@@ -1,0 +1,69 @@
+.table-striped>tbody>tr:nth-child(odd)>td,
+tr.found{
+    background-color:#fffff0;
+}.table-striped>tbody>tr:nth-child(even)>td,
+tr.found{
+    background-color:#ffffd6;
+}
+.table-hover tbody tr:hover,
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th{
+    background:#fbfbae !important;
+}
+.move-left {
+    width: 15px;
+    box-shadow: none;
+}
+.table td.truncate {
+    max-width: 177px;
+}
+.table td.truncate span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 100%;
+}
+.popover-content {
+    background-color: aqua;
+    padding: 0px;
+}
+.panel-default {
+    margin-bottom: 0px;
+    border: none;
+}
+.button-increment {
+    display: block;
+    padding: 0px 12px;
+    height: 15px;
+}
+.btn-group-vertical {
+  flex-wrap: wrap;
+}
+.input-inline {
+    display: inline-flex !important;
+    color: red;
+}
+.tab-pane {
+    height: 425px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.tab-pane-double-row-of-tabs {
+    height: 470px !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.tab-pane-triple-row-of-tabs {
+    height:  350px !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.modal-no-tabs {
+    height: 470px !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

@@ -1,0 +1,9 @@
+/node_modules/
+npm-debug.log
+*.3430562992
+
+*.log
+
+public/bundle\.js\.map
+
+*.map
