@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextInput from './common/TextInput';
+//import TextInput from './common/TextInput';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import * as sessionActions from '../actions/sessionActions';
@@ -26,7 +26,7 @@ class LogInPage extends React.Component {
     }
 
     render() {
-        return (
+        /*return (
             <div>
                 <form>
                     <TextInput
@@ -47,7 +47,7 @@ class LogInPage extends React.Component {
                     {" "}
                 </form>
             </div>
-        );
+        );*/
     }
 }
 

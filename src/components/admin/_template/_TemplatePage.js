@@ -113,10 +113,7 @@ class _TemplateListPage extends React.Component {
         );
     }
 }
-/*
-                    */
-                            
-                            
+
 _TemplateListPage.propTypes = {
     _templates: PropTypes.array.isRequired,
     actions: PropTypes.object,

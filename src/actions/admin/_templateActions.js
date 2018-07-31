@@ -1,5 +1,5 @@
 import * as types from '../actionTypes';
-import _templateApi from '../../api/admin/_TemplatesApi';
+import _templateApi from '../../api/admin/_TemplateApi';
 
 export function load_TemplatesSuccess(_templates) {
     return {type: types.LOAD__TEMPLATES_SUCCESS, _templates};

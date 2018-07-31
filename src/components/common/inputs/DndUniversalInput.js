@@ -14,7 +14,7 @@ class DndUniversalInput extends React.Component {
     }
     
     render() {
-        const resourcePicklist = this.props.picklists ? util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.RESOURCE) : null;
+        const resourcePicklist = this.props.picklists ? util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.RESOURCE) : null;
         const resourceLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Resource' : 'Resource';
         const nameLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Name' : 'Name';
         const descriptionLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Description' : 'Description';
@@ -23,7 +23,7 @@ class DndUniversalInput extends React.Component {
                 <DndInput
                     name="resource"
                     label={resourceLabel}
-                    dataType={util.datatypes.picklist.RESOURCE}
+                    dataType={util.datatypes.PICKLIST}
                     value={this.props.referenceObject.resource}
                     onChange={this.props.onChange}
                     picklist={resourcePicklist}
@@ -35,7 +35,7 @@ class DndUniversalInput extends React.Component {
                 <DndInput
                     name="description"
                     label={descriptionLabel}
-                    dataType={util.datatypes.string.DESCRIPTION}
+                    dataType={util.datatypes.STRING.HTML.LONG}
                     value={this.props.referenceObject.description}
                     onChange={this.props.onChange}
                     />
@@ -48,7 +48,7 @@ class DndUniversalInput extends React.Component {
                         name="name"
                         ref="name"
                         label={nameLabel}
-                        dataType={util.datatypes.string.STRING}
+                        dataType={util.datatypes.STRING.SHORT}
                         value={this.props.referenceObject.name}
                         onChange={this.props.onChange}
                         />

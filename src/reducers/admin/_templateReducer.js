@@ -10,7 +10,7 @@ export default function _templateReducer(state = initialState._templates, action
             return [
                 ...state.filter(_template => _template.id !== action._template.id),
                 Object.assign({}, action._template)
-            ].sort(function(a, b) {
+            ].sort(function(a, b){
                 if (a.name < b.name) {
                     return -1;
                 } else if (a.name > b.name) {
@@ -22,7 +22,7 @@ export default function _templateReducer(state = initialState._templates, action
             return [
                 Object.assign({}, action._template),
                 ...state.filter(_template => _template.id !== action._template.id)
-            ].sort(function(a, b) {
+            ].sort(function(a, b){
                 if (a.name < b.name) {
                     return -1;
                 } else if (a.name > b.name) {

@@ -24,7 +24,7 @@ class ItemtypeForm extends React.Component {
             <DndInput
                 name="applySupplementalPicklist"
                 label="Apply Supplemental Picklist"
-                dataType={util.datatypes.bool.YES_NO}
+                dataType={util.datatypes.BOOL}
                 value={this.props.itemtype.applySupplementalPicklist}
                 onChange={this.props.onChange} />
         ) : null;
@@ -48,7 +48,7 @@ class ItemtypeForm extends React.Component {
                                 name="name"
                                 ref="name"
                                 label="Name"
-                                dataType={util.datatypes.string.STRING}
+                                dataType={util.datatypes.STRING.SHORT}
                                 value={this.props.itemtype.name}
                                 onChange={this.props.onChange}
                                 />
@@ -57,7 +57,7 @@ class ItemtypeForm extends React.Component {
                             <DndInput
                                 name="isPicklist"
                                 label="Is Picklist"
-                                dataType={util.datatypes.bool.YES_NO}
+                                dataType={util.datatypes.BOOL}
                                 value={this.props.itemtype.isPicklist}
                                 onChange={this.props.onChange} />
                         </div>

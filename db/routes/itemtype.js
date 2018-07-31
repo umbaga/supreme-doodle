@@ -25,7 +25,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_type';
-                    SQL += ' WHERE id = $1';
+                    sql += ' WHERE id = $1';
                     vals = [
                         resObj.id
                     ];

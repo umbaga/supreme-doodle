@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import DndInput from '../../common/inputs/DndInput';
 import DndUniversalInput from '../../common/inputs/DndUniversalInput';
-//import util from '../../../util/util';
-import { Tabs, Tab } from 'react-bootstrap';
+import util from '../../../util/util';
 
 class _TemplateForm extends React.Component {
     constructor(props) {
@@ -19,26 +19,19 @@ class _TemplateForm extends React.Component {
     }
     
     render() {
-        const _template = this.props._template;
-        
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-                        <Tab eventKey={1} title="General">
-                            <div>&nbsp;</div>
+                    <div className="modal-no-tabs">
+                        <div className="col-md-12">
                             <DndUniversalInput
                                 ref="name"
-                                referenceObject={_template}
+                                referenceObject={this.props._template}
                                 onChange={this.props.onChange}
                                 picklists={this.props.picklists}
-                                hideDescription
                                 />
-                        </Tab>
-                        <Tab eventKey={2} title="Damage/Save">
-                            <div>&nbsp;</div>
-                        </Tab>
-                    </Tabs>
+                        </div>
+                    </div>
                 </form>
             </div>
         );
@@ -47,12 +40,14 @@ class _TemplateForm extends React.Component {
 
 _TemplateForm.propTypes = {
     _template: PropTypes.object.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,
-    onEdit: PropTypes.func,
-    onViewDetails: PropTypes.func,
-    saving: PropTypes.bool,
-    picklists: PropTypes.array
+    picklists: PropTypes.array,
+    saving: PropTypes.bool
 };
 
 export default _TemplateForm;

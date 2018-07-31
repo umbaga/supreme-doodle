@@ -17,3 +17,9 @@ export const ITEMTYPE = {
     isPicklist: false,
     applySupplementalPicklist: false
 };
+
+export const PICKLIST = {
+    id: 0,
+    name: '',
+    items: []
+};

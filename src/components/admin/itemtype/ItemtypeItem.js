@@ -13,7 +13,7 @@ class ItemtypeItem extends React.Component {
             selectedId: this.props.selectedId
         };
         this.editItemtype = this.editItemtype.bind(this);
-        this.deleteItemType = this.deleteItemType.bind(this);
+        this.deleteItemtype = this.deleteItemtype.bind(this);
     }
     editItemtype() {
         event.preventDefault();
@@ -22,7 +22,7 @@ class ItemtypeItem extends React.Component {
         this.props.onEdit();
         this.setState({selectedId: this.props.itemtype.id});
     }
-    deleteItemType() {
+    deleteItemtype() {
         event.preventDefault();
         if (confirm('are you sure?')) {
             this.props.actions.deleteItemtype(this.props.itemtype);
@@ -38,7 +38,7 @@ class ItemtypeItem extends React.Component {
                     <DndListItemButtonBar
                         listItem={this.props.itemtype}
                         onEdit={this.editItemtype}
-                        onDelete={this.deleteItemType} />
+                        onDelete={this.deleteItemtype} />
                 </td>
             </tr>
         );

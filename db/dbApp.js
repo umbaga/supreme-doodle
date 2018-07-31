@@ -1,32 +1,34 @@
-var express = require('express');
+/* eslint no-console: 0 */
 
-var itemtypes = require('./modules/itemtypeDefinition');
-var modules = require('./modules/common');
+let express = require('express');
 
-var runItemtype = require('./routes/itemtype');
+let itemtypes = require('./modules/itemtypeDefinition');
+let modules = require('./modules/common');
 
-var modules = require('./modules/common');
+let runItemtype = require('./routes/itemtype');
+let runPicklist = require('./routes/picklist');
 
-var pg = require('pg');
+let pg = require('pg');
 
-var cn = {
+let cn = {
     user: 'postgres',
     password: '1qw23er4',
     host: 'localhost',
     port: 5432,
     database: 'dnd5ecg'
 };
-var app = express();
-var bodyParser = require('body-parser');
+let app = express();
+let bodyParser = require('body-parser');
 app.use(bodyParser.json({limit: '5mb', extended: true}));
 app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
-var pool = new pg.Pool(cn);
-app.use(bodyParser.json());         
-app.use(bodyParser.urlencoded({ extended: true })); app.use(bodyParser.urlencoded({ extended: true })); 
+let pool = new pg.Pool(cn);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); app.use(bodyParser.urlencoded({ extended: true }));
 
-var async = require('async');
+let async = require('async');
 
 runItemtype(app, pg, async, pool, itemtypes, modules);
+runPicklist(app, pg, async, pool, itemtypes, modules);
 
 app.listen(5000, function() {
     console.log('Started on Port 5000');

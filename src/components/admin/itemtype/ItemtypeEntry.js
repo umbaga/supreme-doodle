@@ -7,7 +7,6 @@ import ItemtypeForm from './ItemtypeForm';
 import util from '../../../util/util';
 import DndModal from '../../common/DndModal';
 
-
 class ItemtypeEntry extends React.Component {
     constructor(props, context) {
         super(props, context);

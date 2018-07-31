@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as _templateActions from '../../../actions/admin/_templateActions';
-
 import _TemplateForm from './_TemplateForm';
-import _TemplateDetails from './_TemplateDetails';
 import util from '../../../util/util';
 import DndModal from '../../common/DndModal';
 
@@ -16,24 +14,17 @@ class _TemplateEntry extends React.Component {
             _template: this.props._template,
             isCreate: this.props.isCreate,
             canEdit: this.props.canEdit,
-            selectedChartId: 0,
-            saving: false,
-            newMechanic: Object.assign({}, util.objectModel.MECHANIC),
-            editDescription: Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION),
-            selectedChartType: Object.assign({}, util.objectModel.CHART_TYPE),
-            editChart: Object.assign({}, util.objectModel.CHART),
-            editDamageGroupinf: Object.assign({}, util.objectModel.DAMAGE)
+            saving: false
         };
         this.cancel_Template = this.cancel_Template.bind(this);
         this.delete_Template = this.delete_Template.bind(this);
-        this.reset_Template = this.reset_Template.bind(this);
         this.postAction = this.postAction.bind(this);
-        this.saveAndBack_Template = this.saveAndBack_Template.bind(this);
-        this.saveAndNew_Template = this.saveAndNew_Template.bind(this);
         this.save_Template = this.save_Template.bind(this);
+        this.saveAndNew_Template = this.saveAndNew_Template.bind(this);
+        this.saveAndBack_Template = this.saveAndBack_Template.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
     }
-    
+
     componentWillReceiveProps(nextProps) {
         if (this.props._template.id != nextProps._template.id) {
             this.setState({_template: nextProps._template});
@@ -43,7 +34,6 @@ class _TemplateEntry extends React.Component {
 
     cancel_Template(event) {
         event.preventDefault();
-        this.reset_Template();
         this.postAction();
     }
 
@@ -55,43 +45,21 @@ class _TemplateEntry extends React.Component {
         }
     }
 
-    reset_Template() {
-        const blank_Template = Object.assign({}, util.objectModel._TEMPLATE);
-        blank_Template.components = [];
-        blank_Template.supplementalDescriptions = [];
-        blank_Template.damage = {
-            dice: {id: 0, dieCount: 0, dieType: 0, rendered: '', modifier: 0, multiplier: 1, divisor: 1},
-            type: {id: 0, name: ''},
-            attackRollType: {id: 0, name: ''},
-            condition: {id: 0, name: ''},
-            improvement: {
-                dice: {id: 0, dieCount: 0, dieType: 0, rendered: '', modifier: 0, multiplier: 1, divisor: 1},
-                levelCount: 0,
-                projectileCount: 0
-            },
-            supplemental: [],
-            applyAbilityScoreModifier: false,
-            abilityScore: {id: 0, name: ''},
-            maximum: {dice: {id: 0, dieCount: 0, dieType: 0, rendered: '', modifier: 0, multiplier: 1, divisor: 1}},
-            projectileCount: 0
-        };
-        blank_Template.savingThrow = {
-            abilityScore: {id: 0, name: ''},
-            effect: {id: 0, name: ''}
-        };
-        blank_Template.charts = [];
-        blank_Template.mechanics = {base: [], advancement: []};
-        this.setState({_template: blank_Template});
-    }
-    
     postAction() {
         this.props.closeModal();
     }
 
+    save_Template(event) {
+        event.preventDefault();
+        let new_Template = Object.assign({}, util.objectModel._TEMPLATE);
+        this.setState({saving: true, _template: new_Template});
+        this.props.actions.upsert_Template(this.state._template);
+    }
+
     saveAndNew_Template(event) {
         this.save_Template(event);
-        this.reset_Template();
         this.refs.form.refs.name.setFocus();
+        
     }
 
     saveAndBack_Template(event) {
@@ -99,34 +67,22 @@ class _TemplateEntry extends React.Component {
         this.postAction();
     }
 
-    save_Template(event) {
-        event.preventDefault();
-        this.props.actions.upsert_Template(this.state._template);
-        this.reset_Template();
-    }
-    
     updateFormState(event) {
-        const _template = util.common.formState.standard(event, this.state._template, this.props.picklists);
+        const field = event.target.name;
+        const _template = this.state._template;
+        switch (event.target.type) {
+            case 'text':
+                _template[field] = event.target.value;
+                break;
+            case 'checkbox':
+                _template[field] = !_template[field];
+                break;
+            default:
+        }
         return this.setState({_template: _template});
     }
-    
+
     render() {
-        const _template = this.state._template;
-        const contents = this.props.canEdit ? (
-            <_TemplateForm
-                ref="form"
-                _template={_template}
-                isCreate={this.props.isCreate}
-                picklists={this.props.picklists}
-                saving={this.state.saving}
-                onChange={this.updateFormState}
-                />
-        ) : (
-            <_TemplateDetails
-                _template={_template}
-                picklists={this.props.picklists}
-                />
-        );
         return (
             <DndModal
                 headingCaption="_Template"
@@ -139,7 +95,18 @@ class _TemplateEntry extends React.Component {
                 onDelete={this.delete_Template}
                 onSave={this.saveAndBack_Template}
                 onSaveNew={this.saveAndNew_Template}>
-                {contents}
+                <_TemplateForm
+                    ref="form"
+                    _template={this.state._template}
+                    onSave={this.saveAndBack_Template}
+                    onSaveNew={this.saveAndNew_Template}
+                    onChange={this.updateFormState}
+                    onCancel={this.cancel_Template}
+                    onDelete={this.delete_Template}
+                    isCreate={this.state.isCreate}
+                    picklists={this.props.picklists}
+                    saving={this.state.saving}
+                    />
             </DndModal>
         );
     }
@@ -180,7 +147,7 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        actions: bindActionCreators(Object.assign({}, _templateActions), dispatch)
+        actions: bindActionCreators(_templateActions, dispatch)
     };
 }
 
