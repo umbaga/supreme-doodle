@@ -18,7 +18,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.itemtype;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function typeTable(resObj, callback) {
@@ -27,7 +27,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql = 'DELETE FROM adm_core_type';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id
+                        req.params.id
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -35,7 +35,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }
@@ -60,22 +59,22 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.itemtype;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function typeTable(resObj, callback) {
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_type';
-                    sql += ' SET "typename" = $2';
+                    sql += ' SET "typeName" = $2';
                     sql += ', "isPicklist" = $3';
-                    sql += ', "applySypplementalPicklist" = $4';
+                    sql += ', "applySupplementalPicklist" = $4';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id,
-                        resObj.name,
-                        resObj.isPicklist,
-                        resObj.applySypplementalPicklist
+                        resObj.itemtype.id,
+                        resObj.itemtype.name,
+                        resObj.itemtype.isPicklist,
+                        resObj.itemtype.applySupplementalPicklist
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -83,7 +82,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }
@@ -108,19 +106,19 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.itemtype;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function typeTable(resObj, callback) {
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_type';
-                    sql += '("typeName", "isPicklist", "applySypplementalPicklist")';
+                    sql += '("typeName", "isPicklist", "applySupplementalPicklist")';
                     sql += 'VALUES ($1, $2, $3) RETURNING id;';
                     vals = [
-                        resObj.name,
-                        resObj.isPicklist,
-                        resObj.applySypplementalPicklist
+                        resObj.itemtype.name,
+                        resObj.itemtype.isPicklist,
+                        resObj.itemtype.applySupplementalPicklist
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -128,7 +126,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
+                        resObj.itemtype.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }

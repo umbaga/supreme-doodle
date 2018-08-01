@@ -119,7 +119,7 @@ class DndButton extends React.Component {
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
         if (this.props.dataType && this.props.dataType.length != 0) {
             return (
-                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} datatype={this.props.dataType} name={name}>
+                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex}>
                     {renderedLabel}
                 </Button>
             );
@@ -141,7 +141,8 @@ DndButton.propTypes = {
     label: PropTypes.string,
     bsButtonStyle: PropTypes.string,
     dataType: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
+    selectedIndex: PropTypes.number
 };
 
 export default DndButton;

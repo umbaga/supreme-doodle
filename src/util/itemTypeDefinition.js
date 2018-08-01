@@ -1,37 +1,38 @@
 export const TYPE = {
     DESCRIPTION: {
-        GENERAL: 7
+        GENERAL: 11
     },
     ITEM: {
-        ABBREVIATION: 1,
-        DESCRIPTION_TYPE: 2,
-        LINK_TYPE: 3,
-        MECHANIC_TYPE: 4,
-        RESOURCE: 5,
-        TITLE: 6
+        _TEMPLATE: 0,
+        ABBREVIATION: 6,
+        DESCRIPTION_TYPE: 7,
+        LINK_TYPE: 8,
+        MECHANIC_TYPE: 9,
+        RESOURCE: 1,
+        TITLE: 10
     },
     LINK: {
-        ABBREVIATION: 8,
-        CHART: 10,
-        DESCRIPTION: 9,
+        ABBREVIATION: 14,
+        CHART: 18,
+        DESCRIPTION: 16,
         MAP: {
-            EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 11
+            EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 19
         },
-        MECHANIC: 12,
+        MECHANIC: 21,
         RACE: {
-            SUBRACE: 13,
-            VARIANT: 14
+            SUBRACE: 20,
+            VARIANT: 15
         },
-        TITLE: 15
+        TITLE: 17
     },
     MECHANIC: {
-        ADVANTAGE: 16,
-        BONUS: 17
+        ADVANTAGE: 12,
+        BONUS: 13
     },
     RESOURCE: {
-        DMG: 19,
-        MONSTER: 20,
-        PHB: 18,
-        VOLO: 21
+        DMG: 4,
+        MONSTER: 3,
+        PHB: 2,
+        VOLO: 5
     }
 };

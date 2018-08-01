@@ -78,6 +78,7 @@ class PicklistListPage extends React.Component {
                             </tr>
                             <tr>
                                 <th>Name</th>
+                                <th>Items</th>
                                 <th style={{paddingRight: '25px'}}>
                                     <div className="pull-right">
                                         <DndButton onClick={this.onCreate} buttonType="create" />

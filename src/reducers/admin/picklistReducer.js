@@ -8,8 +8,8 @@ export default function picklistReducer(state = initialState.picklists, action) 
             return action.picklists;
         case types.CREATE_PICKLIST_SUCCESS:
             return [
-                ...state.filter(picklist => picklist.id !== action.picklist.id),
-                Object.assign({}, action.picklist)
+                Object.assign({}, action.picklist),
+                ...state.filter(picklist => picklist.id !== action.picklist.id)
             ].sort(function(a, b){
                 if (a.name < b.name) {
                     return -1;

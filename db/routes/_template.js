@@ -18,7 +18,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body._template;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
@@ -27,7 +27,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql = 'DELETE FROM adm_core_item';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id
+                        req.params.id
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -35,7 +35,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }
@@ -70,8 +69,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql += ' SET "itemName" = $2';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id,
-                        resObj.name
+                        resObj._template.id,
+                        resObj._template.name
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -79,7 +78,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }
@@ -114,7 +112,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql += '("itemName")';
                     sql += 'VALUES ($1) RETURNING id;';
                     vals = [
-                        resObj.name
+                        resObj._template.name
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -122,7 +120,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
+                        resObj._template.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }

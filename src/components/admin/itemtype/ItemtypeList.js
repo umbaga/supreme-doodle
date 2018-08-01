@@ -11,16 +11,18 @@ class ItemtypeList extends React.Component {
     render() {
         return (
             <tbody>
-                {this.props.itemtypes.map(itemtype =>
-                               <ItemtypeItem
-                                    key={itemtype.id}
-                                    itemtype={itemtype}
-                                    openModal={this.props.openModal}
-                                    selectedId={this.props.selectedId}
-                                    changeSelectedId={this.props.changeSelectedId}
-                                    onEdit={this.props.onEdit}
-                                   />
-                              )}
+                {this.props.itemtypes.map(function(itemtype, idx) {
+                    return (
+                        <ItemtypeItem
+                            key={idx}
+                            itemtype={itemtype}
+                            openModal={this.props.openModal}
+                            selectedId={this.props.selectedId}
+                            changeSelectedId={this.props.changeSelectedId}
+                            onEdit={this.props.onEdit}
+                            />
+                    );
+                }.bind(this))}
             </tbody>
         );
     }

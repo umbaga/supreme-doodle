@@ -3,8 +3,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let sql = '';
     let vals = [];
     let query = null;
-    let tmp = null;
     let resObj = null;
+    let parameterArray = null;
+    let addComma = false;
     app.delete('/api/adm/picklist/:id', function(req, res) {
         results = [];
         vals = [];
@@ -18,16 +19,17 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.picklist;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
-                function itemTable(resObj, callback) {
+                function typeTable(resObj, callback) {
+                    console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_type';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id
+                        req.params.id
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -35,7 +37,24 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
+                        return callback(null, resObj);
+                    });
+                },
+                function itemTable(resObj, callback) {
+                    console.log('picklist-02');
+                    results = [];
+                    vals = [];
+                    sql = 'DELETE FROM adm_core_type';
+                    sql += ' WHERE "typeId" = $1';
+                    vals = [
+                        req.params.id
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        done();
                         return callback(null, resObj);
                     });
                 }
@@ -60,10 +79,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.picklist;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
+                    console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_type';
@@ -71,9 +91,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql += ', "applySupplementalPicklist" = $3';
                     sql += ' WHERE id = $1';
                     vals = [
-                        resObj.id,
-                        resObj.name,
-                        resObj.applySupplementalPicklist
+                        resObj.picklist.id,
+                        resObj.picklist.name,
+                        resObj.picklist.applySupplementalPicklist
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -81,9 +101,74 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
+                },
+                function insertNewItems(resObj, callback) {
+                    console.log('picklist-02');
+                    results = [];
+                    vals = [];
+                    sql = 'WITH vals AS (';
+                    addComma = false;
+                    for (let q = 0; q < resObj.picklist.items.length; q++) {
+                        sql += addComma ? ' UNION ' : '';
+                        sql += ' SELECT $' + ((q * 2) + 1).toString() + ' :: bigint AS "typeId", $' + ((q * 2) + 2).toString() + ' :: varchar AS "itemName"';
+                        vals.push(resObj.picklist.id);
+                        vals.push(resObj.picklist.items[q].name);
+                        addComma = true;
+                    }
+                    sql += ')';
+                    sql += ' INSERT INTO adm_core_item ("typeId", "itemName")';
+                    sql += ' SELECT v."typeId", v."itemName"';
+                    sql += ' FROM vals AS v';
+                    sql += ' WHERE NOT EXISTS (';
+                    sql += ' SELECT * FROM adm_core_item AS t';
+                    sql += ' WHERE t."typeId" = v."typeId"';
+                    sql += ' AND t."itemName" = v."itemName"';
+                    sql += ')';
+                    sql += ' RETURNING id, "typeId", "itemName" AS "name"';
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        done();
+                        for (let q = 0; q < results.length; q++) {
+                            for (let w = 0; w < resObj.picklist.items.length; w++) {
+                                if (!resObj.picklist.items[w].id || resObj.picklist.items[w].id <= 0) {
+                                    if (resObj.picklist.items[w].name == results[q].name) {
+                                        resObj.picklist.items[w].id = results[q].id;
+                                    }
+                                }
+                            }
+                        }
+                        return callback(null, resObj);
+                    });
+                },
+                function removeUnassignedItems(resObj, callback) {
+                    console.log('picklist-03');
+                    results = [];
+                    addComma = false;
+                    sql = 'DELETE FROM adm_core_item';
+                    sql += ' WHERE "typeId" = $1';
+                    sql += ' AND "id" NOT IN (';
+                    vals = [resObj.picklist.id];
+                    for (let q = 0; q < resObj.picklist.items.length; q++) {
+                        sql += addComma ? ', ' : '';
+                        sql += '$' + (q + 2).toString();
+                        vals.push(resObj.picklist.items[q].id);
+                        addComma = true;
+                    }
+                    sql += ')';
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        done();
+                        return callback(null, resObj);
+                    });
+                    
                 }
             ], function(error, result) {
                 if (error) {
@@ -106,19 +191,25 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body.picklist;
+                    resObj = req.body;
+                    resObj.permissions = {};
+                    resObj.permissions.hasItems = false;
+                    if (resObj.picklist.items && resObj.picklist.items.length != 0) {
+                        resObj.permissions.hasItems = true;
+                    }
                     cb(null, resObj);
                 },
-                function itemTable(resObj, callback) {
+                function typeTable(resObj, callback) {
+                    console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_type';
-                    sql += '("typeName", "isPicklist", "applySupplementalPicklist")';
-                    sql += 'VALUES ($1, $2, $3) RETURNING id;';
+                    sql += ' ("typeName", "isPicklist", "applySupplementalPicklist")';
+                    sql += ' VALUES ($1, $2, $3) RETURNING id;';
                     vals = [
-                        resObj.name,
+                        resObj.picklist.name,
                         true,
-                        resObj.applySupplementalPicklist
+                        resObj.picklist.applySupplementalPicklist
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -126,11 +217,50 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                     query.on('end', function() {
                         done();
-                        resObj.id = parseInt(results[0].id);
+                        resObj.picklist.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
+                },
+                function itemTable(resObj, callback) {
+                    console.log('picklist-02');
+                    if (resObj.permissions.hasItems) {
+                        results = [];
+                        vals = [];
+                        addComma = false;
+                        sql = 'INSERT INTO adm_core_item';
+                        sql += ' ("itemName", "typeId")';
+                        sql += ' VALUES ';
+                        parameterArray = common.parameterArray.resetValues(2);
+                        for (let e = 0; e < resObj.picklist.items.length; e++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.sql(parameterArray);
+                            vals.push(resObj.picklist.items[e].name);
+                            vals.push(resObj.picklist.id);
+                            addComma = true;
+                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                        }
+                        sql += ' returning id, "itemName"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            done();
+                            for (let q = 0; q < resObj.picklist.items.length; q++) {
+                                for (let w = 0; w < results.length; w++) {
+                                    if (resObj.picklist.items[q].name == results[w].itemName) {
+                                        resObj.picklist.items[q].id = results[w].id;
+                                    }
+                                }
+                            }
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
                 }
             ], function(error, result) {
+                console.log('picklist-done');
                 if (error) {
                     console.error(error);
                 }
@@ -147,15 +277,42 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 return res.status(500).json({ success: false, data: err});
             }
             sql = 'SELECT t."id", t."typeName" AS "name", t."applySupplementalPicklist"';
+            sql += ', json_agg((SELECT x FROM (SELECT ';
+            sql += '    i."itemName" AS "name"';
+            sql += '    , i."id"';
+            sql += ') x ORDER BY i."itemName")) AS items';
             sql += ' FROM adm_core_type t';
+            sql += ' LEFT OUTER JOIN adm_core_item i ON i."typeId" = t.id';
             sql += ' WHERE t."isPicklist" = $1';
+            sql += ' GROUP BY t.id';
             sql += ' ORDER BY t."typeName"';
             vals = [
                 true
             ];
             query = client.query(new pg.Query(sql, vals));
             query.on('row', function(row) {
-                results.push(row);
+                let newRow = row;
+                newRow.items.sort(function(a, b) {
+                    if (a.name < b.name) {
+                        return -1;
+                    } else if (a.name > b.name) {
+                        return 1;
+                    }
+                    return 0;
+                });
+                if (!newRow.items || (newRow.items.length != 0 && !newRow.items[0].id)) {
+                    newRow.items = [];
+                }
+                for (let x = 0; x < newRow.items.length; x++) {
+                    for (let key in newRow.items[x]) {
+                        if (newRow.items[x].hasOwnProperty(key)) {
+                            if (newRow.items[x][key] === null) {
+                                delete newRow.items[x][key];
+                            }
+                        }
+                    }
+                }
+                results.push(newRow);
             });
             query.on('end', function() {
                 done();

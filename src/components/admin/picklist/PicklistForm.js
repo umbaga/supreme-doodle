@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import DndInput from '../../common/inputs/DndInput';
 import util from '../../../util/util';
 
-class _PicklistForm extends React.Component {
+class PicklistForm extends React.Component {
     constructor(props) {
         super(props);
         this.setFocus = this.setFocus.bind(this);
@@ -38,7 +38,22 @@ class _PicklistForm extends React.Component {
                                 label="Apply Supplemental Picklist"
                                 dataType={util.datatypes.BOOL}
                                 value={this.props.picklist.applySupplementalPicklist}
-                                onChange={this.props.onChange} />
+                                onChange={this.props.onChange}
+                                />
+                        </div>
+                        <div className="col-md-12">
+                            <DndInput
+                                name="items"
+                                label="Add New Item"
+                                dataType={util.datatypes.ARRAY.LIST.ADD.NEW}
+                                value={this.props.picklist.items}
+                                childValue={this.props.editItem.name}
+                                childName="name"
+                                onChange={this.props.onChange}
+                                buttonOnClick={this.props.onChange}
+                                onChangeChild={this.props.onChangeItem}
+                                buttonDatatype={util.datatypes.ACTION.LIST.NEW}
+                                />
                         </div>
                     </div>
                 </form>
@@ -47,11 +62,13 @@ class _PicklistForm extends React.Component {
     }
 }
 
-_PicklistForm.propTypes = {
+PicklistForm.propTypes = {
+    editItem: PropTypes.object.isRequired,
     picklist: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    onChangeItem: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,
@@ -59,4 +76,4 @@ _PicklistForm.propTypes = {
     saving: PropTypes.bool
 };
 
-export default _PicklistForm;
+export default PicklistForm;

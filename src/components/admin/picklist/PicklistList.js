@@ -11,16 +11,18 @@ class PicklistList extends React.Component {
     render() {
         return (
             <tbody>
-                {this.props.picklists.map(picklist =>
-                               <PicklistItem
-                                    key={picklist.id}
-                                    picklist={picklist}
-                                    openModal={this.props.openModal}
-                                    selectedId={this.props.selectedId}
-                                    changeSelectedId={this.props.changeSelectedId}
-                                    onEdit={this.props.onEdit}
-                                   />
-                              )}
+                {this.props.picklists.map(function(picklist, idx) {
+                    return (
+                        <PicklistItem
+                            key={idx}
+                            picklist={picklist}
+                            openModal={this.props.openModal}
+                            selectedId={this.props.selectedId}
+                            changeSelectedId={this.props.changeSelectedId}
+                            onEdit={this.props.onEdit}
+                            />
+                    );
+                }.bind(this))}
             </tbody>
         );
     }

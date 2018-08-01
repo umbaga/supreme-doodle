@@ -1,11 +1,21 @@
 export const ACTION = {
     LIST: {
-        ADD: 'DATATYPE_ACTION_LIST_ADD',
-        ORDER: {
-            DOWN: 'DATATYPE_ACTION_LIST_ORDER_DOWN',
-            UP: 'DATATYPE_ACTION_LIST_ORDER_UP'
+        FROM_PICKLIST: {
+            ADD: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ADD',
+            ORDER: {
+                DOWN: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ORDER_DOWN',
+                UP: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ORDER_UP'
+            },
+            REMOVE: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_REMOVE'
         },
-        REMOVE: 'DATATYPE_ACTION_LIST_REMOVE'
+        NEW: {
+            ADD: 'DATATYPE_ACTION_LIST_NEW_ADD',
+            ORDER: {
+                DOWN: 'DATATYPE_ACTION_LIST_NEW_ORDER_DOWN',
+                UP: 'DATATYPE_ACTION_LIST_NEW_ORDER_UP'
+            },
+            REMOVE: 'DATATYPE_ACTION_LIST_NEW_REMOVE'
+        }
     },
     TOGGLE: {
         ADD: 'DATATYPE_ACTION_TOGGLE_ADD',
@@ -15,7 +25,12 @@ export const ACTION = {
 
 export const ARRAY = {
     CHECKBOX: 'DATATYPE_ARRAY_CHECKBOX',
-    LIST: 'DATATYPE_ARRAY_LIST',
+    LIST: {
+        ADD: {
+            FROM_PICKLIST: 'DATATYPE_ARRAY_LIST_ADD_FROM_PICKLIST',
+            NEW: 'DATATYPE_ARRAY_LIST_ADD_NEW'
+        }
+    },
     TOGGLE: 'DATATYPE_ARRAY_TOGGLE'
 };
 

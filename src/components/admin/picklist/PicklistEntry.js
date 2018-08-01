@@ -11,6 +11,7 @@ class PicklistEntry extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
+            editItem: Object.assign({}, util.objectModel.ITEM),
             picklist: this.props.picklist,
             isCreate: this.props.isCreate,
             canEdit: this.props.canEdit,
@@ -23,6 +24,7 @@ class PicklistEntry extends React.Component {
         this.saveAndNewPicklist = this.saveAndNewPicklist.bind(this);
         this.saveAndBackPicklist = this.saveAndBackPicklist.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
+        this.updateItemFormState = this.updateItemFormState.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -68,20 +70,15 @@ class PicklistEntry extends React.Component {
     }
 
     updateFormState(event) {
-        const field = event.target.name;
-        const picklist = this.state.picklist;
-        switch (event.target.type) {
-            case 'text':
-                picklist[field] = event.target.value;
-                break;
-            case 'checkbox':
-                picklist[field] = !picklist[field];
-                break;
-            default:
-        }
-        return this.setState({picklist: picklist});
+        let picklist = util.common.formState.standard(event, this.state.picklist, this.props.picklists, this.state.editItem);
+        let newEditItem = Object.assign({}, util.common.resetObject.item(picklist.items.length * -1));
+        return this.setState({picklist: picklist, editItem: newEditItem});
     }
 
+    updateItemFormState(event) {
+        let editItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists);
+        return this.setState({editItem: editItem});
+    }
     render() {
         return (
             <DndModal
@@ -101,11 +98,13 @@ class PicklistEntry extends React.Component {
                     onSave={this.saveAndBackPicklist}
                     onSaveNew={this.saveAndNewPicklist}
                     onChange={this.updateFormState}
+                    onChangeItem={this.updateItemFormState}
                     onCancel={this.cancelPicklist}
                     onDelete={this.deletePicklist}
                     isCreate={this.state.isCreate}
                     picklists={this.props.picklists}
                     saving={this.state.saving}
+                    editItem={this.state.editItem}
                     />
             </DndModal>
         );
