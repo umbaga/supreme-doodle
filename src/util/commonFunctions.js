@@ -14,6 +14,11 @@ export const resetObject = {
     itemtype: function() {
         let retVal = Object.assign({}, util.objectModel.ITEMTYPE);
         return retVal;
+    },
+    picklist: function() {
+        let retVal = Object.assign({}, util.objectModel.PICKLIST);
+        retVal.items = [];
+        return retVal;
     }
 };
 

@@ -53,7 +53,7 @@ class PicklistEntry extends React.Component {
 
     savePicklist(event) {
         event.preventDefault();
-        let newPicklist = Object.assign({}, util.objectModel.PICKLIST);
+        let newPicklist = util.common.resetObject.picklist();
         this.setState({saving: true, picklist: newPicklist});
         this.props.actions.upsertPicklist(this.state.picklist);
     }
@@ -61,7 +61,6 @@ class PicklistEntry extends React.Component {
     saveAndNewPicklist(event) {
         this.savePicklist(event);
         this.refs.form.refs.name.setFocus();
-        
     }
 
     saveAndBackPicklist(event) {

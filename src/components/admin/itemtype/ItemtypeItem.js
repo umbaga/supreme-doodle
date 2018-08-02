@@ -31,6 +31,7 @@ class ItemtypeItem extends React.Component {
     render() {
         return (
             <tr key={this.props.itemtype.id}>
+                <td width="50"></td>
                 <td>{this.props.itemtype.name}</td>
                 <td className="text-center">{util.format.forDisplay.bool.asCheckX(this.props.itemtype.isPicklist)}</td>
                 <td className="text-center">{util.format.forDisplay.bool.asCheckX(this.props.itemtype.applySupplementalPicklist)}</td>

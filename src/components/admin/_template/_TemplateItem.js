@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import util from '../../../util/util';
 import DndListItemButtonBar from '../../common/buttons/DndListItemButtonBar';
 import * as _templateActions from '../../../actions/admin/_templateActions';
+import { Popover, OverlayTrigger } from 'react-bootstrap';
 
 class _TemplateItem extends React.Component {
     constructor(props, context) {
@@ -29,9 +30,29 @@ class _TemplateItem extends React.Component {
         }
     }
     render() {
+        const itemArrayPopover = (
+            <Popover id={this.props._template.id}>
+                {popoverContent(this.props._template.items)}
+            </Popover>
+        );
+        function popoverContent(val) {
+            let tmp = [];
+            if (val) {
+                for (let x = 0; x < val.length; x++) {
+                    tmp.push(<div key={x}>{val[x].name}</div>);
+                }
+            }
+            return tmp;
+        }
         return (
             <tr key={this.props._template.id}>
+                <td width="50"></td>
                 <td>{this.props._template.name}</td>
+                <td className="truncate">
+                    <OverlayTrigger trigger={['hover', 'focus']} placement="top" overlay={itemArrayPopover}>
+                        <span>{util.format.forDisplay.array.commaDelimitedList(this.props._template.items)}</span>
+                    </OverlayTrigger>
+                </td>
                 <td>
                     <DndListItemButtonBar
                         listItem={this.props._template}

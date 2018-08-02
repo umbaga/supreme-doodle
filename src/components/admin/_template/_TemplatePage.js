@@ -29,7 +29,7 @@ class _TemplateListPage extends React.Component {
     }
 
     componentWillMount() {
-        if (this.props._templates[0].id == '') {
+        if (!this.props._templates || (this.props._templates && this.props._templates.length == 0)) {
             this.props.actions.load_Templates();
         }
     }
@@ -69,15 +69,20 @@ class _TemplateListPage extends React.Component {
         return (
             <div className="col-md-12">
                 <div>
-                    <table className="table table-sm table-striped table-hover">
+                    <table className="table table-sm table-striped table-hover tableBodyScroll">
                         <thead>
                             <tr>
-                                <th colSpan="2">
-                                    <h2><span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>_Templates</h2>
+                                <th width="50">
+                                    <span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>
+                                </th>
+                                <th colSpan="3">
+                                    <h2>_Templates</h2>
                                 </th>
                             </tr>
                             <tr>
+                                <th width="50"></th>
                                 <th>Name</th>
+                                <th>Items</th>
                                 <th style={{paddingRight: '25px'}}>
                                     <div className="pull-right">
                                         <DndButton onClick={this.onCreate} buttonType="create" />
@@ -104,7 +109,6 @@ class _TemplateListPage extends React.Component {
                     isCreate={this.state.isCreate}
                     canEdit={this.state.canEdit}
                     selectedId={this.state.selectedId}
-                    picklists={this.props.picklists}
                     showModal={this.state.showModal}
                     onEdit={this.onEdit}
                     onViewDetails={this.onViewDetails}
@@ -118,25 +122,18 @@ _TemplateListPage.propTypes = {
     _templates: PropTypes.array.isRequired,
     actions: PropTypes.object,
     children: PropTypes.object,
-    picklists: PropTypes.array,
     equipments: PropTypes.array,
     proficiencies: PropTypes.array
 };
 
 function mapStateToProps(state) {
-    let picklists = Object.assign([{}], [util.objectModel.PICKLIST]);
-    if (state.picklists.length > 0) {
-        picklists = Object.assign([{}], state.picklists);
-    }
     if (state._templates.length > 0) {
         return {
-            _templates: state._templates,
-            picklists: picklists
+            _templates: state._templates
         };
     } else {
         return {
-            _templates: [util.objectModel._TEMPLATE],
-            picklists: picklists
+            _templates: []
         };
     }
 }

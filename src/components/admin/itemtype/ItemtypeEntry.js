@@ -59,7 +59,6 @@ class ItemtypeEntry extends React.Component {
     saveAndNewItemtype(event) {
         this.saveItemtype(event);
         this.refs.form.refs.name.setFocus();
-        
     }
 
     saveAndBackItemtype(event) {

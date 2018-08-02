@@ -11,6 +11,7 @@ class _TemplateEntry extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
+            editItem: Object.assign({}, util.objectModel.ITEM),
             _template: this.props._template,
             isCreate: this.props.isCreate,
             canEdit: this.props.canEdit,
@@ -23,6 +24,7 @@ class _TemplateEntry extends React.Component {
         this.saveAndNew_Template = this.saveAndNew_Template.bind(this);
         this.saveAndBack_Template = this.saveAndBack_Template.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
+        this.updateItemFormState = this.updateItemFormState.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -51,7 +53,7 @@ class _TemplateEntry extends React.Component {
 
     save_Template(event) {
         event.preventDefault();
-        let new_Template = Object.assign({}, util.objectModel._TEMPLATE);
+        let new_Template = util.common.resetObject._template();
         this.setState({saving: true, _template: new_Template});
         this.props.actions.upsert_Template(this.state._template);
     }
@@ -59,7 +61,6 @@ class _TemplateEntry extends React.Component {
     saveAndNew_Template(event) {
         this.save_Template(event);
         this.refs.form.refs.name.setFocus();
-        
     }
 
     saveAndBack_Template(event) {
@@ -68,20 +69,15 @@ class _TemplateEntry extends React.Component {
     }
 
     updateFormState(event) {
-        const field = event.target.name;
-        const _template = this.state._template;
-        switch (event.target.type) {
-            case 'text':
-                _template[field] = event.target.value;
-                break;
-            case 'checkbox':
-                _template[field] = !_template[field];
-                break;
-            default:
-        }
-        return this.setState({_template: _template});
+        let _template = util.common.formState.standard(event, this.state._template, this.props._templates, this.state.editItem);
+        let newEditItem = Object.assign({}, util.common.resetObject.item(_template.items.length * -1));
+        return this.setState({_template: _template, editItem: newEditItem});
     }
 
+    updateItemFormState(event) {
+        let editItem = util.common.formState.standard(event, this.state.editItem, this.props._templates);
+        return this.setState({editItem: editItem});
+    }
     render() {
         return (
             <DndModal
@@ -101,11 +97,13 @@ class _TemplateEntry extends React.Component {
                     onSave={this.saveAndBack_Template}
                     onSaveNew={this.saveAndNew_Template}
                     onChange={this.updateFormState}
+                    onChangeItem={this.updateItemFormState}
                     onCancel={this.cancel_Template}
                     onDelete={this.delete_Template}
                     isCreate={this.state.isCreate}
-                    picklists={this.props.picklists}
+                    _templates={this.props._templates}
                     saving={this.state.saving}
+                    editItem={this.state.editItem}
                     />
             </DndModal>
         );
@@ -120,7 +118,7 @@ _TemplateEntry.propTypes = {
     openModal: PropTypes.func.isRequired,
     showModal: PropTypes.bool.isRequired,
     isCreate: PropTypes.bool,
-    picklists: PropTypes.array
+    _templates: PropTypes.array
 };
 
 function get_TemplateById(_templates, id) {

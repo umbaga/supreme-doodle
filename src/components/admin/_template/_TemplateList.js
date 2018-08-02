@@ -11,16 +11,18 @@ class _TemplateList extends React.Component {
     render() {
         return (
             <tbody>
-                {this.props._templates.map(_template =>
-                               <_TemplateItem
-                                    key={_template.id}
-                                    _template={_template}
-                                    openModal={this.props.openModal}
-                                    selectedId={this.props.selectedId}
-                                    changeSelectedId={this.props.changeSelectedId}
-                                    onEdit={this.props.onEdit}
-                                   />
-                              )}
+                {this.props._templates.map(function(_template, idx) {
+                    return (
+                        <_TemplateItem
+                            key={idx}
+                            _template={_template}
+                            openModal={this.props.openModal}
+                            selectedId={this.props.selectedId}
+                            changeSelectedId={this.props.changeSelectedId}
+                            onEdit={this.props.onEdit}
+                            />
+                    );
+                }.bind(this))}
             </tbody>
         );
     }

@@ -46,6 +46,7 @@ class PicklistItem extends React.Component {
         }
         return (
             <tr key={this.props.picklist.id}>
+                <td width="50"></td>
                 <td>{this.props.picklist.name}</td>
                 <td className="truncate">
                     <OverlayTrigger trigger={['hover', 'focus']} placement="top" overlay={itemArrayPopover}>

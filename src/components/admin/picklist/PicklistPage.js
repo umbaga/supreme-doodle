@@ -69,14 +69,18 @@ class PicklistListPage extends React.Component {
         return (
             <div className="col-md-12">
                 <div>
-                    <table className="table table-sm table-striped table-hover">
+                    <table className="table table-sm table-striped table-hover tableBodyScroll">
                         <thead>
                             <tr>
-                                <th colSpan="2">
-                                    <h2><span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>Picklists</h2>
+                                <th width="50">
+                                    <span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>
+                                </th>
+                                <th colSpan="3">
+                                    <h2>Picklists</h2>
                                 </th>
                             </tr>
                             <tr>
+                                <th width="50"></th>
                                 <th>Name</th>
                                 <th>Items</th>
                                 <th style={{paddingRight: '25px'}}>

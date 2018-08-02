@@ -67,3 +67,13 @@ tr.found{
     overflow-y: scroll;
     overflow-x: hidden;
 }
+.tableBodyScroll tbody {
+    display:block;
+    max-height:565px;
+    overflow-y:scroll;
+}
+.tableBodyScroll thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DndInput from '../../common/inputs/DndInput';
-import DndUniversalInput from '../../common/inputs/DndUniversalInput';
 import util from '../../../util/util';
 
 class _TemplateForm extends React.Component {
@@ -24,11 +23,36 @@ class _TemplateForm extends React.Component {
                 <form>
                     <div className="modal-no-tabs">
                         <div className="col-md-12">
-                            <DndUniversalInput
+                            <DndInput
+                                name="name"
                                 ref="name"
-                                referenceObject={this.props._template}
+                                label="Name"
+                                dataType={util.datatypes.STRING.SHORT}
+                                value={this.props._template.name}
                                 onChange={this.props.onChange}
-                                picklists={this.props.picklists}
+                                />
+                        </div>
+                        <div className="col-md-12">
+                            <DndInput
+                                name="applySupplemental_Template"
+                                label="Apply Supplemental _Template"
+                                dataType={util.datatypes.BOOL}
+                                value={this.props._template.applySupplemental_Template}
+                                onChange={this.props.onChange}
+                                />
+                        </div>
+                        <div className="col-md-12">
+                            <DndInput
+                                name="items"
+                                label="Add New Item"
+                                dataType={util.datatypes.ARRAY.LIST.ADD.NEW}
+                                value={this.props._template.items}
+                                childValue={this.props.editItem.name}
+                                childName="name"
+                                onChange={this.props.onChange}
+                                buttonOnClick={this.props.onChange}
+                                onChangeChild={this.props.onChangeItem}
+                                buttonDatatype={util.datatypes.ACTION.LIST.NEW}
                                 />
                         </div>
                     </div>
@@ -39,14 +63,16 @@ class _TemplateForm extends React.Component {
 }
 
 _TemplateForm.propTypes = {
+    editItem: PropTypes.object.isRequired,
     _template: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    onChangeItem: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,
-    picklists: PropTypes.array,
+    _templates: PropTypes.array,
     saving: PropTypes.bool
 };
 
