@@ -122,18 +122,22 @@ _TemplatePage.propTypes = {
     _templates: PropTypes.array.isRequired,
     actions: PropTypes.object,
     children: PropTypes.object,
-    equipments: PropTypes.array,
     picklists: PropTypes.array
 };
 
 function mapStateToProps(state) {
+    let picklists = [];
+    if (state.picklists.length > 0) {
+        picklists = state.picklists;
+    }
     if (state._templates.length > 0) {
         return {
+            picklists: picklists,
             _templates: state._templates
         };
     } else {
         return {
-            picklists: [],
+            picklists: picklists,
             _templates: []
         };
     }

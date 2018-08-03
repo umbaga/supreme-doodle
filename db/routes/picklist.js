@@ -277,66 +277,112 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
-            sql = 'SELECT t."id", t."typeName" AS "name", t."applySupplementalPicklist"';
-            sql += ', json_agg((SELECT x FROM (SELECT ';
-            sql += '    i."itemName" AS "name"';
-            sql += '    , i."id"';
-            sql += '    , get_link_text(i.id, $2) AS "abbreviation"';
-            sql += '    , dmgtyp."isEnergy", dmgtyp."isWeapon"';
-            sql += '    , ability."isMental", ability."isPhysical", ability."isPrimary"';
-            sql += '    , wpnprop."requireAmmunition", wpnprop."requireRange", wpnprop."requireSpecialDescription", wpnprop."requireVersatileDamage"';
-            sql += '    , spcomp."requireFlavorText"';
-            sql += '    , ordidx."orderIndex"';
-            sql += '    , profcat."requireAbilityScore", profcat."requireLanguage"';
-            sql += '    , get_parent_id(i.id, $3) AS "parentId"';
-            sql += ') x ORDER BY i."itemName")) AS items';
-            sql += ' FROM adm_core_type t';
-            sql += ' LEFT OUTER JOIN adm_core_item i ON i."typeId" = t.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_damage_type dmgtyp ON dmgtyp."itemId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_ability_score ability ON ability."itemId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_weapon_property wpnprop ON wpnprop."itemId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_spell_component spcomp ON spcomp."itemId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_order ordidx ON ordidx."itemId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_picklist_item_proficiency_category profcat ON profcat."itemId" = i.id';
-            sql += ' WHERE t."isPicklist" = $1';
-            sql += ' GROUP BY t.id';
-            sql += ' ORDER BY t."typeName"';
-            vals = [
-                true,
-                itemtypes.TYPE.LINK.ABBREVIATION,
-                itemtypes.TYPE.LINK.PARENT_CHILD
-            ];
-            query = client.query(new pg.Query(sql, vals));
-            query.on('row', function(row) {
-                let newRow = row;
-                newRow.items.sort(function(a, b) {
-                    if (a.orderIndex == null) {
-                        if (a.name < b.name) {
-                            return -1;
-                        } else if (a.name > b.name) {
-                            return 1;
+            async.waterfall([
+                function basePicklists(callback) {
+                    sql = 'SELECT t."id", t."typeName" AS "name", t."applySupplementalPicklist"';
+                    sql += ', json_agg((SELECT x FROM (SELECT ';
+                    sql += '    i."itemName" AS "name"';
+                    sql += '    , i."id"';
+                    sql += '    , get_link_text(i.id, $2) AS "abbreviation"';
+                    sql += '    , dmgtyp."isEnergy", dmgtyp."isWeapon"';
+                    sql += '    , ability."isMental", ability."isPhysical", ability."isPrimary"';
+                    sql += '    , wpnprop."requireAmmunition", wpnprop."requireRange", wpnprop."requireSpecialDescription", wpnprop."requireVersatileDamage"';
+                    sql += '    , spcomp."requireFlavorText"';
+                    sql += '    , ordidx."orderIndex"';
+                    sql += '    , profcat."requireAbilityScore", profcat."requireLanguage"';
+                    sql += '    , get_parent_id(i.id, $3) AS "parentId"';
+                    sql += ') x ORDER BY i."itemName")) AS items';
+                    sql += ' FROM adm_core_type t';
+                    sql += ' LEFT OUTER JOIN adm_core_item i ON i."typeId" = t.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_damage_type dmgtyp ON dmgtyp."itemId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_ability_score ability ON ability."itemId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_weapon_property wpnprop ON wpnprop."itemId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_spell_component spcomp ON spcomp."itemId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_order ordidx ON ordidx."itemId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_picklist_item_proficiency_category profcat ON profcat."itemId" = i.id';
+                    sql += ' WHERE t."isPicklist" = $1';
+                    sql += ' GROUP BY t.id';
+                    sql += ' ORDER BY t."typeName"';
+                    vals = [
+                        true,
+                        itemtypes.TYPE.LINK.ABBREVIATION,
+                        itemtypes.TYPE.LINK.PARENT_CHILD
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        let newRow = row;
+                        newRow.items.sort(function(a, b) {
+                            if (a.orderIndex == null) {
+                                if (a.name < b.name) {
+                                    return -1;
+                                } else if (a.name > b.name) {
+                                    return 1;
+                                }
+                            } else {
+                                return a.orderIndex - b.orderIndex;
+                            }
+                            return 0;
+                        });
+                        if (!newRow.items || (newRow.items.length != 0 && !newRow.items[0].id)) {
+                            newRow.items = [];
                         }
-                    } else {
-                        return a.orderIndex - b.orderIndex;
-                    }
-                    return 0;
-                });
-                if (!newRow.items || (newRow.items.length != 0 && !newRow.items[0].id)) {
-                    newRow.items = [];
-                }
-                for (let x = 0; x < newRow.items.length; x++) {
-                    for (let key in newRow.items[x]) {
-                        if (newRow.items[x].hasOwnProperty(key)) {
-                            if (newRow.items[x][key] === null) {
-                                delete newRow.items[x][key];
+                        for (let x = 0; x < newRow.items.length; x++) {
+                            for (let key in newRow.items[x]) {
+                                if (newRow.items[x].hasOwnProperty(key)) {
+                                    if (newRow.items[x][key] === null) {
+                                        delete newRow.items[x][key];
+                                    }
+                                }
                             }
                         }
-                    }
+                        results.push(newRow);
+                    });
+                    query.on('end', function() {
+                        done();
+                        return callback(null, results);
+                    });
+                },
+                function proficiencies(resObj, callback) {
+                    results = [];
+                    sql = 'SELECT i."id", i."itemName" AS "name"';
+                    sql += ', get_item(i."resourceId") AS "resource"';
+                    sql += ', get_item(prof."categoryId") AS "category"';
+                    sql += ', get_item(abscore."abilityScoreId") AS "abilityScore"';
+                    sql += ', json_build_object(';
+                    sql += '    \'dialects\', get_link_array(i.id, $2)';
+                    sql += '    , \'rarity\', get_item(lang."rarityId")';
+                    sql += '    , \'script\', get_item(lang."scriptId")';
+                    sql += ') AS "language"';
+                    sql += ' FROM adm_core_item i';
+                    sql += ' INNER JOIN adm_def_proficiency prof ON prof."proficiencyId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_proficiency_ability_score abscore ON abscore."proficiencyId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_proficiency_language lang ON lang."proficiencyId" = i.id';
+                    sql += ' WHERE i."typeId" = $1';
+                    sql += ' ORDER BY i."itemName"';
+                    vals = [
+                        itemtypes.TYPE.ITEM.PROFICIENCY,
+                        itemtypes.TYPE.LINK.DIALECT
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        done();
+                        let newPicklist = {};
+                        newPicklist.id = itemtypes.TYPE.ITEM.PROFICIENCY;
+                        newPicklist.name = 'Proficiency';
+                        newPicklist.isPicklist = true;
+                        newPicklist.applySupplementalPicklist = false;
+                        newPicklist.items = results;
+                        resObj.push(newPicklist);
+                        return callback(null, resObj);
+                    });
                 }
-                results.push(newRow);
-            });
-            query.on('end', function() {
-                done();
+            ], function(error, results) {
+                if (error) {
+                    console.error(error);
+                }
                 return res.json(results);
             });
         });

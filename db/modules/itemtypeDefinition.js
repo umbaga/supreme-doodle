@@ -49,6 +49,7 @@ module.exports = {TYPE: {
         DESCRIPTION_TYPE: 7,
         DIALECT: 324,
         DURATION: 283,
+        EQUIPMENT: 435,
         EQUIPMENT_CATEGORY: 107,
         LANGUAGE_RARITY: 144,
         LANGUAGE_SCRIPT: 136,

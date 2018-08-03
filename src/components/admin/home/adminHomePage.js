@@ -12,6 +12,7 @@ class AdminHomePage extends React.Component {
                     <li><Link to="admin/itemtype">Item Types</Link></li>
                     <li><Link to="admin/picklist">Picklists</Link></li>
                     <li><Link to="admin/proficiency">Proficiencies</Link></li>
+                    <li><Link to="admin/equipment">Equipment</Link></li>
                 </ul>
             </div>
         );

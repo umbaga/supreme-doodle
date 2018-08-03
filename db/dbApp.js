@@ -5,6 +5,7 @@ let express = require('express');
 let itemtypes = require('./modules/itemtypeDefinition');
 let modules = require('./modules/common');
 
+let runEquipment = require('./routes/equipment');
 let runItemtype = require('./routes/itemtype');
 let runPicklist = require('./routes/picklist');
 let runProficiency = require('./routes/proficiency');
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true })); app.use(bodyParser.urlencode
 
 let async = require('async');
 
+runEquipment(app, pg, async, pool, itemtypes, modules);
 runItemtype(app, pg, async, pool, itemtypes, modules);
 runPicklist(app, pg, async, pool, itemtypes, modules);
 runProficiency(app, pg, async, pool, itemtypes, modules);
