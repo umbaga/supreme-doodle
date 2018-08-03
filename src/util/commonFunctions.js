@@ -19,6 +19,16 @@ export const resetObject = {
         let retVal = Object.assign({}, util.objectModel.PICKLIST);
         retVal.items = [];
         return retVal;
+    },
+    proficiency: function() {
+        let retVal = Object.assign({}, util.objectModel.PROFICIENCY);
+        retVal.abilityScore = {id: 0};
+        retVal.category = {id: 0};
+        retVal.language = {};
+        retVal.language.dialects = [];
+        retVal.language.rarity = {id: 0};
+        retVal.language.script = {id: 0};
+        return retVal;
     }
 };
 
@@ -150,6 +160,18 @@ export const formState = {
                 break;
             case util.datatypes.BOOL:
                 util.common.formState.functions.set.objectValue(retVal, field, event.target.checked);
+                break;
+            case util.datatypes.PICKLIST:
+                if (field.split('_').length == 1) {
+                    if (inputType == 'text') {
+                        newSelectedValue.id = 0;
+                        newSelectedValue.name = event.target.value;
+                    } else {
+                        newSelectedValue.id = parseInt(event.target.options[event.target.selectedIndex].value);
+                        newSelectedValue.name = event.target.options[event.target.selectedIndex].text;
+                    }
+                    util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue);
+                }
                 break;
             default:
                 console.error('Missing Datatype in switch: ' + dataType);

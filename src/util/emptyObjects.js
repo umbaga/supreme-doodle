@@ -25,3 +25,15 @@ export const PICKLIST = {
     applySupplementalPicklist: false,
     items: []
 };
+export const PROFICIENCY = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE,
+    abilityScore: _ID_NAME_OBJECT,
+    category: _ID_NAME_OBJECT,
+    language: {
+        dialects: [],
+        rarity: _ID_NAME_OBJECT,
+        script: _ID_NAME_OBJECT
+    }
+};

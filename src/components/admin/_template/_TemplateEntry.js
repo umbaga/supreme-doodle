@@ -94,6 +94,7 @@ class _TemplateEntry extends React.Component {
                 <_TemplateForm
                     ref="form"
                     _template={this.state._template}
+                    picklists={this.props.picklists}
                     onSave={this.saveAndBack_Template}
                     onSaveNew={this.saveAndNew_Template}
                     onChange={this.updateFormState}
@@ -112,13 +113,14 @@ class _TemplateEntry extends React.Component {
 
 _TemplateEntry.propTypes = {
     _template: PropTypes.object,
+    _templates: PropTypes.object,
     actions: PropTypes.object,
     canEdit: PropTypes.bool,
     closeModal: PropTypes.func.isRequired,
     openModal: PropTypes.func.isRequired,
     showModal: PropTypes.bool.isRequired,
     isCreate: PropTypes.bool,
-    _templates: PropTypes.array
+    picklists: PropTypes.array
 };
 
 function get_TemplateById(_templates, id) {

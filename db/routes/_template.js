@@ -5,6 +5,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let query = null;
     let tmp = null;
     let resObj = null;
+    let parameterArray = null;
+    let addComma = false;
     app.delete('/api/adm/_template/:id', function(req, res) {
         results = [];
         vals = [];
@@ -59,7 +61,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body._template;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
@@ -102,7 +104,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    resObj = req.body._template;
+                    resObj = req.body;
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {

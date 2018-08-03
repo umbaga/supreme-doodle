@@ -41,9 +41,13 @@ class DndInput extends React.Component {
             console.error('datatype undefined: ' + this.props.name);
         }
         let listInput = null;
+        let buttonDisabled = false;
         
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.LIST.ADD.NEW:
+                if (!this.props.childValue || this.props.childValue.length == 0) {
+                    buttonDisabled = true;
+                }
                 primaryInput = (
                     <input
                         type="text"
@@ -63,38 +67,68 @@ class DndInput extends React.Component {
                         value={this.props.value}
                         onChange={this.props.onChange}
                         dataType={this.props.buttonDatatype}
+                        startScrollingAt={this.props.listTableStartScrollingAt}
+                        rowHeight={this.props.listTableRowHeight}
+                        hideScrolling={this.props.listTableHideScrolling}
                         />
                 );
                 break;
             case util.datatypes.BOOL:
-                primaryInput = (<input
-                                    type="checkbox"
-                                    name={this.props.name}
-                                    ref={this.props.name}
-                                    checked={this.props.value}
-                                    datatype={this.props.dataType}
-                                    onChange={this.props.onChange}
-                                    className="form-control checkbox-inline"
-                                    readOnly={isReadOnly}
-                                    />);
+                primaryInput = (
+                    <input
+                        type="checkbox"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        checked={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control checkbox-inline"
+                        readOnly={isReadOnly}
+                        />
+                );
+                break;
+            case util.datatypes.PICKLIST:
+                placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
+                primaryInput = (
+                    <select
+                        value={this.props.value.id}
+                        name={this.props.name}
+                        ref={this.props.name}
+                        className="form-control"
+                        onChange={this.props.onChange}
+                        datatype={this.props.dataType}>
+                        {this.renderSelectOneOption(placeholderText)}
+                        {this.props.picklist.map(function(picklistItem, idx) {
+                            return (
+                                <option
+                                    key={idx}
+                                    value={picklistItem.id}>
+                                    {picklistItem.name}
+                                </option>
+                            );
+                        }.bind(this))}
+                    </select>
+                );
                 break;
             case util.datatypes.STRING.SHORT:
-                primaryInput = (<input
-                                    type="text"
-                                    name={this.props.name}
-                                    ref={this.props.name}
-                                    value={this.props.value}
-                                    datatype={this.props.dataType}
-                                    onChange={this.props.onChange}
-                                    className="form-control"
-                                    readOnly={isReadOnly}
-                                    placeholder={placeholderText}
-                                    />);
+                primaryInput = (
+                    <input
+                        type="text"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        readOnly={isReadOnly}
+                        placeholder={placeholderText}
+                        />
+                );
                 break;
             default:
                 primaryInput = (<div>Need to add dataType to switch in DndInput</div>);
         }
-        const buttonType = (this.props.buttonType && this.props.buttonType.length) != 0 ? this.props.buttonType : 'additem';
+        finalButtonType = (this.props.buttonType && this.props.buttonType.length != 0) ? this.props.buttonType : 'additem';
         const finalInput = hasButton ? (
             <div className="input-group">
                 {primaryInput}
@@ -105,6 +139,7 @@ class DndInput extends React.Component {
                         bsButtonStyle={this.props.bsButtonStyle}
                         name={this.props.name}
                         dataType={this.props.buttonDatatype.ADD}
+                        disabled={buttonDisabled}
                         />
                 </span>
             </div>
@@ -162,9 +197,13 @@ DndInput.propTypes = {
     inputCols: PropTypes.number,
     label: PropTypes.string,
     labelCols: PropTypes.number,
+    listTableStartScrollingAt: PropTypes.number,
+    listTableRowHeight: PropTypes.number,
+    listTableHideScrolling: PropTypes.bool,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func,
+    picklist: PropTypes.array,
     placeholder: PropTypes.string,
     stackLabel: PropTypes.bool,
     value: PropTypes.oneOfType([
@@ -179,7 +218,6 @@ DndInput.propTypes = {
     numberMaxVal: PropTypes.number,
     numberMinVal: PropTypes.number,
     numberStepVal: PropTypes.number,
-    picklist: PropTypes.array,
     selectBoxSize: PropTypes.number,
     */
 export default DndInput;

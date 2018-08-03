@@ -1,36 +1,4 @@
 module.exports = {TYPE: {
-    CATEGORY: {
-        EQUIPMENT: {
-            AMMUNITION: 108,
-            ARCANE_FOCUS: 109,
-            ARMOR: 110,
-            ARTISANS_TOOL: 111,
-            DRUIDIC_FOCUS: 112,
-            GAMING_SET: 113,
-            GENERAL: 114,
-            HOLY_SYMBOL: 115,
-            LAND_VEHICLE: 116,
-            MOUNT: 117,
-            MUSICAL_INSTRUMENT: 118,
-            PACK: 119,
-            TACK_AND_HARNESS: 120,
-            TOOL: 121,
-            WATER_VEHICLE: 122,
-            WEAPON: 123
-        },
-        PROFICIENCY: {
-            ARMOR: 126,
-            ARTISANS_TOOL: 127,
-            GAMING_SET: 128,
-            LANGUAGE: 129,
-            MUSICAL_INSTRUMENT: 130,
-            SAVING_THROW: 131,
-            SKILL: 132,
-            TOOL: 133,
-            WEAPON: 134,
-            WEAPON_SPECIFIC: 135
-        }
-    },
     DATA_TYPE: {
         ARRAY_OF: {
             ITEMS: 320
@@ -42,6 +10,24 @@ module.exports = {TYPE: {
         FLAVOR_TEXT: 99,
         GENERAL: 11,
         SPECIAL_WEAPON: 84
+    },
+    EQUIPMENT_CATEGORY: {
+        AMMUNITION: 108,
+        ARCANE_FOCUS: 109,
+        ARMOR: 110,
+        ARTISANS_TOOL: 111,
+        DRUIDIC_FOCUS: 112,
+        GAMING_SET: 113,
+        GENERAL: 114,
+        HOLY_SYMBOL: 115,
+        LAND_VEHICLE: 116,
+        MOUNT: 117,
+        MUSICAL_INSTRUMENT: 118,
+        PACK: 119,
+        TACK_AND_HARNESS: 120,
+        TOOL: 121,
+        WATER_VEHICLE: 122,
+        WEAPON: 123
     },
     ITEM: {
         _TEMPLATE: 0,
@@ -61,6 +47,7 @@ module.exports = {TYPE: {
         DAMAGE_TYPE: 29,
         DATA_TYPE: 319,
         DESCRIPTION_TYPE: 7,
+        DIALECT: 324,
         DURATION: 283,
         EQUIPMENT_CATEGORY: 107,
         LANGUAGE_RARITY: 144,
@@ -72,6 +59,7 @@ module.exports = {TYPE: {
         MOVEMENT_TYPE: 207,
         NATURAL_WEAPON_TYPE: 305,
         OTHER_EFFECT: 255,
+        PROFICIENCY: 323,
         PROFICIENCY_CATEGORY: 125,
         RANGE: 28,
         RECHARGE_TYPE: 291,
@@ -95,6 +83,7 @@ module.exports = {TYPE: {
         ABBREVIATION: 14,
         CHART: 18,
         DESCRIPTION: 16,
+        DIALECT: 325,
         MAP: {
             EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 19
         },
@@ -111,6 +100,18 @@ module.exports = {TYPE: {
         BONUS: {
             STAT: 13
         }
+    },
+    PROFICIENCY_CATEGORY: {
+        ARMOR: 126,
+        ARTISANS_TOOL: 127,
+        GAMING_SET: 128,
+        LANGUAGE: 129,
+        MUSICAL_INSTRUMENT: 130,
+        SAVING_THROW: 131,
+        SKILL: 132,
+        TOOL: 133,
+        WEAPON: 134,
+        WEAPON_SPECIFIC: 135
     },
     RESOURCE: {
         DMG: 4,

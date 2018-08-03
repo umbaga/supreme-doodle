@@ -63,6 +63,51 @@ let common = {
             }
             return retVal;
         },
+        insertNewRecords: function(objectArray, tableName, columnNames, dataTypes) {
+            let retVal = [];
+            vals = [];
+            let selectUnionClauseString = '';
+            let columnNamesString = '';
+            let valsColumnNamesString = '';
+            let whereClauseString = '';
+            let addComma2 = false;
+            let valNum = 0;
+            addComma = false;
+            for (let q = 0; q < columnNames.length; q++) {
+                columnNamesString += addComma ? ', ' : '';
+                columnNamesString += '"' + columnNames[q] + '"';
+                valsColumnNamesString += addComma ? ', ' : '';
+                valsColumnNamesString += 'v."' + columnNames[q] + '"';
+                whereClauseString += addComma ? ' AND ' : ' WHERE ';
+                whereClauseString += 't."' + columnNames[q] + '" = v."' + columnNames[q] + '"';
+                addComma = true;
+            }
+            addComma = false;
+            for (let q = 0; q < objectArray.length; q++) {
+                selectUnionClauseString += addComma ? ' UNION ' : '';
+                selectUnionClauseString += 'SELECT ';
+                addComma2 = false;
+                for (let w = 0; w < columnNames.length; w++) {
+                    selectUnionClauseString += addComma2 ? ', ' : '';
+                    valNum = ((q * columnNames.length) + w) + 1;
+                    selectUnionClauseString += '$' + valNum.toString() + ' :: ' + dataTypes[w] + ' AS "' + columnNames[w] + '"';
+                    addComma2 = true;
+                }
+                addComma = true;
+            }
+            retVal = 'WITH vals AS (';
+            retVal += selectUnionClauseString;
+            retVal += ')';
+            retVal += ' INSERT INTO ' + tableName + ' (' + columnNamesString + ')';
+            retVal += ' SELECT ' + valsColumnNamesString;
+            retVal += ' FROM vals AS v';
+            retVal += ' WHERE NOT EXISTS (';
+            retVal += ' SELECT * FROM ' + tableName + ' AS t';
+            retVal += whereClauseString
+            retVal += ')';
+            retVal += ' RETURNING id, ' + columnNamesString;
+            return retVal;
+        },
         resetValues: function(count, startingValue) {
             let finalStartingValue = 0;
             let retVal = [];

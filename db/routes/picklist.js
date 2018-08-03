@@ -192,6 +192,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             async.waterfall([
                 function init(cb) {
                     resObj = req.body;
+                    console.log(resObj);
                     resObj.permissions = {};
                     resObj.permissions.hasItems = false;
                     if (resObj.picklist.items && resObj.picklist.items.length != 0) {

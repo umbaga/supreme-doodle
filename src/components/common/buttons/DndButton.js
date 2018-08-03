@@ -15,6 +15,7 @@ class DndButton extends React.Component {
         if (this.props.isBadge) {
             extraClasses += ' badge ';
         }
+        let finalDisabled = this.props.disabled ? this.props.disabled : false;
         extraClasses += ' ' + this.props.additionalButtonStyles;
         switch (this.props.buttonType.toLowerCase()) {
             case 'additem':
@@ -119,13 +120,13 @@ class DndButton extends React.Component {
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
         if (this.props.dataType && this.props.dataType.length != 0) {
             return (
-                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex}>
+                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}>
                     {renderedLabel}
                 </Button>
             );
         } else {
             return (
-                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick}>
+                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} disabled={finalDisabled}>
                     {renderedLabel}
                 </Button>
             );
@@ -142,7 +143,8 @@ DndButton.propTypes = {
     bsButtonStyle: PropTypes.string,
     dataType: PropTypes.string,
     name: PropTypes.string,
-    selectedIndex: PropTypes.number
+    selectedIndex: PropTypes.number,
+    disabled: PropTypes.bool
 };
 
 export default DndButton;

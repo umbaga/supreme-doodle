@@ -1,4 +1,4 @@
-class _TemplatesApi {
+class _TemplateApi {
 
     static requestHeaders() {
         return {'AUTHORIZATION': 'Bearer ${sessionStorage.jwt}'};
@@ -59,4 +59,4 @@ class _TemplatesApi {
     }
 }
 
-export default _TemplatesApi;
+export default _TemplateApi;

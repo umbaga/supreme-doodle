@@ -32,29 +32,6 @@ class _TemplateForm extends React.Component {
                                 onChange={this.props.onChange}
                                 />
                         </div>
-                        <div className="col-md-12">
-                            <DndInput
-                                name="applySupplemental_Template"
-                                label="Apply Supplemental _Template"
-                                dataType={util.datatypes.BOOL}
-                                value={this.props._template.applySupplemental_Template}
-                                onChange={this.props.onChange}
-                                />
-                        </div>
-                        <div className="col-md-12">
-                            <DndInput
-                                name="items"
-                                label="Add New Item"
-                                dataType={util.datatypes.ARRAY.LIST.ADD.NEW}
-                                value={this.props._template.items}
-                                childValue={this.props.editItem.name}
-                                childName="name"
-                                onChange={this.props.onChange}
-                                buttonOnClick={this.props.onChange}
-                                onChangeChild={this.props.onChangeItem}
-                                buttonDatatype={util.datatypes.ACTION.LIST.NEW}
-                                />
-                        </div>
                     </div>
                 </form>
             </div>
@@ -72,7 +49,7 @@ _TemplateForm.propTypes = {
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,
-    _templates: PropTypes.array,
+    picklists: PropTypes.array,
     saving: PropTypes.bool
 };
 

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import {browserHistory} from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import PicklistList from './PicklistList';
-import PicklistEntry from './PicklistEntry';
-import * as actions from '../../../actions/admin/picklistActions';
+import ProficiencyList from './ProficiencyList';
+import ProficiencyEntry from './ProficiencyEntry';
+import * as actions from '../../../actions/admin/proficiencyActions';
 import DndButton from '../../common/buttons/DndButton';
 
-class PicklistListPage extends React.Component {
+class ProficiencyPage extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -28,8 +28,8 @@ class PicklistListPage extends React.Component {
     }
 
     componentWillMount() {
-        if (!this.props.picklists || (this.props.picklists && this.props.picklists.length == 0)) {
-            this.props.actions.loadPicklists();
+        if (!this.props.proficiencies || (this.props.proficiencies && this.props.proficiencies.length == 0)) {
+            this.props.actions.loadProficiencies();
         }
     }
 
@@ -64,6 +64,21 @@ class PicklistListPage extends React.Component {
     }
     
     render() {
+        const proficiencies = this.props.proficiencies.sort(function(a, b) {
+            if (a.category.name < b.category.name) {
+                return -1;
+            } else if (a.category.name > b.category.name) {
+                return 1;
+            } else {
+                if (a.name < b.name) {
+                    return -1;
+                } else if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            }
+            
+        });
         const picklists = this.props.picklists;
         return (
             <div className="col-md-12">
@@ -74,14 +89,17 @@ class PicklistListPage extends React.Component {
                                 <th width="50">
                                     <span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>
                                 </th>
-                                <th colSpan="3">
-                                    <h2>Picklists</h2>
+                                <th colSpan="2">
+                                    <h2>Proficiencies</h2>
                                 </th>
                             </tr>
                             <tr>
                                 <th width="50"></th>
                                 <th>Name</th>
-                                <th>Items</th>
+                                <th>Category</th>
+                                <th>Ability Score</th>
+                                <th>Rarity</th>
+                                <th>Script</th>
                                 <th style={{paddingRight: '25px'}}>
                                     <div className="pull-right">
                                         <DndButton onClick={this.onCreate} buttonType="create" />
@@ -89,8 +107,8 @@ class PicklistListPage extends React.Component {
                                 </th>
                             </tr>
                         </thead>
-                        <PicklistList
-                            picklists={picklists}
+                        <ProficiencyList
+                            proficiencies={proficiencies}
                             openModal={this.open}
                             selectedId={this.state.selectedId}
                             changeSelectedId={this.changeSelectedId}
@@ -101,7 +119,7 @@ class PicklistListPage extends React.Component {
                             />
                     </table>
                 </div>
-                <PicklistEntry
+                <ProficiencyEntry
                     closeModal={this.close}
                     openModal={this.open}
                     picklists={picklists}
@@ -116,23 +134,30 @@ class PicklistListPage extends React.Component {
         );
     }
 }
-
-PicklistListPage.propTypes = {
-    picklists: PropTypes.array.isRequired,
+/*
+                                    */
+ProficiencyPage.propTypes = {
+    proficiencies: PropTypes.array.isRequired,
+    picklists: PropTypes.array,
     actions: PropTypes.object,
     children: PropTypes.object,
-    equipments: PropTypes.array,
-    proficiencies: PropTypes.array
+    equipments: PropTypes.array
 };
 
 function mapStateToProps(state) {
+    let picklists = [];
     if (state.picklists.length > 0) {
+        picklists = state.picklists;
+    }
+    if (state.proficiencies.length > 0) {
         return {
-            picklists: state.picklists
+            picklists: picklists,
+            proficiencies: state.proficiencies
         };
     } else {
         return {
-            picklists: []
+            picklists: picklists,
+            proficiencies: []
         };
     }
 }
@@ -141,4 +166,4 @@ function mapDispatchToProps(dispatch) {
     return {actions: bindActionCreators(actions, dispatch)};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PicklistListPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ProficiencyPage);

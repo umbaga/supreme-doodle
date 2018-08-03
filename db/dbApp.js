@@ -7,6 +7,7 @@ let modules = require('./modules/common');
 
 let runItemtype = require('./routes/itemtype');
 let runPicklist = require('./routes/picklist');
+let runProficiency = require('./routes/proficiency');
 
 let pg = require('pg');
 
@@ -29,6 +30,7 @@ let async = require('async');
 
 runItemtype(app, pg, async, pool, itemtypes, modules);
 runPicklist(app, pg, async, pool, itemtypes, modules);
+runProficiency(app, pg, async, pool, itemtypes, modules);
 
 app.listen(5000, function() {
     console.log('Started on Port 5000');

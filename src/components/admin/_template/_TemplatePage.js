@@ -6,10 +6,10 @@ import {bindActionCreators} from 'redux';
 import _TemplateList from './_TemplateList';
 import _TemplateEntry from './_TemplateEntry';
 import * as actions from '../../../actions/admin/_templateActions';
-import util from '../../../util/util';
+//import util from '../../../util/util';
 import DndButton from '../../common/buttons/DndButton';
 
-class _TemplateListPage extends React.Component {
+class _TemplatePage extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
@@ -66,6 +66,7 @@ class _TemplateListPage extends React.Component {
     
     render() {
         const _templates = this.props._templates;
+        const picklists = this.props.picklists;
         return (
             <div className="col-md-12">
                 <div>
@@ -75,14 +76,13 @@ class _TemplateListPage extends React.Component {
                                 <th width="50">
                                     <span><DndButton onClick={this.backToAdminHome} buttonType="back" /></span>
                                 </th>
-                                <th colSpan="3">
+                                <th colSpan="2">
                                     <h2>_Templates</h2>
                                 </th>
                             </tr>
                             <tr>
                                 <th width="50"></th>
                                 <th>Name</th>
-                                <th>Items</th>
                                 <th style={{paddingRight: '25px'}}>
                                     <div className="pull-right">
                                         <DndButton onClick={this.onCreate} buttonType="create" />
@@ -105,7 +105,7 @@ class _TemplateListPage extends React.Component {
                 <_TemplateEntry
                     closeModal={this.close}
                     openModal={this.open}
-                    _templates={_templates}
+                    picklists={picklists}
                     isCreate={this.state.isCreate}
                     canEdit={this.state.canEdit}
                     selectedId={this.state.selectedId}
@@ -118,12 +118,12 @@ class _TemplateListPage extends React.Component {
     }
 }
 
-_TemplateListPage.propTypes = {
+_TemplatePage.propTypes = {
     _templates: PropTypes.array.isRequired,
     actions: PropTypes.object,
     children: PropTypes.object,
     equipments: PropTypes.array,
-    proficiencies: PropTypes.array
+    picklists: PropTypes.array
 };
 
 function mapStateToProps(state) {
@@ -133,6 +133,7 @@ function mapStateToProps(state) {
         };
     } else {
         return {
+            picklists: [],
             _templates: []
         };
     }
@@ -142,4 +143,4 @@ function mapDispatchToProps(dispatch) {
     return {actions: bindActionCreators(actions, dispatch)};
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(_TemplateListPage);
+export default connect(mapStateToProps, mapDispatchToProps)(_TemplatePage);
