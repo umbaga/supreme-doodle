@@ -58,7 +58,7 @@ class EquipmentList extends React.Component {
             <tbody>
                 <tr><th colSpan="8">Light Armor</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.ARMOR.LIGHT;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.ARMOR.LIGHT;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -74,7 +74,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="8">Medium Armor</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.ARMOR.MEDIUM;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.ARMOR.MEDIUM;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -90,7 +90,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="8">Heavy Armor</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.ARMOR.HEAVY;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.ARMOR.HEAVY;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -106,7 +106,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="8">Shields</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.ARMOR.SHIELD;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.ARMOR.SHIELD;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -130,7 +130,7 @@ class EquipmentList extends React.Component {
             <tbody>
                 <tr><th colSpan="7">Simple Melee Weapons</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.MELEE;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.MELEE;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -146,7 +146,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="7">Simple Ranged Weapons</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.RANGED;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.RANGED;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -162,7 +162,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="7">Martial Melee Weapons</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.MELEE;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.MELEE;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem
@@ -178,7 +178,7 @@ class EquipmentList extends React.Component {
                 }.bind(this))}
                 <tr><th colSpan="7">Martial Ranged Weapons</th></tr>
                 {tmpEquipments.filter(function(equipment) {
-                    return equipment.proficiency.id = util.itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.RANGED;
+                    return equipment.proficiency.id == util.itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL && equipment.weapon.class.id == util.itemtypes.TYPE.WEAPON_CLASS.RANGED;
                 }).map(function(equipment) {
                     return (
                         <EquipmentItem

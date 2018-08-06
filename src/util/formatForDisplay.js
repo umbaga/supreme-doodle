@@ -77,7 +77,7 @@ array.weaponProperties = function(arr) {
             retVal = '';
             for (let x = 0; x < arr.properties.length; x++) {
                 retVal += arr.properties[x].name;
-                if (arr.properties[x].requireVeratileDamage) {
+                if (arr.properties[x].requireVersatileDamage) {
                     retVal += ' (' + util.format.forDisplay.string.dieRoll(arr.damage.versatile.dice) + ')';
                 }
                 if (arr.properties[x].requireRange) {

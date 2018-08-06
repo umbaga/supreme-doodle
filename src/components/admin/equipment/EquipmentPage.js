@@ -183,6 +183,7 @@ class EquipmentPage extends React.Component {
                             onEdit={this.onEdit}
                             onViewDetails={this.onViewDetails}
                             selectedCategory={this.state.selectedCategory}
+                            picklists={picklists}
                             />
                     </table>
                 </div>

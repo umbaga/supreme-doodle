@@ -92,7 +92,8 @@ class EquipmentForm extends React.Component {
     
     renderAmmunitionInputs(equipment, ammunitionPicklist, properties) {
         let retVal = null;
-        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.AMMUNITION) {
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.AMMUNITION
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WEAPON && this.weaponHasAmmunitionProperty(equipment, properties)) {
             retVal = (
                 <div className="col-sm-12">
                     <DndInput
@@ -100,19 +101,6 @@ class EquipmentForm extends React.Component {
                         label="Ammunition Type"
                         dataType={util.datatypes.PICKLIST}
                         value={equipment.ammunition}
-                        onChange={this.props.onChange}
-                        picklist={ammunitionPicklist}
-                        />
-                </div>
-            );
-        } else if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WEAPON && this.weaponHasAmmunitionProperty(equipment, properties)) {
-            retVal = (
-                <div className="col-sm-12">
-                    <DndInput
-                        name="weapon.ammunition"
-                        label="Ammunition Type"
-                        dataType={util.datatypes.PICKLIST}
-                        value={equipment.weapon.ammunition}
                         onChange={this.props.onChange}
                         picklist={ammunitionPicklist}
                         />
