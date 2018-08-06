@@ -36,11 +36,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -79,11 +79,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -105,28 +105,31 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             async.waterfall([
                 function init(cb) {
                     resObj = req.body;
+                    resObj._template.permissions = {};
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_item';
-                    sql += '("itemName")';
-                    sql += 'VALUES ($1) RETURNING id;';
+                    sql += '("itemName", "typeId", "resourceId")';
+                    sql += 'VALUES ($1, $2, $3) RETURNING id;';
                     vals = [
-                        resObj._template.name
+                        resObj._template.name,
+                        itemtypes.TYPE.ITEM._TEMPLATE,
+                        resObj._template.resource.id
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         resObj._template.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }

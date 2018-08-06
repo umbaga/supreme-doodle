@@ -97,12 +97,12 @@ class PicklistEntry extends React.Component {
                     onSave={this.saveAndBackPicklist}
                     onSaveNew={this.saveAndNewPicklist}
                     onChange={this.updateFormState}
-                    onChangeItem={this.updateItemFormState}
                     onCancel={this.cancelPicklist}
                     onDelete={this.deletePicklist}
                     isCreate={this.state.isCreate}
                     picklists={this.props.picklists}
                     saving={this.state.saving}
+                    onChangeItem={this.updateItemFormState}
                     editItem={this.state.editItem}
                     />
             </DndModal>

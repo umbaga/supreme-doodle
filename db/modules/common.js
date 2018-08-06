@@ -234,10 +234,10 @@ let common = {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
                             for (let w = 0; w < resObj.objectArray.length; w++) {
                                 resObj.objectArray[w] = common.datatypes.dice.getObject(results, resObj.objectArray[w]);
                             }
+                            done();
                             return callback(null, resObj.objectArray);
                         });
                     }

@@ -91,31 +91,25 @@ class ProficiencyForm extends React.Component {
             <div>
                 <form>
                     <div className="modal-no-tabs">
+                        <DndUniversalInput
+                            ref="name"
+                            referenceObject={proficiency}
+                            onChange={this.props.onChange}
+                            picklists={picklists}
+                            hideDescription
+                            />
                         <div className="col-md-12">
-                            <DndUniversalInput
-                                ref="name"
-                                referenceObject={proficiency}
+                            <DndInput
+                                name="category"
+                                label="Category"
+                                dataType={util.datatypes.PICKLIST}
+                                value={proficiency.category}
                                 onChange={this.props.onChange}
-                                picklists={picklists}
-                                hideDescription
+                                picklist={categories}
                                 />
                         </div>
-                        <div className="col-md-12">
-                            <div className="col-md-12">
-                                <div className="col-md-12">
-                                    <DndInput
-                                        name="category"
-                                        label="Category"
-                                        dataType={util.datatypes.PICKLIST}
-                                        value={proficiency.category}
-                                        onChange={this.props.onChange}
-                                        picklist={categories}
-                                        />
-                                </div>
-                                {this.renderAbilityScoreInputs(proficiency, abilityScores)}
-                                {this.renderLanguageInputs(proficiency, rarities, scripts)}
-                            </div>
-                        </div>
+                        {this.renderAbilityScoreInputs(proficiency, abilityScores)}
+                        {this.renderLanguageInputs(proficiency, rarities, scripts)}
                     </div>
                 </form>
             </div>

@@ -39,6 +39,7 @@ export const TYPE = {
         ALIGNMENT: 171,
         ALIGNMENT_ETHICAL: 163,
         ALIGNMENT_MORAL: 167,
+        AMMUNITION_TYPE: 436,
         ATTACK_TYPE: 228,
         CHECK_TYPE: 248,
         CONDITION: 43,
@@ -69,6 +70,7 @@ export const TYPE = {
         SCHOOL_OF_MAGIC: 85,
         SIZE: 100,
         SPELL_COMPONENT: 94,
+        SPELLCASTING_FOCUS: 445,
         STAT: 242,
         TITLE: 10,
         UNIT: {
@@ -86,7 +88,8 @@ export const TYPE = {
         DESCRIPTION: 16,
         DIALECT: 325,
         MAP: {
-            EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 19
+            EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 19,
+            EQUIPMENT_CATEGORY_TO_FOCUS_TYPE: 450
         },
         MECHANIC: 21,
         PARENT_CHILD: 124,
@@ -94,7 +97,8 @@ export const TYPE = {
             SUBRACE: 20,
             VARIANT: 15
         },
-        TITLE: 17
+        TITLE: 17,
+        WEAPON_PROPERTY: 444
     },
     MECHANIC: {
         ADVANTAGE: 12,
@@ -111,6 +115,7 @@ export const TYPE = {
         SAVING_THROW: 131,
         SKILL: 132,
         TOOL: 133,
+        VEHICLE: 441,
         WEAPON: 134,
         WEAPON_SPECIFIC: 135
     },
@@ -128,8 +133,37 @@ export const TYPE = {
         SMALL: 105,
         TINY: 106
     },
+    SPELLCASTING_FOCUS: {
+        ARCANE_FOCUS: 446,
+        DRUIDIC_FOCUS: 447,
+        HOLY_SYMBOL: 448,
+        MUSICAL_INSTRUMENT: 449
+    },
     WEAPON_CLASS: {
         MELEE: 27,
         RANGED: 28
+    },
+    PROFICIENCY: {
+        ARMOR: {
+            HEAVY: 432,
+            LIGHT: 430,
+            MEDIUM: 431,
+            SHIELD: 433
+        },
+        VEHICLE: {
+            LAND: 442,
+            WATER: 443
+        },
+        WEAPON: {
+            IMPROVISED: 381,
+            MARTIAL: 380,
+            SIMPLE: 379
+        }
+    },
+    WEAPON_PROPERTY: {
+        AMMUNITION: 74,
+        SPECIAL: 80,
+        THROWN: 81,
+        VERSATILE: 83
     }
 };

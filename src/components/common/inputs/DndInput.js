@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import util from '../../../util/util';
 import DndInputWrapper from './DndInputWrapper';
 import DndList from './DndList';
+import DndTags from './DndTags';
 import DndButton from '../buttons/DndButton';
 
 class DndInput extends React.Component {
@@ -25,6 +26,7 @@ class DndInput extends React.Component {
     
     render() {
         let primaryInput = null;
+        let longValue = '';
         let isReadOnly = this.props.isReadOnly ? this.props.isReadOnly : false;
         let hasButton = this.props.buttonOnClick ? true : false;
         let finalButtonType = 'additem';
@@ -42,13 +44,36 @@ class DndInput extends React.Component {
         }
         let listInput = null;
         let buttonDisabled = false;
+        let numberMinVal = this.props.numberMinVal ? this.props.numberMinVal : 0;
+        let numberStepVal = this.props.numberStepVal ? this.props.numberStepVal : 1;
+        let finalPicklist = this.props.picklist;
+        let textAreaHeight = this.props.longStringHeight ? this.props.longStringHeight + 'px' : '210px';
         
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.LIST.ADD.NEW:
-                if (!this.props.childValue || this.props.childValue.length == 0) {
-                    buttonDisabled = true;
+            case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
+                placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
+                if (this.props.dataType.split('NEW').length > 1) {
+                    if (!this.props.childValue || this.props.childValue.length == 0) {
+                        buttonDisabled = true;
+                    }
+                } else if (this.props.dataType.split('TAGS').length > 1) {
+                    if (!this.props.childValue.name || this.props.childValue.name.length == 0) {
+                        buttonDisabled = true;
+                    }
                 }
-                primaryInput = (
+                if (this.props.dataType.split('PICKLIST').length > 1) {
+                    finalPicklist = finalPicklist.filter(function(item) {
+                        let showThis = true;
+                        for (let q = 0; q < this.props.value.length; q++) {
+                            if (this.props.value[q].id == item.id) {
+                                showThis = false;
+                            }
+                        }
+                        return showThis;
+                    }.bind(this));
+                }
+                primaryInput = (this.props.dataType.split('NEW').length > 1) ? (
                     <input
                         type="text"
                         name={this.props.childName}
@@ -59,8 +84,38 @@ class DndInput extends React.Component {
                         readOnly={isReadOnly}
                         placeholder={placeholderText}
                         />
+                ) : (
+                    <select
+                        value={this.props.childValue.id}
+                        name={this.props.childName}
+                        ref={this.props.childName}
+                        className="form-control"
+                        onChange={this.props.onChangeChild}
+                        datatype={this.props.dataType}>
+                        {this.renderSelectOneOption(placeholderText)}
+                        {finalPicklist.map(function(picklistItem, idx) {
+                            return (
+                                <option
+                                    key={idx}
+                                    value={picklistItem.id}>
+                                    {picklistItem.name}
+                                </option>
+                            );
+                        }.bind(this))}
+                    </select>
                 );
-                listInput = (
+                listInput = (this.props.dataType.split('TAGS').length > 1) ? (
+                    <DndTags
+                        name={this.props.name}
+                        childName={this.props.childName}
+                        value={this.props.value}
+                        onChange={this.props.onChange}
+                        dataType={this.props.buttonDatatype}
+                        startScrollingAt={this.props.listTableStartScrollingAt}
+                        rowHeight={this.props.listTableRowHeight}
+                        hideScrolling={this.props.listTableHideScrolling}
+                        />
+                ) : (
                     <DndList
                         name={this.props.name}
                         childName={this.props.childName}
@@ -87,6 +142,60 @@ class DndInput extends React.Component {
                         />
                 );
                 break;
+            case util.datatypes.COMBO.DICE.PICKLIST:
+                placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
+                primaryInput = (
+                    <div className=" input-group input-inline">
+                        <input
+                            type="text"
+                            name={this.props.name + '.dice'}
+                            ref={this.props.name}
+                            value={this.props.value.dice.rendered}
+                            datatype={util.datatypes.SPECIAL.DICE}
+                            onChange={this.props.onChange}
+                            className="form-control"
+                            readOnly={isReadOnly}
+                            placeholder="Dice"
+                            />
+                        <select
+                            value={this.props.childValue.id}
+                            name={this.props.childName}
+                            ref={this.props.childName}
+                            className="form-control"
+                            onChange={this.props.onChange}
+                            datatype={util.datatypes.PICKLIST}>
+                            {this.renderSelectOneOption(placeholderText)}
+                            {finalPicklist.map(function(picklistItem, idx) {
+                                return (
+                                    <option
+                                        key={idx}
+                                        value={picklistItem.id}>
+                                        {picklistItem.name}
+                                    </option>
+                                );
+                            }.bind(this))}
+                        </select>
+                    </div>
+                );
+                break;
+            case util.datatypes.NUMBER.DEC:
+            case util.datatypes.NUMBER.INT:
+                primaryInput = (
+                    <input
+                        type="number"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        step={numberStepVal}
+                        min={numberMinVal}
+                        readOnly={isReadOnly}
+                        />
+                );
+                break;
             case util.datatypes.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
@@ -98,7 +207,7 @@ class DndInput extends React.Component {
                         onChange={this.props.onChange}
                         datatype={this.props.dataType}>
                         {this.renderSelectOneOption(placeholderText)}
-                        {this.props.picklist.map(function(picklistItem, idx) {
+                        {finalPicklist.map(function(picklistItem, idx) {
                             return (
                                 <option
                                     key={idx}
@@ -108,6 +217,21 @@ class DndInput extends React.Component {
                             );
                         }.bind(this))}
                     </select>
+                );
+                break;
+            case util.datatypes.SPECIAL.DICE:
+                primaryInput = (
+                    <input
+                        type="text"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value.rendered}
+                        datatype={this.props.dataType}
+                        onKeyUp={this.props.onChange}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        />
                 );
                 break;
             case util.datatypes.STRING.SHORT:
@@ -122,6 +246,26 @@ class DndInput extends React.Component {
                         className="form-control"
                         readOnly={isReadOnly}
                         placeholder={placeholderText}
+                        />
+                );
+                break;
+            case util.datatypes.STRING.HTML.LONG:
+                if (this.props.value) {
+                    longValue = this.props.value;
+                } else {
+                    textAreaHeight = '35px';
+                }
+                primaryInput = (
+                    <div
+                        id={this.props.name}
+                        datatype={this.props.dataType}
+                        className="form-control pre-scrollable"
+                        style={{height: textAreaHeight}}
+                        contentEditable
+                        dangerouslySetInnerHTML={{ __html: longValue }}
+                        onBlur={this.props.onChange}
+                        onClick={this.props.onChange}
+                        onChange={this.props.onChange}
                         />
                 );
                 break;
@@ -200,7 +344,12 @@ DndInput.propTypes = {
     listTableStartScrollingAt: PropTypes.number,
     listTableRowHeight: PropTypes.number,
     listTableHideScrolling: PropTypes.bool,
+    longStringHeight: PropTypes.number,
     name: PropTypes.string.isRequired,
+    numberMaxVal: PropTypes.number,
+    numberMinVal: PropTypes.number,
+    numberStepVal: PropTypes.number,
+    selectBoxSize: PropTypes.number,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func,
     picklist: PropTypes.array,
@@ -214,10 +363,5 @@ DndInput.propTypes = {
         PropTypes.bool
     ]).isRequired
 };
-/*
-    numberMaxVal: PropTypes.number,
-    numberMinVal: PropTypes.number,
-    numberStepVal: PropTypes.number,
-    selectBoxSize: PropTypes.number,
-    */
+
 export default DndInput;

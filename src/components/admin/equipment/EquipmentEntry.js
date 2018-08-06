@@ -25,6 +25,7 @@ class EquipmentEntry extends React.Component {
         this.saveAndBackEquipment = this.saveAndBackEquipment.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
         this.updateItemFormState = this.updateItemFormState.bind(this);
+        this.clearInfoForCategory = this.clearInfoForCategory.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -54,6 +55,9 @@ class EquipmentEntry extends React.Component {
     saveEquipment(event) {
         event.preventDefault();
         let newEquipment = util.common.resetObject.equipment();
+        if (this.props.selectedCategory.id != 0) {
+            newEquipment.category = this.props.selectedCategory;
+        }
         this.setState({saving: true, equipment: newEquipment});
         this.props.actions.upsertEquipment(this.state.equipment);
     }
@@ -70,7 +74,10 @@ class EquipmentEntry extends React.Component {
 
     updateFormState(event) {
         let equipment = util.common.formState.standard(event, this.state.equipment, this.props.equipments, this.state.editItem);
-        let newEditItem = Object.assign({}, util.common.resetObject.item(equipment.items.length * -1));
+        let newEditItem = Object.assign({}, util.common.resetObject.item(equipment.weapon.properties.length * -1));
+        if (event.target.getAttribute('name') == 'category') {
+            equipment = this.clearInfoForCategory(equipment);
+        }
         return this.setState({equipment: equipment, editItem: newEditItem});
     }
 
@@ -78,6 +85,36 @@ class EquipmentEntry extends React.Component {
         let editItem = util.common.formState.standard(event, this.state.editItem, this.props.equipments);
         return this.setState({editItem: editItem});
     }
+    
+    clearInfoForCategory(equipment) {
+        let retVal = equipment;
+        if (equipment.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.ARMOR) {
+            retVal.armor = {};
+            retVal.armor.armorClass = {};
+            retVal.armor.armorClass.applyDexterity = true;
+            retVal.armor.armorClass.base = 11;
+            retVal.armor.armorClass.isCumulative = false;
+            retVal.armor.armorClass.maximumDexterity = 0;
+            retVal.armor.minimumStrength = 0;
+            retVal.armor.stealthDisadvantage = false;
+        }
+        if (equipment.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WEAPON) {
+            retVal.weapon = {};
+            retVal.weapon.class = {id: 0};
+            retVal.weapon.damage = {};
+            retVal.weapon.damage.dice = {id: 0, rendered: ''};
+            retVal.weapon.damage.type = {id: 0};
+            retVal.weapon.damage.versatile = {};
+            retVal.weapon.damage.versatile.dice = {id: 0, rendered: ''};
+            retVal.weapon.properties = [];
+            retVal.weapon.range = {};
+            retVal.weapon.range.maximum = 0;
+            retVal.weapon.range.normal = 0;
+            retVal.weapon.special = '';
+        }
+        return retVal;
+    }
+    
     render() {
         return (
             <DndModal
@@ -90,7 +127,8 @@ class EquipmentEntry extends React.Component {
                 onCancel={this.cancelEquipment}
                 onDelete={this.deleteEquipment}
                 onSave={this.saveAndBackEquipment}
-                onSaveNew={this.saveAndNewEquipment}>
+                onSaveNew={this.saveAndNewEquipment}
+                size="large">
                 <EquipmentForm
                     ref="form"
                     equipment={this.state.equipment}
@@ -98,12 +136,12 @@ class EquipmentEntry extends React.Component {
                     onSave={this.saveAndBackEquipment}
                     onSaveNew={this.saveAndNewEquipment}
                     onChange={this.updateFormState}
-                    onChangeItem={this.updateItemFormState}
                     onCancel={this.cancelEquipment}
                     onDelete={this.deleteEquipment}
                     isCreate={this.state.isCreate}
                     equipments={this.props.equipments}
                     saving={this.state.saving}
+                    onChangeItem={this.updateItemFormState}
                     editItem={this.state.editItem}
                     />
             </DndModal>
@@ -120,7 +158,8 @@ EquipmentEntry.propTypes = {
     openModal: PropTypes.func.isRequired,
     showModal: PropTypes.bool.isRequired,
     isCreate: PropTypes.bool,
-    picklists: PropTypes.array
+    picklists: PropTypes.array,
+    selectedCategory: PropTypes.object.isRequired
 };
 
 function getEquipmentById(equipments, id) {

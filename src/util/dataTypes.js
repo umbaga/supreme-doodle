@@ -1,6 +1,6 @@
 export const ACTION = {
     LIST: {
-        FROM_PICKLIST: {
+        PICKLIST: {
             ADD: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ADD',
             ORDER: {
                 DOWN: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ORDER_DOWN',
@@ -27,8 +27,14 @@ export const ARRAY = {
     CHECKBOX: 'DATATYPE_ARRAY_CHECKBOX',
     LIST: {
         ADD: {
-            FROM_PICKLIST: 'DATATYPE_ARRAY_LIST_ADD_FROM_PICKLIST',
+            PICKLIST: 'DATATYPE_ARRAY_LIST_ADD_PICKLIST',
             NEW: 'DATATYPE_ARRAY_LIST_ADD_NEW'
+        }
+    },
+    TAGS: {
+        ADD: {
+            PICKLIST: 'DATATYPE_ARRAY_TAGS_ADD_PICKLIST',
+            NEW: 'DATATYPE_ARRAY_LIST_TAGS_NEW'
         }
     },
     TOGGLE: 'DATATYPE_ARRAY_TOGGLE'

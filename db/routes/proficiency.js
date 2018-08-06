@@ -14,7 +14,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -38,7 +38,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -56,7 +56,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -74,7 +74,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -92,7 +92,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -111,11 +111,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -130,7 +131,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -170,7 +171,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -190,7 +191,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -218,7 +219,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -248,7 +249,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -278,7 +279,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         if (resObj.perm.hasDialects) {
                             for (let q = 0; q < resObj.proficiency.language.dialects.length; q++) {
                                 for (let w = 0; w < results.length; w++) {
@@ -320,7 +321,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -350,7 +351,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             return callback(null, resObj);
                         });
                     } else {
@@ -374,7 +375,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             return callback(null, resObj);
                         });
                     } else {
@@ -382,6 +383,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -435,7 +437,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         resObj.proficiency.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
@@ -456,7 +458,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 },
@@ -477,7 +479,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             return callback(null, resObj);
                         });
                     } else {
@@ -502,7 +504,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             return callback(null, resObj);
                         });
                     } else {
@@ -534,7 +536,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             console.log(resObj.proficiency.language.dialects.length);
                             for (let q = 0; q < resObj.proficiency.language.dialects.length; q++) {
                                 console.log(resObj.proficiency.language.dialects[q]);
@@ -576,7 +578,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
+                            //done();
                             return callback(null, resObj);
                         });
                     } else {
@@ -584,6 +586,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -595,7 +598,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         results = [];
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }

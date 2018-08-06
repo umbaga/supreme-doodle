@@ -73,17 +73,17 @@ array.enclosedCommaDelimtedList = function(arr, openString, closeString) {
 array.weaponProperties = function(arr) {
     let retVal = util.unicode.punctuation.longDash;
     if (arr) {
-        if (arr.weaponProperties && arr.weaponProperties.length > 0) {
+        if (arr.properties && arr.properties.length > 0) {
             retVal = '';
-            for (let x = 0; x < arr.weaponProperties.length; x++) {
-                retVal += arr.weaponProperties[x].name;
-                if (arr.weaponProperties[x].requireDamage) {
+            for (let x = 0; x < arr.properties.length; x++) {
+                retVal += arr.properties[x].name;
+                if (arr.properties[x].requireVeratileDamage) {
                     retVal += ' (' + util.format.forDisplay.string.dieRoll(arr.damage.versatile.dice) + ')';
                 }
-                if (arr.weaponProperties[x].requireRange) {
+                if (arr.properties[x].requireRange) {
                     retVal += ' (range ' + arr.range.normal + '/' + arr.range.maximum + ')';
                 }
-                retVal += x < arr.weaponProperties.length - 1 ? ', ' : '';
+                retVal += x < arr.properties.length - 1 ? ', ' : '';
             }
         }
     }
@@ -297,11 +297,11 @@ obj.armorClass = function(val) {
     if (val.isCumulative) {
         retVal += '+';
     }
-    retVal += val.baseArmorClass.toString();
-    if (val.applyDexModifier) {
+    retVal += val.base.toString();
+    if (val.applyDexterity) {
         retVal += ' + Dex Modifier';
         if (val.hasMaxDexModifier) {
-            retVal += ' (max ' + val.maxDexModifier.toString() + ')';
+            retVal += ' (max ' + val.maximumDexterity.toString() + ')';
         }
     }
     return retVal;

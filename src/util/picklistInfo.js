@@ -2,10 +2,30 @@ import util from './util';
 
 export function getPicklistItems (picklistArray, picklistId) {
     let retVal = [];
-    let tmp = picklistArray.filter((picklist) => picklist.id == picklistId);
-    if (tmp && tmp.length != 0) {
-        retVal = tmp[0].items;
+    let tmp = picklistArray.filter(function(picklist) {
+        if (picklistId.constructor === Array) {
+            for (let e = 0; e < picklistId.length; e++) {
+                if (picklist.id == picklistId[e]) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return picklist.id == picklistId;
+        }
+    });
+    for (let e = 0; e < tmp.length; e++) {
+        retVal = retVal.concat(tmp[e].items);
     }
+    retVal = retVal.sort(function(a, b) {
+        if (a.name < b.name) {
+            return -1;
+        } else if (a.name > b.name) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
     return retVal;
 }
 

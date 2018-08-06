@@ -12,7 +12,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -34,11 +34,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -53,7 +54,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -81,11 +82,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
+                        //done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -100,7 +102,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -125,12 +127,13 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         resObj.itemtype.id = parseInt(results[0].id);
+                        //done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -142,7 +145,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         results = [];
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
+                //done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }

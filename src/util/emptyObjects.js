@@ -19,11 +19,12 @@ const _DICE = {
 };
 export const examples = exampleObjects;
 
-export const EQUIPMENT = {
+export const _EQUIPMENT = {
     id: 0,
     name: '',
     resource: _RESOURCE,
     description: '',
+    ammunition: _ID_NAME_OBJECT,
     armor: {
         armorClass: {
             applyDexterity: true,
@@ -32,7 +33,6 @@ export const EQUIPMENT = {
             maximumDexterity: 0
         },
         minimumStrength: 0,
-        proficiency: _ID_NAME_OBJECT,
         stealthDisadvantage: false
     },
     assignedEquipment: [],
@@ -40,6 +40,8 @@ export const EQUIPMENT = {
     category: _ID_NAME_OBJECT,
     cost: 0,
     count: 1,
+    isImprovisedWeapon: false,
+    proficiency: _ID_NAME_OBJECT,
     speed: 0,
     unit: '',
     weapon: {
@@ -52,7 +54,6 @@ export const EQUIPMENT = {
                 dice: _DICE
             }
         },
-        proficiency: _ID_NAME_OBJECT,
         properties: [],
         range: {
             maximum: 0,
@@ -62,6 +63,52 @@ export const EQUIPMENT = {
     },
     weight: 0
 };
+export const EQUIPMENT = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE,
+    description: '',
+    ammunition: _ID_NAME_OBJECT,
+    armor: {
+        armorClass: {
+            applyDexterity: true,
+            base: 11,
+            isCumulative: false,
+            hasMaximumDexterity: false,
+            maximumDexterity: 0
+        },
+        minimumStrength: 0,
+        stealthDisadvantage: false
+    },
+    assignedEquipment: [],
+    carryCapacity: 0,
+    category: _ID_NAME_OBJECT,
+    cost: 0,
+    count: 1,
+    isImprovisedWeapon: false,
+    proficiency: _ID_NAME_OBJECT,
+    speed: 0,
+    unit: '',
+    weapon: {
+        class: _ID_NAME_OBJECT,
+        damage: {
+            dice: _DICE,
+            type: _ID_NAME_OBJECT,
+            versatile: {
+                dice: _DICE
+            }
+        },
+        properties: [],
+        range: {
+            maximum: 0,
+            normal: 0
+        },
+        special: ''
+    },
+    weight: 0
+};/*
+            {id: 83, name: 'Versatile'},
+            {id: 81, name: 'Thrown'},*/
 export const ITEM = _ID_NAME_OBJECT;
 export const ITEMTYPE = {
     id: 0,

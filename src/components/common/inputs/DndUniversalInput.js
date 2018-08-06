@@ -42,7 +42,7 @@ class DndUniversalInput extends React.Component {
             </div>
         );
         return (
-            <div className="col-md-12">
+            <fragment>
                 <div className="col-md-12">
                     <DndInput
                         name="name"
@@ -55,7 +55,7 @@ class DndUniversalInput extends React.Component {
                 </div>
                 {resourceInput}
                 {descriptionInput}
-            </div>
+            </fragment>
         );
     }
 }

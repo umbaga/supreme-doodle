@@ -4,6 +4,43 @@ import * as picklistInfo from './picklistInfo';
 export const picklists = picklistInfo;
 
 export const resetObject = {
+    equipment: function() {
+        let retVal = Object.assign({}, util.objectModel.EQUIPMENT);
+        retVal.ammunition = {id: 0};
+        retVal.armor = {};
+        retVal.armor.armorClass = {};
+        retVal.armor.armorClass.applyDexterity = true;
+        retVal.armor.armorClass.base = 11;
+        retVal.armor.armorClass.isCumulative = false;
+        retVal.armor.armorClass.maximumDexterity = 0;
+        retVal.armor.armorClass.hasMaximumDexterity = false;
+        retVal.armor.minimumStrength = 0;
+        retVal.armor.stealthDisadvantage = false;
+        retVal.assignedEquipment = [];
+        retVal.carryCapacity = 0;
+        //retVal.category = {id: 0};
+        retVal.cost = 0;
+        retVal.count = 1;
+        retVal.description = '';
+        retVal.isImprovisedWeapon = false;
+        //retVal.proficiency = {id: 0};
+        retVal.speed = 0;
+        retVal.unit = '';
+        retVal.weight = 0;
+        retVal.weapon = {};
+        //retVal.weapon.class = {id: 0};
+        retVal.weapon.damage = {};
+        retVal.weapon.damage.dice = {id: 0, rendered: ''};
+        retVal.weapon.damage.type = {id: 0};
+        retVal.weapon.damage.versatile = {};
+        retVal.weapon.damage.versatile.dice = {id: 0, rendered: ''};
+        retVal.weapon.properties = [],
+        retVal.weapon.range = {};
+        retVal.weapon.range.maximum = 0;
+        retVal.weapon.range.normal = 0;
+        retVal.weapon.special = '';
+        return retVal;
+    },
     item: function(newId) {
         let retVal = Object.assign({}, util.objectModel.ITEM);
         if (newId !== undefined) {
@@ -135,6 +172,67 @@ export const formState = {
             }
         }
     },
+    dice: function(event) {
+        let retVal = {};
+        let newRenderedValue = '';
+        if (event.target.value && event.target.value.length != 0) {
+            for (let y = 0; y < event.target.value.length; y++) {
+                if (event.target.value.charAt(y) == '1' || event.target.value.charAt(y) == '2' ||
+                   event.target.value.charAt(y) == '3' || event.target.value.charAt(y) == '4' ||
+                   event.target.value.charAt(y) == '5' || event.target.value.charAt(y) == '6' ||
+                   event.target.value.charAt(y) == '7' || event.target.value.charAt(y) == '8' ||
+                   event.target.value.charAt(y) == '9' || event.target.value.charAt(y) == '0' ||
+                   event.target.value.charAt(y) == 'd' || event.target.value.charAt(y) == 'D' ||
+                   event.target.value.charAt(y) == '+' || event.target.value.charAt(y) == '-' ||
+                   event.target.value.charAt(y) == 'x' || event.target.value.charAt(y) == 'X' ||
+                    event.target.value.charAt(y) == '*' || event.target.value.charAt(y) == '/') {
+                    newRenderedValue += event.target.value.charAt(y);
+                }
+            }
+        }
+        if (util.datatypes.compareDataType(newRenderedValue, util.datatypes.SPECIAL.DICE)) {
+            if (event.target.value.indexOf('+') != -1 || event.target.value.indexOf('-') != -1) {
+                if (event.target.value.indexOf('+') != -1) {
+                    retVal.modifier = parseInt(event.target.value.split('+')[1]);
+                } else {
+                    retVal.modifier = -1 * parseInt(event.target.value.split('-')[1]);
+                }
+                retVal.multiplier = 1;
+                retVal.divisor = 1;
+            } else if (event.target.value.indexOf('x') != -1 || event.target.value.indexOf('*') != -1) {
+                if (event.target.value.indexOf('x') != -1) {
+                    retVal.multiplier = parseInt(event.target.value.toLowerCase().split('x')[1]);
+                } else {
+                    retVal.multiplier = parseInt(event.target.value.split('*')[1]);
+                }
+                retVal.modifier = 0;
+                retVal.divisor = 1;
+            } else if (event.target.value.indexOf('/') != -1) {
+                retVal.divisor = parseInt(event.target.value.split('/')[1]);
+                retVal.modifier = 0;
+                retVal.multiplier = 1;
+            } else {
+                retVal.modifier = 0;
+                retVal.multiplier = 1;
+                retVal.divisor = 1;
+            }
+            retVal.dieCount = parseInt(event.target.value.toLowerCase().split('d')[0]);
+            retVal.dieType = parseInt(event.target.value.toLowerCase().split('d')[1]);
+        } else {
+            retVal.id = 0;
+            if (event.target.value.length != 0) {
+                retVal.dieCount = parseInt(event.target.value.toLowerCase().split('d')[0]);
+            } else {
+                retVal.dieCount = 0;
+            }
+            retVal.dieType = 1;
+            retVal.modifier = 0;
+            retVal.multiplier = 1;
+            retVal.divisor = 1;
+        }
+        retVal.rendered = newRenderedValue;
+        return retVal;
+    },
     standard: function(event, obj, picklists, arrayObject) {
         let retVal = obj;
         let field = util.common.formState.functions.set.fieldFromTargetName(event);
@@ -142,11 +240,14 @@ export const formState = {
         let newSelectedValue = {};
         let inputType = event.target.type;
         let selectedIndex = util.common.formState.functions.set.valueFromTarget(event, 'value');
+        let tmpText = '';
         switch (dataType) {
             case util.datatypes.ACTION.LIST.NEW.ADD:
+            case util.datatypes.ACTION.LIST.PICKLIST.ADD:
                 util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
                 break;
             case util.datatypes.ACTION.LIST.NEW.REMOVE:
+            case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
                 util.common.formState.functions.set.objectValue(retVal, field, selectedIndex, 'remove');
                 break;
             case util.datatypes.ARRAY.LIST.ADD.NEW:
@@ -157,6 +258,18 @@ export const formState = {
             case util.datatypes.STRING.SHORT:
             case util.datatypes.STRING.LONG:
                 util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                break;
+            case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
+                if (field.split('_').length == 1) {
+                    if (inputType == 'text') {
+                        newSelectedValue.id = 0;
+                        newSelectedValue.name = event.target.value;
+                    } else {
+                        newSelectedValue.id = parseInt(event.target.options[event.target.selectedIndex].value);
+                        newSelectedValue.name = event.target.options[event.target.selectedIndex].text;
+                    }
+                    retVal = newSelectedValue;
+                }
                 break;
             case util.datatypes.BOOL:
                 util.common.formState.functions.set.objectValue(retVal, field, event.target.checked);
@@ -172,6 +285,13 @@ export const formState = {
                     }
                     util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue);
                 }
+                break;
+            case util.datatypes.SPECIAL.DICE:
+                util.common.formState.functions.set.objectValue(retVal, field, formState.dice(event));
+                break;
+            case util.datatypes.STRING.HTML.LONG:
+                tmpText = util.common.replace.description(event.target.innerHTML);
+                util.common.formState.functions.set.objectValue(retVal, field, tmpText.trim());
                 break;
             default:
                 console.error('Missing Datatype in switch: ' + dataType);

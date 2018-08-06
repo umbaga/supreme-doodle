@@ -77,3 +77,16 @@ tr.found{
     width:100%;
     table-layout:fixed;
 }
+.dnd-tag {
+    background-color:darkgoldenrod;
+    vertical-align: middle;
+    margin: 5px;
+}
+.dnd-tag-text {
+    padding-top: 5px;
+    padding-left: 10px;
+}
+.dnd-tag-x {
+    padding-left: 10px;
+    color:darkblue;
+}

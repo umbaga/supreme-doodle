@@ -47,9 +47,9 @@ class PicklistForm extends React.Component {
                                 label="Add New Item"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.NEW}
                                 value={this.props.picklist.items}
+                                onChange={this.props.onChange}
                                 childValue={this.props.editItem.name}
                                 childName="name"
-                                onChange={this.props.onChange}
                                 buttonOnClick={this.props.onChange}
                                 onChangeChild={this.props.onChangeItem}
                                 buttonDatatype={util.datatypes.ACTION.LIST.NEW}

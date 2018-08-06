@@ -36,7 +36,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                 },
@@ -54,11 +53,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -100,7 +99,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                 },
@@ -132,7 +130,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         for (let q = 0; q < results.length; q++) {
                             for (let w = 0; w < resObj.picklist.items.length; w++) {
                                 if (!resObj.picklist.items[w].id || resObj.picklist.items[w].id <= 0) {
@@ -142,6 +139,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 }
                             }
                         }
+                        done();
                         return callback(null, resObj);
                     });
                 },
@@ -165,12 +163,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         return callback(null, resObj);
                     });
                     
                 }
             ], function(error, result) {
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -217,7 +215,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         resObj.picklist.id = parseInt(results[0].id);
                         return callback(null, resObj);
                     });
@@ -246,7 +243,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            done();
                             for (let q = 0; q < resObj.picklist.items.length; q++) {
                                 for (let w = 0; w < results.length; w++) {
                                     if (resObj.picklist.items[q].name == results[w].itemName) {
@@ -262,6 +258,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 }
             ], function(error, result) {
                 console.log('picklist-done');
+                done();
                 if (error) {
                     console.error(error);
                 }
@@ -269,7 +266,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             });
         });
     });
-    app.get('/api/adm/picklists', function(req, res) {
+    app.get('/api/adm/picklists', async function(req, res) {
         results = [];
         pool.connect(function(err, client, done) {
             if (err) {
@@ -338,8 +335,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(newRow);
                     });
                     query.on('end', function() {
-                        done();
-                        return callback(null, results);
+                        return callback(err, results);
                     });
                 },
                 function proficiencies(resObj, callback) {
@@ -368,7 +364,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
-                        done();
                         let newPicklist = {};
                         newPicklist.id = itemtypes.TYPE.ITEM.PROFICIENCY;
                         newPicklist.name = 'Proficiency';
@@ -376,10 +371,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         newPicklist.applySupplementalPicklist = false;
                         newPicklist.items = results;
                         resObj.push(newPicklist);
-                        return callback(null, resObj);
+                        return callback(err, resObj);
                     });
                 }
             ], function(error, results) {
+                done();
                 if (error) {
                     console.error(error);
                 }
