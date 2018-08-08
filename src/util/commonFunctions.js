@@ -9,6 +9,11 @@ export const resetObject = {
         
         return retVal;
     },
+    background: function() {
+        let retVal = Object.assign({}, util.objectModel.BACKGROUND);
+        
+        return retVal;
+    },
     equipment: function(equipmentCategory, oldEquipment) {
         let retVal = Object.assign({}, util.objectModel.EQUIPMENT);
         retVal.ammunition = {id: 0};

@@ -4,6 +4,7 @@ import App from './components/App';
 
 import AdminHomePage from './components/admin/home/adminHomePage';
 
+import BackgroundPage from './components/admin/background/BackgroundPage';
 import DescriptionPage from './components/admin/description/DescriptionPage';
 import EquipmentPage from './components/admin/equipment/EquipmentPage';
 import ItemtypePage from './components/admin/itemtype/ItemtypePage';
@@ -22,6 +23,7 @@ export default (
         <Route path="/admin/itemtype" component={ItemtypePage} />
         <Route path="/admin/picklist" component={PicklistPage} />
         <Route path="/admin/proficiency" component={ProficiencyPage} />
+        <Route path="/admin/background" component={BackgroundPage} />
         <Route path="/login" component={LogInPage} />
         <Route path="/about" component={AboutPage} />
     </Route>

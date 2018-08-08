@@ -28,6 +28,62 @@ export const ASSIGNED_EQUIPMENT = {
     cost: 0,
     weight: 0
 };
+export const BACKGROUND = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE,
+    description: '',
+    proficiencies: {
+        assigned: [],
+        select: {
+            category: [],
+            list: []
+        }
+    },
+    equipment: {
+        startingGold: 0,
+        assigned: []
+    },
+    charts: [],
+    feature: {
+        id: 0,
+        name: '',
+        description: {}
+    },
+    variants: []
+};
+export const BACKGROUND_VARIANT = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE,
+    description: '',
+    parentId: 0,
+    feature: {
+        id: 0,
+        name: '',
+        description: ''
+    },
+    proficiencies: {
+        gain: {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        },
+        lose: {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        }
+    },
+    equipment: {
+        gain: [],
+        lose: []
+    }
+};
 export const EQUIPMENT = {
     id: 0,
     name: '',

@@ -1,5 +1,6 @@
 export default {
     _templates: [],
+    backgrounds: [],
     equipments: [],
     itemtypes: [],
     picklists: [],

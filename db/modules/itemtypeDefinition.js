@@ -44,6 +44,7 @@ module.exports = {TYPE: {
         ALIGNMENT_MORAL: 167,
         AMMUNITION_TYPE: 436,
         ATTACK_TYPE: 228,
+        BACKGROUND: 902,
         CHECK_TYPE: 248,
         CONDITION: 43,
         COVER: 238,
