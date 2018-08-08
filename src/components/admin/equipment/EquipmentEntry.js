@@ -83,6 +83,16 @@ class EquipmentEntry extends React.Component {
         if (event.target.getAttribute('name') == 'category') {
             equipment = this.clearInfoForCategory(equipment);
         }
+        if (util.common.formState.functions.set.fieldFromTargetName(event).split('assignedEquipment').length > 1) {
+            let newCost = 0;
+            let newWeight = 0;
+            for (let q = 0; q < equipment.assignedEquipment.length; q++) {
+                newCost = newCost + (equipment.assignedEquipment[q].cost * equipment.assignedEquipment[q].assigned);
+                newWeight = newWeight + (equipment.assignedEquipment[q].weight * equipment.assignedEquipment[q].assigned);
+            }
+            equipment.cost = newCost;
+            equipment.weight = newWeight;
+        }
         return this.setState({equipment: equipment, editItem: newEditItem, editEquipment: newEditEquipment});
     }
 

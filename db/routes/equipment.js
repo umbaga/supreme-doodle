@@ -1250,6 +1250,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj = req.body;
                     resObj.permissions = {};
                     resObj.permissions.need = {};
+                    resObj.permissions.need.assignedEquipment = false;
                     resObj.permissions.need.dice = false;
                     resObj.permissions.need.ammunition = false;
                     resObj.permissions.need.armor = false;
@@ -1325,6 +1326,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 resObj.permissions.need.specialDescription = true;
                             }
                         }
+                    }
+                    if (resObj.equipment.assignedEquipment && resObj.equipment.assignedEquipment.length != 0) {
+                        resObj.permissions.need.assignedEquipment = true;
                     }
                     cb(null, resObj);
                 },
@@ -1741,10 +1745,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function weaponPropertyLink(resObj, callback) {
+                function link(resObj, callback) {
                     console.log('equipment-18');
                     results = [];
-                    if (resObj.permissions.need.weaponProperty || resObj.equipment.description || resObj.permissions.need.specialDescription) {
+                    if (resObj.permissions.need.weaponProperty || resObj.permissions.need.description
+                        || resObj.permissions.need.specialDescription || resObj.permissions.need.assignedEquipment) {
                         sql = 'INSERT INTO adm_link';
                         sql += ' ("referenceId", "targetId", "typeId")';
                         sql += ' VALUES ';
@@ -1758,6 +1763,17 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 vals.push(resObj.equipment.id);
                                 vals.push(resObj.equipment.weapon.properties[e].id);
                                 vals.push(itemtypes.TYPE.LINK.WEAPON_PROPERTY);
+                                addComma = true;
+                                parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            }
+                        }
+                        if (resObj.permissions.need.assignedEquipment) {
+                            for (let e = 0; e < resObj.equipment.assignedEquipment.length; e++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.sql(parameterArray);
+                                vals.push(resObj.equipment.id);
+                                vals.push(resObj.equipment.assignedEquipment[e].id);
+                                vals.push(itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT);
                                 addComma = true;
                                 parameterArray = common.parameterArray.incrementValues(parameterArray);
                             }
@@ -1780,12 +1796,53 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             addComma = true;
                             parameterArray = common.parameterArray.incrementValues(parameterArray);
                         }
+                        sql += ' RETURNING id, "targetId", "typeId"';
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
                         query.on('end', function() {
-
+                            if (resObj.permissions.need.assignedEquipment) {
+                                for (let q = 0; q < results.length; q++) {
+                                    if (results[q].typeId == itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT) {
+                                        for (let w = 0; w < resObj.equipment.assignedEquipment.length; w++) {
+                                            if (results[q].targetId == resObj.equipment.assignedEquipment[w].id) {
+                                                resObj.equipment.assignedEquipment[w].linkId = results[q].id;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function linkCount(resObj, callback) {
+                    console.log('equipment-19');
+                    results = [];
+                    if (resObj.permissions.need.assignedEquipment) {
+                        sql = 'INSERT INTO adm_link_count';
+                        sql += ' ("linkId", "count")';
+                        sql += ' VALUES ';
+                        vals = [];
+                        addComma = false;
+                        parameterArray = common.parameterArray.resetValues(2);
+                        for (let q = 0; q < resObj.equipment.assignedEquipment.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.sql(parameterArray);
+                            vals.push(resObj.equipment.assignedEquipment[q].linkId);
+                            vals.push(resObj.equipment.assignedEquipment[q].assigned);
+                            addComma = true;
+                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
                             return callback(null, resObj);
                         });
                     } else {
@@ -1859,7 +1916,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += '        END';
             sql += '    )';
             sql += ' ELSE \'{}\' END AS "weapon"';
-            sql += ', \'[]\' AS "assignedEquipment"';
+            sql += ', CASE WHEN get_assigned_equipment(i.id, $8) IS NULL THEN \'[]\' ELSE get_assigned_equipment(i.id, $8) END AS "assignedEquipment"';
             sql += ' FROM adm_core_item i';
             sql += ' INNER JOIN adm_def_equipment eq ON eq."equipmentId" = i.id';
             sql += ' LEFT OUTER JOIN adm_def_equipment_ammunition ammo ON ammo."equipmentId" = i.id';
@@ -1882,7 +1939,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL,
                 itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE,
                 itemtypes.TYPE.DESCRIPTION.SPECIAL_WEAPON,
-                itemtypes.TYPE.LINK.WEAPON_PROPERTY
+                itemtypes.TYPE.LINK.WEAPON_PROPERTY,
+                itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT
             ];
             query = client.query(new pg.Query(sql, vals));
             query.on('row', function(row) {

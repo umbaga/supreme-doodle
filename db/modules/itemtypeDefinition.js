@@ -16,6 +16,7 @@ module.exports = {TYPE: {
         PACK: 119,
         TACK_AND_HARNESS: 120,
         TOOL: 121,
+        TRINKET: 887,
         WATER_VEHICLE: 122,
         WEAPON: 123
     },
@@ -88,6 +89,7 @@ module.exports = {TYPE: {
     },
     LINK: {
         ABBREVIATION: 14,
+        ASSIGNED_EQUIPMENT: 886,
         CHART: 18,
         DESCRIPTION: 16,
         DIALECT: 325,

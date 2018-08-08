@@ -39,6 +39,7 @@ class EquipmentItem extends React.Component {
         let stealthCell = null;
         let damageCell = null;
         let propertiesCell = null;
+        let assignedEquipmentCell = null;
         if (this.props.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.MOUNT) {
             weightCell = null;
             speedCell = (<td className="text-center">{util.format.forDisplay.number.speed(equipment.speed)}</td>);
@@ -59,6 +60,10 @@ class EquipmentItem extends React.Component {
             damageCell = (<td className="text-center">{util.format.forDisplay.obj.damage(equipment.weapon.damage)}</td>);
             propertiesCell = (<td>{util.format.forDisplay.array.weaponProperties(equipment.weapon)}</td>);
         }
+        if (this.props.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.PACK) {
+            weightCell = null;
+            assignedEquipmentCell = (<td>{util.format.forDisplay.array.equipmentPackItems(equipment.assignedEquipment)}</td>);
+        }
         return (
             <tr key={this.props.equipment.id}>
                 <td width="50"></td>
@@ -72,6 +77,7 @@ class EquipmentItem extends React.Component {
                 {propertiesCell}
                 {speedCell}
                 {carryCapacityCell}
+                {assignedEquipmentCell}
                 <td>
                     <DndListItemButtonBar
                         listItem={this.props.equipment}

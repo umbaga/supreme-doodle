@@ -24,7 +24,9 @@ export const ASSIGNED_EQUIPMENT = {
     name: '',
     count: 1,
     unit: '',
-    assigned: 1
+    assigned: 1,
+    cost: 0,
+    weight: 0
 };
 export const EQUIPMENT = {
     id: 0,

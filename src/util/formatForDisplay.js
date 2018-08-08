@@ -37,7 +37,7 @@ array.equipmentPackItems = function(arr) {
         retVal = '';
         for (let a = 0; a < arr.length; a++) {
             retVal += util.format.forDisplay.string.reorderCommaSeparatedString(arr[a].name);
-            let tmpCount = arr[a].assignedCount;
+            let tmpCount = arr[a].assigned;
             if (arr[a].count != 0) {
                 tmpCount = tmpCount * arr[a].count;
             }

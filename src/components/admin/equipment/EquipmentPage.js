@@ -97,11 +97,16 @@ class EquipmentPage extends React.Component {
         let stealthCell = null;
         let damageCell = null;
         let propertiesCell = null;
+        let assignedEquipmentCall = null;
         
         if (this.state.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.MOUNT
            || this.state.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WATER_VEHICLE) {
             weightCell = null;
             speedCell = (<th className="text-center">Speed</th>);
+        }
+        if (this.state.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.PACK) {
+            weightCell = null;
+            assignedEquipmentCall = (<th className="text-center">Equipment</th>);
         }
         if (this.state.selectedCategory.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.MOUNT) {
             carryCapacityCell = (<th>Carry Capacity</th>);
@@ -128,6 +133,7 @@ class EquipmentPage extends React.Component {
                 {propertiesCell}
                 {speedCell}
                 {carryCapacityCell}
+                {assignedEquipmentCall}
                 {buttonCell}
             </tr>
         );

@@ -8,6 +8,7 @@ class DndList extends React.Component {
         super(props, context);
         this._renderName = this._renderName.bind(this);
         this._onChangeWithIndex = this._onChangeWithIndex.bind(this);
+        this.renderAuxiliaryInputs = this.renderAuxiliaryInputs.bind(this);
     }
     
     _renderName(str, val) {
@@ -21,6 +22,34 @@ class DndList extends React.Component {
     
     _onChangeWithIndex(event) {
         this.props.onChange(event, event.target.getAttribute('data-selectedIndex'));
+    }
+    
+    renderAuxiliaryInputs(idx) {
+        if (this.props.childAuxiliaryDatatypes && this.props.childAuxiliaryDatatypes.length != 0) {
+            return this.props.childAuxiliaryDatatypes.map(function(datatype, idx2) {
+                switch (datatype) {
+                    case util.datatypes.NUMBER.INT:
+                        return (
+                            <td key={idx2}>
+                                <input
+                                    type="number"
+                                    name={this.props.name + '_idx_' + idx.toString() + '_idx_' + this.props.childAuxiliaryNames[idx2]}
+                                    value={this.props.value[idx][this.props.childAuxiliaryNames[idx2]]}
+                                    datatype={datatype}
+                                    onChange={this._onChangeWithIndex}
+                                    className="form-control dnd-input-number"
+                                    min="1"
+                                    data-selectedIndex={idx}
+                                    />
+                            </td>
+                        );
+                    default:
+                        return (<td key={idx2}>Missing datatype in List Input</td>);
+                }
+            }.bind(this));
+        } else {
+            return null;
+        }
     }
     
     render() {
@@ -50,27 +79,7 @@ class DndList extends React.Component {
                         {this.props.value.map(function(item, idx) {
                             return (
                                 <tr key={idx}>
-                                    {this.props.childAuxiliaryDatatypes.map(function(datatype, idx2) {
-                                        switch (datatype) {
-                                            case util.datatypes.NUMBER.INT:
-                                                return (
-                                                    <td key={idx2}>
-                                                        <input
-                                                            type="number"
-                                                            name={this.props.name + '_idx_' + idx.toString() + '_idx_' + this.props.childAuxiliaryNames[idx2]}
-                                                            value={this.props.value[idx][this.props.childAuxiliaryNames[idx2]]}
-                                                            datatype={datatype}
-                                                            onChange={this._onChangeWithIndex}
-                                                            className="form-control dnd-input-number"
-                                                            min="1"
-                                                            data-selectedIndex={idx}
-                                                            />
-                                                    </td>
-                                                );
-                                            default:
-                                                return (<td key={idx2}>Missing datatype in List Input</td>);
-                                        }
-                                    }.bind(this))}
+                                    {this.renderAuxiliaryInputs(idx)}
                                     <td>{this._renderName(item[this.props.childName], item)}</td>
                                     <td>
                                         <div className="pull-right">
