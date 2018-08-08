@@ -57,6 +57,20 @@ class PicklistsApi {
             return error;
         });
     }
+
+    static updatePicklistItem(item) {
+        const headers = Object.assign({'Content-Type': 'application/json'}, this.requestHeaders());
+        const request = new Request('http://localhost:5000/api/adm/picklist/item/' + item.id, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify({item: item})
+        });
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+    }
 }
 
 export default PicklistsApi;

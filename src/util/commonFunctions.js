@@ -4,7 +4,12 @@ import * as picklistInfo from './picklistInfo';
 export const picklists = picklistInfo;
 
 export const resetObject = {
-    equipment: function() {
+    assignedEquipment: function() {
+        let retVal = Object.assign({}, util.objectModel.ASSIGNED_EQUIPMENT);
+        
+        return retVal;
+    },
+    equipment: function(equipmentCategory, oldEquipment) {
         let retVal = Object.assign({}, util.objectModel.EQUIPMENT);
         retVal.ammunition = {id: 0};
         retVal.armor = {};
@@ -14,21 +19,37 @@ export const resetObject = {
         retVal.armor.armorClass.isCumulative = false;
         retVal.armor.armorClass.maximumDexterity = 0;
         retVal.armor.armorClass.hasMaximumDexterity = false;
+        retVal.armor.hasMinimumStrength = false;
         retVal.armor.minimumStrength = 0;
         retVal.armor.stealthDisadvantage = false;
         retVal.assignedEquipment = [];
         retVal.carryCapacity = 0;
-        //retVal.category = {id: 0};
+        if (equipmentCategory && equipmentCategory.id && equipmentCategory.id != 0) {
+            retVal.category = equipmentCategory;
+        } else {
+            retVal.category = {id: 0};
+        }
         retVal.cost = 0;
         retVal.count = 1;
         retVal.description = '';
         retVal.isImprovisedWeapon = false;
-        //retVal.proficiency = {id: 0};
+        if (oldEquipment && (oldEquipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.ARMOR || oldEquipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WEAPON
+            || oldEquipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.LAND_VEHICLE || oldEquipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WATER_VEHICLE)
+           && (oldEquipment.proficiency && oldEquipment.proficiency.id && oldEquipment.proficiency.id != 0)) {
+            retVal.proficiency = oldEquipment.proficiency;
+        } else {
+            retVal.proficiency = {id: 0};
+        }
         retVal.speed = 0;
         retVal.unit = '';
         retVal.weight = 0;
         retVal.weapon = {};
-        //retVal.weapon.class = {id: 0};
+        if (oldEquipment && oldEquipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WEAPON && oldEquipment && oldEquipment.weapon && oldEquipment.weapon.class && oldEquipment.weapon.class.id != 0) {
+            retVal.weapon.class = oldEquipment.weapon.class;
+        } else {
+            retVal.weapon.class = {id: 0};
+        }
+        
         retVal.weapon.damage = {};
         retVal.weapon.damage.dice = {id: 0, rendered: ''};
         retVal.weapon.damage.type = {id: 0};
@@ -72,16 +93,16 @@ export const resetObject = {
 export const replace = {
     description: function(val) {
         return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ')
-            .replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ');
+            .replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
     }
 };
 
 export const formState = {
     functions: {
         set: {
-            objectValue: function(obj, prop, val, action) {
+            objectValue: function(obj, prop, val, action, idx, subfield) {
                 if (typeof prop === 'string') {
-                    return util.common.formState.functions.set.objectValue(obj, prop.split('.'), val, action);
+                    return util.common.formState.functions.set.objectValue(obj, prop.split('.'), val, action, idx, subfield);
                 } else if (prop.length == 1 && val !== undefined) {
                     if (action == undefined) {
                         return obj[prop[0]] = val;
@@ -102,14 +123,16 @@ export const formState = {
                                 }
                                 return obj[prop[0]];
                             case 'remove':
-                                return obj[prop[0]].splice(val, 1);
+                                return obj[prop[0]].splice(idx, 1);
+                            case 'edit':
+                                return obj[prop[0]][idx][subfield] = val;
                             default:
                         }
                     }
                 } else if (prop.length == 0) {
                     return obj;
                 } else {
-                    return util.common.formState.functions.set.objectValue(obj[prop[0]], prop.slice(1), val, action);
+                    return util.common.formState.functions.set.objectValue(obj[prop[0]], prop.slice(1), val, action, idx, subfield);
                 }
             },
             fieldFromTargetName: function(event) {
@@ -235,7 +258,13 @@ export const formState = {
     },
     standard: function(event, obj, picklists, arrayObject) {
         let retVal = obj;
-        let field = util.common.formState.functions.set.fieldFromTargetName(event);
+        let field = util.common.formState.functions.set.fieldFromTargetName(event).split('_idx_')[0];
+        let arrayItemIndex = -1;
+        let subfield = '';
+        if (util.common.formState.functions.set.fieldFromTargetName(event).split('_idx_').length > 1) {
+            arrayItemIndex = util.common.formState.functions.set.fieldFromTargetName(event).split('_idx_')[1];
+            subfield = util.common.formState.functions.set.fieldFromTargetName(event).split('_idx_')[2];
+        }
         let dataType = util.common.formState.functions.set.dataTypeFromTarget(event);
         let newSelectedValue = {};
         let inputType = event.target.type;
@@ -248,7 +277,7 @@ export const formState = {
                 break;
             case util.datatypes.ACTION.LIST.NEW.REMOVE:
             case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
-                util.common.formState.functions.set.objectValue(retVal, field, selectedIndex, 'remove');
+                util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
                 break;
             case util.datatypes.ARRAY.LIST.ADD.NEW:
             case util.datatypes.NUMBER.CHARACTER_LEVEL:
@@ -257,7 +286,11 @@ export const formState = {
             case util.datatypes.NUMBER.SPELL_LEVEL:
             case util.datatypes.STRING.SHORT:
             case util.datatypes.STRING.LONG:
-                util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                if (arrayItemIndex == -1) {
+                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                } else {
+                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value, 'edit', arrayItemIndex, subfield);
+                }
                 break;
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
                 if (field.split('_').length == 1) {
@@ -265,11 +298,22 @@ export const formState = {
                         newSelectedValue.id = 0;
                         newSelectedValue.name = event.target.value;
                     } else {
-                        newSelectedValue.id = parseInt(event.target.options[event.target.selectedIndex].value);
-                        newSelectedValue.name = event.target.options[event.target.selectedIndex].text;
+                        newSelectedValue = util.common.picklists.getPicklistItem(picklists, event.target.options[event.target.selectedIndex].value);
                     }
                     retVal = newSelectedValue;
                 }
+                break;
+            case util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT:
+                for (let key in retVal) {
+                    if (retVal.hasOwnProperty(key)) {
+                        if (util.common.picklists.getPicklistItem(picklists, event.target.options[event.target.selectedIndex].value)[key] !== undefined && util.common.picklists.getPicklistItem(picklists, event.target.options[event.target.selectedIndex].value)[key] !== null) {
+                            newSelectedValue[key] = util.common.picklists.getPicklistItem(picklists, event.target.options[event.target.selectedIndex].value)[key];
+                        } else {
+                            newSelectedValue[key] = retVal[key];
+                        }
+                    }
+                }
+                retVal = newSelectedValue;
                 break;
             case util.datatypes.BOOL:
                 util.common.formState.functions.set.objectValue(retVal, field, event.target.checked);

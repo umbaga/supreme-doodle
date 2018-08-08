@@ -5,8 +5,16 @@ import { Button } from 'react-bootstrap';
 class DndButton extends React.Component {
     constructor(props, context) {
         super(props, context);
+        this._onClick = this._onClick.bind(this);
     }
 
+    _onClick(event) {
+        if (this.props.changeFocusRefName && this.props.changeFocusRefName.length != 0) {
+            this.props.refs[this.props.changeFocusRefName].focus();
+        }
+        this.props.onClick(event);
+    }
+    
     render() {
         let bootstrapStyle = '';
         let fontawesomeStyle = 'fa fa-';
@@ -120,7 +128,7 @@ class DndButton extends React.Component {
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
         if (this.props.dataType && this.props.dataType.length != 0) {
             return (
-                <Button bsStyle={finalBootstrapStyle} onClick={this.props.onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}>
+                <Button bsStyle={finalBootstrapStyle} onClick={this._onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}>
                     {renderedLabel}
                 </Button>
             );
@@ -144,7 +152,9 @@ DndButton.propTypes = {
     dataType: PropTypes.string,
     name: PropTypes.string,
     selectedIndex: PropTypes.number,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    changeFocusRefName: PropTypes.string,
+    refs: PropTypes.object
 };
 
 export default DndButton;

@@ -28,7 +28,12 @@ export const ARRAY = {
     LIST: {
         ADD: {
             PICKLIST: 'DATATYPE_ARRAY_LIST_ADD_PICKLIST',
-            NEW: 'DATATYPE_ARRAY_LIST_ADD_NEW'
+            NEW: 'DATATYPE_ARRAY_LIST_ADD_NEW',
+            WITH_VALUE: {
+                PICKLIST: {
+                    INT: 'DATATYPE_ARRAY_LIST_ADD_WITH_VALUE_PICKLIST_INT'
+                }
+            }
         }
     },
     TAGS: {

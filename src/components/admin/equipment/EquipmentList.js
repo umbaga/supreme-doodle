@@ -40,15 +40,15 @@ class EquipmentList extends React.Component {
     
     renderArmorBody(equipments) {
         let tmpEquipments = equipments.sort(function(a, b) {
-            if (a.armorClass.base > b.armorClass.base) {
+            if (a.armor.armorClass.base > b.armor.armorClass.base) {
                 return 1;
-            } else if (a.armorClass.base < b.armorClass.base) {
+            } else if (a.armor.armorClass.base < b.armor.armorClass.base) {
                 return -1;
             } else {
                 if (a.armor.stealthDisadvantage > b.armor.stealthDisadvantage) {
-                    return 1;
-                } else if (a.armor.stealthDisadvantage < b.armor.stealthDisadvantage) {
                     return -1;
+                } else if (a.armor.stealthDisadvantage < b.armor.stealthDisadvantage) {
+                    return 1;
                 } else {
                     return 0;
                 }
@@ -209,7 +209,8 @@ EquipmentList.propTypes = {
     changeSelectedId: PropTypes.func.isRequired,
     selectedId: PropTypes.number.isRequired,
     onEdit: PropTypes.func,
-    selectedCategory: PropTypes.object.isRequired
+    selectedCategory: PropTypes.object.isRequired,
+    picklists: PropTypes.array.isRequired
 };
 
 export default EquipmentList;

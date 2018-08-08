@@ -300,7 +300,7 @@ obj.armorClass = function(val) {
     retVal += val.base.toString();
     if (val.applyDexterity) {
         retVal += ' + Dex Modifier';
-        if (val.hasMaxDexModifier) {
+        if (val.hasMaximumDexterity) {
             retVal += ' (max ' + val.maximumDexterity.toString() + ')';
         }
     }
@@ -357,7 +357,7 @@ obj.equipmentName = function(val) {
         }
     }
     if (val.isMagicItem) {
-        retVal = retVal + ' ';
+        retVal = retVal + '';
     }
     return retVal;
 };

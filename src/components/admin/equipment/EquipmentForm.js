@@ -11,10 +11,11 @@ class EquipmentForm extends React.Component {
         this.setFocus = this.setFocus.bind(this);
         this.renderAmmunitionInputs = this.renderAmmunitionInputs.bind(this);
         this.renderArmorInputs = this.renderArmorInputs.bind(this);
+        this.renderAssignedEquipmentListInputs = this.renderAssignedEquipmentListInputs.bind(this);
         this.renderCarryCapacityInputs = this.renderCarryCapacityInputs.bind(this);
         this.renderDamageInputs = this.renderDamageInputs.bind(this);
-        this.renderEquipmentListInputs = this.renderEquipmentListInputs.bind(this);
         this.renderIsImprovisedWeaponInputs = this.renderIsImprovisedWeaponInputs.bind(this);
+        this.renderIsMagicItemInputs = this.renderIsMagicItemInputs.bind(this);
         this.renderProficiencyInputs = this.renderProficiencyInputs.bind(this);
         this.renderRangeInputs = this.renderRangeInputs.bind(this);
         this.renderSpecialDescriptionInputs = this.renderSpecialDescriptionInputs.bind(this);
@@ -112,7 +113,8 @@ class EquipmentForm extends React.Component {
     
     renderArmorInputs(equipment) {
         let retVal = null;
-        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.ARMOR) {
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.ARMOR
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.BARDING) {
             let hasMaxDexInput = (equipment.armor.armorClass.applyDexterity) ? (
                 <div className="col-sm-6">
                     <DndInput
@@ -131,6 +133,17 @@ class EquipmentForm extends React.Component {
                         label="Max Dex Mod"
                         dataType={util.datatypes.NUMBER.INT}
                         value={equipment.armor.armorClass.maximumDexterity}
+                        onChange={this.props.onChange}
+                        />
+                </div>
+            ) : null;
+            let minStrInput = (equipment.armor.hasMinimumStrength) ? (
+                <div className="col-sm-6">
+                    <DndInput
+                        name="armor.minimumStrength"
+                        label="Min Str"
+                        dataType={util.datatypes.NUMBER.INT}
+                        value={equipment.armor.minimumStrength}
                         onChange={this.props.onChange}
                         />
                 </div>
@@ -168,13 +181,14 @@ class EquipmentForm extends React.Component {
                     {maxDexInput}
                     <div className="col-sm-6">
                         <DndInput
-                            name="armor.minimumStrength"
-                            label="Min Str"
-                            dataType={util.datatypes.NUMBER.INT}
-                            value={equipment.armor.minimumStrength}
+                            name="armor.hasMinimumStrength"
+                            label="Has Min Str"
+                            dataType={util.datatypes.BOOL}
+                            value={equipment.armor.hasMinimumStrength}
                             onChange={this.props.onChange}
                             />
                     </div>
+                    {minStrInput}
                     <div className="col-sm-6">
                         <DndInput
                             name="armor.armorClass.isCumulative"
@@ -185,6 +199,38 @@ class EquipmentForm extends React.Component {
                             />
                     </div>
                 </fragment>
+            );
+        }
+        return retVal;
+    }
+    
+    renderAssignedEquipmentListInputs(equipment, equipments) {
+        let retVal = null;
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.PACK) {
+            retVal = (
+                <div className="col-md-12">
+                    <DndInput
+                        name="assignedEquipment"
+                        label="Assigned Equipment"
+                        dataType={util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT}
+                        value={equipment.assignedEquipment}
+                        onChange={this.props.onChange}
+                        buttonOnClick={this.props.onChange}
+                        buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
+                        changeFocusRefName="assignedEquipment"
+                        picklist={equipments}
+                        
+                        childName="name"
+                        childValue={this.props.editEquipment}
+                        childAuxiliaryNames={['assigned']}
+                        childAuxiliaryDatatypes={[util.datatypes.NUMBER.INT]}
+                        childAuxiliaryValues={[this.props.editEquipment.assigned]}
+                        onChangeChild={this.props.onChangeEquipment}
+                        
+                        assignedEquipment={equipments}
+                        renderNameFunction={util.format.forDisplay.obj.equipmentName}
+                        />
+                </div>
             );
         }
         return retVal;
@@ -230,14 +276,6 @@ class EquipmentForm extends React.Component {
         return retVal;
     }
     
-    renderEquipmentListInputs(equipment, equipments) {
-        let retVal = null;
-        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.PACK) {
-            retVal = (<div>EQUIPMENT LIST</div>);
-        }
-        return retVal;
-    }
-    
     renderIsImprovisedWeaponInputs(equipment) {
         let retVal = null;
         if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL) {
@@ -248,6 +286,24 @@ class EquipmentForm extends React.Component {
                         label="Is Improvised Weapon"
                         dataType={util.datatypes.BOOL}
                         value={equipment.isImprovisedWeapon}
+                        onChange={this.props.onChange}
+                        />
+                </div>
+            );
+        }
+        return retVal;
+    }
+    
+    renderIsMagicItemInputs(equipment) {
+        let retVal = null;
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL) {
+            retVal = (
+                <div className="col-sm-6">
+                    <DndInput
+                        name="isMagicItem"
+                        label="Is Magic Item"
+                        dataType={util.datatypes.BOOL}
+                        value={equipment.isMagicItem}
                         onChange={this.props.onChange}
                         />
                 </div>
@@ -374,7 +430,10 @@ class EquipmentForm extends React.Component {
     renderUnitInputs(equipment) {
         let retVal = null;
         let unitInput = null;
-        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL) {
+        let countInput = null;
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TACK_AND_HARNESS
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.FOOD) {
             unitInput = (
                 <div className="col-sm-6">
                     <DndInput
@@ -389,17 +448,25 @@ class EquipmentForm extends React.Component {
         }
         if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL
            || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.AMMUNITION) {
+            countInput = (
+                <div className="col-sm-6">
+                    <DndInput
+                        name="count"
+                        label="Count"
+                        dataType={util.datatypes.NUMBER.INT}
+                        value={equipment.count}
+                        onChange={this.props.onChange}
+                        />
+                </div>
+            );
+        }
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.GENERAL
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TACK_AND_HARNESS
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.AMMUNITION
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.FOOD) {
             retVal = (
                 <fragment>
-                    <div className="col-sm-6">
-                        <DndInput
-                            name="count"
-                            label="Count"
-                            dataType={util.datatypes.NUMBER.INT}
-                            value={equipment.count}
-                            onChange={this.props.onChange}
-                            />
-                    </div>
+                    {countInput}
                     {unitInput}
                 </fragment>
             );
@@ -461,6 +528,7 @@ class EquipmentForm extends React.Component {
                         buttonOnClick={this.props.onChange}
                         onChangeChild={this.props.onChangeItem}
                         buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
+                        changeFocusRefName="weapon.properties"
                         />
                 </div>
             );
@@ -469,6 +537,10 @@ class EquipmentForm extends React.Component {
     }
     
     renderWeightInput(equipment) {
+        let isReadOnly = false;
+        if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.PACK) {
+            isReadOnly = true;
+        }
         let retVal = (
             <div className="col-sm-6">
                 <DndInput
@@ -477,11 +549,13 @@ class EquipmentForm extends React.Component {
                     dataType={util.datatypes.NUMBER.DEC}
                     value={equipment.weight}
                     onChange={this.props.onChange}
+                    isReadOnly={isReadOnly}
                     />
             </div>
         );
         if (equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.MOUNT
-           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WATER_VEHICLE) {
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.WATER_VEHICLE
+           || equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.FOOD) {
             retVal = null;
         }
         return retVal;
@@ -490,14 +564,14 @@ class EquipmentForm extends React.Component {
     render() {
         const equipment = this.props.equipment;
         const picklists = this.props.picklists;
-        const ammunitionTypes = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.AMMUNITION_TYPE);
-        const categories = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT_CATEGORY);
-        const damageTypes = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.DAMAGE_TYPE);
-        const equipments = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT);
-        const proficiencies = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.PROFICIENCY);
-        const weaponProperties = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.WEAPON_PROPERTY);
-        const weaponClasses = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.WEAPON_CLASS);
-        //console.log(proficiencies);
+        const ammunitionTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.AMMUNITION_TYPE);
+        const categories = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT_CATEGORY);
+        const damageTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.DAMAGE_TYPE);
+        const proficiencies = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.PROFICIENCY);
+        const weaponProperties = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.WEAPON_PROPERTY);
+        const weaponClasses = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.WEAPON_CLASS);
+        
+        const assignedEquipment = util.common.picklists.getPicklistItems(picklists, [util.itemtypes.TYPE.ITEM.EQUIPMENT, util.itemtypes.TYPE.ITEM.EQUIPMENT_CATEGORY]);
         return (
             <div>
                 <form>
@@ -518,8 +592,8 @@ class EquipmentForm extends React.Component {
                                 picklist={categories}
                                 />
                         </div>
-                        {this.renderWeaponClassInputs(equipment, weaponClasses)}
                         {this.renderProficiencyInputs(equipment, proficiencies)}
+                        {this.renderWeaponClassInputs(equipment, weaponClasses)}
                         <div className="col-sm-6">
                             <DndInput
                                 name="cost"
@@ -532,6 +606,7 @@ class EquipmentForm extends React.Component {
                         {this.renderWeightInput(equipment)}
                         {this.renderUnitInputs(equipment)}
                         {this.renderArmorInputs(equipment)}
+                        {this.renderIsMagicItemInputs(equipment)}
                         {this.renderIsImprovisedWeaponInputs(equipment)}
                         {this.renderDamageInputs(equipment, damageTypes)}
                         {this.renderSpeedInputs(equipment)}
@@ -541,7 +616,7 @@ class EquipmentForm extends React.Component {
                         {this.renderAmmunitionInputs(equipment, ammunitionTypes, weaponProperties)}
                         {this.renderSpecialDescriptionInputs(equipment, weaponProperties)}
                         {this.renderVersatileDamage(equipment, weaponProperties)}
-                        {this.renderEquipmentListInputs(equipment, equipments)}
+                        {this.renderAssignedEquipmentListInputs(equipment, assignedEquipment)}
                     </div>
                 </form>
             </div>
@@ -551,11 +626,13 @@ class EquipmentForm extends React.Component {
 
 EquipmentForm.propTypes = {
     editItem: PropTypes.object.isRequired,
+    editEquipment: PropTypes.object.isRequired,
     equipment: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeItem: PropTypes.func.isRequired,
+    onChangeEquipment: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,

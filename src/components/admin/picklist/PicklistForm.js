@@ -18,6 +18,10 @@ class PicklistForm extends React.Component {
     }
     
     render() {
+        let picklist = this.props.picklist;
+        picklist.items = picklist.items.filter(function(item) {
+            return !item.isSupplemental;
+        });
         return (
             <div>
                 <form>
@@ -28,7 +32,7 @@ class PicklistForm extends React.Component {
                                 ref="name"
                                 label="Name"
                                 dataType={util.datatypes.STRING.SHORT}
-                                value={this.props.picklist.name}
+                                value={picklist.name}
                                 onChange={this.props.onChange}
                                 />
                         </div>
@@ -37,7 +41,7 @@ class PicklistForm extends React.Component {
                                 name="applySupplementalPicklist"
                                 label="Apply Supplemental Picklist"
                                 dataType={util.datatypes.BOOL}
-                                value={this.props.picklist.applySupplementalPicklist}
+                                value={picklist.applySupplementalPicklist}
                                 onChange={this.props.onChange}
                                 />
                         </div>
@@ -46,13 +50,14 @@ class PicklistForm extends React.Component {
                                 name="items"
                                 label="Add New Item"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.NEW}
-                                value={this.props.picklist.items}
+                                value={picklist.items}
                                 onChange={this.props.onChange}
                                 childValue={this.props.editItem.name}
                                 childName="name"
                                 buttonOnClick={this.props.onChange}
                                 onChangeChild={this.props.onChangeItem}
                                 buttonDatatype={util.datatypes.ACTION.LIST.NEW}
+                                changeFocusRefName="items"
                                 />
                         </div>
                     </div>

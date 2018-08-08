@@ -6,6 +6,21 @@ import DndButton from '../buttons/DndButton';
 class DndList extends React.Component {
     constructor(props, context) {
         super(props, context);
+        this._renderName = this._renderName.bind(this);
+        this._onChangeWithIndex = this._onChangeWithIndex.bind(this);
+    }
+    
+    _renderName(str, val) {
+        if (this.props.renderNameFunction !== undefined) {
+            if (typeof this.props.renderNameFunction == 'function') {
+                return this.props.renderNameFunction(val);
+            }
+        }
+        return str;
+    }
+    
+    _onChangeWithIndex(event) {
+        this.props.onChange(event, event.target.getAttribute('data-selectedIndex'));
     }
     
     render() {
@@ -35,7 +50,28 @@ class DndList extends React.Component {
                         {this.props.value.map(function(item, idx) {
                             return (
                                 <tr key={idx}>
-                                    <td>{item[this.props.childName]}</td>
+                                    {this.props.childAuxiliaryDatatypes.map(function(datatype, idx2) {
+                                        switch (datatype) {
+                                            case util.datatypes.NUMBER.INT:
+                                                return (
+                                                    <td key={idx2}>
+                                                        <input
+                                                            type="number"
+                                                            name={this.props.name + '_idx_' + idx.toString() + '_idx_' + this.props.childAuxiliaryNames[idx2]}
+                                                            value={this.props.value[idx][this.props.childAuxiliaryNames[idx2]]}
+                                                            datatype={datatype}
+                                                            onChange={this._onChangeWithIndex}
+                                                            className="form-control dnd-input-number"
+                                                            min="1"
+                                                            data-selectedIndex={idx}
+                                                            />
+                                                    </td>
+                                                );
+                                            default:
+                                                return (<td key={idx2}>Missing datatype in List Input</td>);
+                                        }
+                                    }.bind(this))}
+                                    <td>{this._renderName(item[this.props.childName], item)}</td>
                                     <td>
                                         <div className="pull-right">
                                             <DndButton
@@ -63,6 +99,10 @@ DndList.propTypes = {
     buttonOnClick: PropTypes.func,
     buttonType: PropTypes.string,
     childName: PropTypes.string,
+    childAuxiliaryDatatypes: PropTypes.array,
+    childAuxiliaryNames: PropTypes.array,
+    childAuxiliaryValues: PropTypes.array,
+    renderNameFunction: PropTypes.func,
     dataType: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object

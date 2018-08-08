@@ -21,6 +21,10 @@ export function upsertPicklistSuccess(picklist) {
     return {type: types.UPSERT_PICKLIST_SUCCESS, picklist};
 }
 
+export function updatePicklistItemSuccess(item) {
+    return {type: types.UPDATE_PICKLIST_ITEM_SUCCESS, item};
+}
+
 export function loadPicklists() {
     return function(dispatch) {
         return picklistApi.getAllPicklists().then(picklists => {
@@ -79,5 +83,15 @@ export function upsertPicklist(picklist) {
                 throw (error);
             });
         }
+    };
+}
+
+export function updatePicklistItem(item) {
+    return function (dispatch) {
+        return picklistApi.updatePicklistItem(item).then(responsePicklistItem => {
+            dispatch(updatePicklistItemSuccess(responsePicklistItem.item));
+        }).catch(error => {
+            throw (error);
+        });
     };
 }

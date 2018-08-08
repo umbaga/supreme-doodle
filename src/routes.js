@@ -4,6 +4,7 @@ import App from './components/App';
 
 import AdminHomePage from './components/admin/home/adminHomePage';
 
+import DescriptionPage from './components/admin/description/DescriptionPage';
 import EquipmentPage from './components/admin/equipment/EquipmentPage';
 import ItemtypePage from './components/admin/itemtype/ItemtypePage';
 import PicklistPage from './components/admin/picklist/PicklistPage';
@@ -16,6 +17,7 @@ export default (
     <Route path="/" component={App}>
         <IndexRoute component={AdminHomePage} />
         <Route path="/Home" component={AdminHomePage} />
+        <Route path="/admin/description" component={DescriptionPage} />
         <Route path="/admin/equipment" component={EquipmentPage} />
         <Route path="/admin/itemtype" component={ItemtypePage} />
         <Route path="/admin/picklist" component={PicklistPage} />

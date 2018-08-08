@@ -6,6 +6,139 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let resObj = null;
     let parameterArray = null;
     let addComma = false;
+    app.put('/api/adm/picklist/item/:id', function(req, res) {
+        results = [];
+        vals = [];
+        sql = '';
+        query = null;
+        pool.connect(function(err, client, done) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ success: false, data: err});
+            }
+            async.waterfall([
+                function init(cb) {
+                    resObj = req.body;
+                    resObj.permissions = {};
+                    resObj.permissions.hasDescription = false;
+                    resObj.permissions.descriptionExists = false;
+                    if (resObj.item.description && resObj.item.description.lenth != 0) {
+                        resObj.permissions.hasDescription = true;
+                    }
+                    resObj.item.descriptionId = 0;
+                    cb(null, resObj);
+                },
+                function checkForExistingDescription(resObj, callback) {
+                    //console.log('item-01');
+                    results = [];
+                    sql = 'SELECT id, description';
+                    sql += ' FROM adm_core_description';
+                    sql += ' WHERE id IN (SELECT "targetId" FROM adm_link lnk WHERE lnk."referenceId" = $1 AND lnk."typeId" = $2)';
+                    sql += ' AND "typeId" = $3';
+                    vals = [
+                        resObj.item.id,
+                        itemtypes.TYPE.LINK.DESCRIPTION,
+                        itemtypes.TYPE.DESCRIPTION.GENERAL
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        if (results.length != 0) {
+                            resObj.permissions.descriptionExists = true;
+                            resObj.item.descriptionId = results[0].id;
+                        }
+                        return callback(null, resObj);
+                    });
+                },
+                function descriptionTable(resObj, callback) {
+                    //console.log('item-02');
+                    results = [];
+                    if (resObj.permissions.hasDescription && resObj.permissions.descriptionExists) {
+                        //update description
+                        sql = 'UPDATE adm_core_description';
+                        sql += ' SET description = $1';
+                        sql += ' WHERE id = $2';
+                        vals = [
+                            resObj.item.description,
+                            resObj.item.descriptionId
+                        ];
+                    } else if (resObj.permissions.hasDescription && !resObj.permissions.descriptionExists) {
+                        //insert description
+                        sql = 'INSERT INTO adm_core_description';
+                        sql += ' ("description", "typeId")';
+                        sql += ' VALUES ($1, $2) RETURNING id';
+                        vals = [
+                            resObj.item.description,
+                            itemtypes.TYPE.DESCRIPTION.GENERAL
+                        ];
+                    } else {
+                        //delete description
+                        sql = 'DELETE FROM adm_core_description';
+                        sql += ' WHERE id = $1';
+                        vals = [
+                            resObj.item.descriptionId
+                        ]
+                    }
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        if (results.length != 0) {
+                            if (results[0] && results[0].id && results[0].id != 0) {
+                                resObj.item.descriptionId = results[0].id;
+                            }
+                        }
+                        return callback(null, resObj);
+                    });
+                },
+                function linkTable(resObj, callback) {
+                    //console.log('item-03');
+                    results = [];
+                    if (resObj.permissions.hasDescription && resObj.permissions.descriptionExists) {
+                        //update description
+                        return callback(null, resObj);
+                    } else if (resObj.permissions.hasDescription && !resObj.permissions.descriptionExists) {
+                        //insert description
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ($1, $2, $3) RETURNING id';
+                        vals = [
+                            resObj.item.id,
+                            resObj.item.descriptionId,
+                            itemtypes.TYPE.LINK.DESCRIPTION
+                        ];
+                    } else {
+                        //delete description
+                        sql = 'DELETE FROM adm_link';
+                        sql += ' WHERE "referenceId" = $1';
+                        sql += ' AND "typeId" = $2';
+                        vals = [
+                            resObj.item.id,
+                            itemtypes.TYPE.LINK.DESCRIPTION
+                        ]
+                    }
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        return callback(null, resObj);
+                    });
+                    
+                }
+            ], function(error, result) {
+                done();
+                if (error) {
+                    console.error(error);
+                }
+                return res.json(result);
+            });
+        });
+        
+    });
     app.delete('/api/adm/picklist/:id', function(req, res) {
         results = [];
         vals = [];
@@ -23,7 +156,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function typeTable(resObj, callback) {
-                    console.log('picklist-01');
+                    //console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_type';
@@ -40,7 +173,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function itemTable(resObj, callback) {
-                    console.log('picklist-02');
+                    //console.log('picklist-02');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_type';
@@ -72,7 +205,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         query = null;
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -82,7 +214,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('picklist-01');
+                    //console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_type';
@@ -103,7 +235,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function insertNewItems(resObj, callback) {
-                    console.log('picklist-02');
+                    //console.log('picklist-02');
                     results = [];
                     vals = [];
                     sql = 'WITH vals AS (';
@@ -144,7 +276,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function removeUnassignedItems(resObj, callback) {
-                    console.log('picklist-03');
+                    //console.log('picklist-03');
                     results = [];
                     addComma = false;
                     sql = 'DELETE FROM adm_core_item';
@@ -190,7 +322,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             async.waterfall([
                 function init(cb) {
                     resObj = req.body;
-                    console.log(resObj);
+                    //console.log(resObj);
                     resObj.permissions = {};
                     resObj.permissions.hasItems = false;
                     if (resObj.picklist.items && resObj.picklist.items.length != 0) {
@@ -199,7 +331,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function typeTable(resObj, callback) {
-                    console.log('picklist-01');
+                    //console.log('picklist-01');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_type';
@@ -220,7 +352,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function itemTable(resObj, callback) {
-                    console.log('picklist-02');
+                    //console.log('picklist-02');
                     if (resObj.permissions.hasItems) {
                         results = [];
                         vals = [];
@@ -257,7 +389,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 }
             ], function(error, result) {
-                console.log('picklist-done');
+                //console.log('picklist-done');
                 done();
                 if (error) {
                     console.error(error);
@@ -270,7 +402,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
         results = [];
         pool.connect(function(err, client, done) {
             if (err) {
-                done();
                 console.error(err);
                 return res.status(500).json({ success: false, data: err});
             }
@@ -281,6 +412,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     sql += '    i."itemName" AS "name"';
                     sql += '    , i."id"';
                     sql += '    , get_link_text(i.id, $2) AS "abbreviation"';
+                    sql += '    , get_description(i.id, $4) AS "description"';
                     sql += '    , dmgtyp."isEnergy", dmgtyp."isWeapon"';
                     sql += '    , ability."isMental", ability."isPhysical", ability."isPrimary"';
                     sql += '    , wpnprop."requireAmmunition", wpnprop."requireRange", wpnprop."requireSpecialDescription", wpnprop."requireVersatileDamage"';
@@ -303,7 +435,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     vals = [
                         true,
                         itemtypes.TYPE.LINK.ABBREVIATION,
-                        itemtypes.TYPE.LINK.PARENT_CHILD
+                        itemtypes.TYPE.LINK.PARENT_CHILD,
+                        itemtypes.TYPE.DESCRIPTION.GENERAL
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -335,7 +468,30 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(newRow);
                     });
                     query.on('end', function() {
-                        return callback(err, results);
+                        let finalResults = results;
+                        let supplementalPicklist = null;
+                        for (let q = 0; q < results.length; q++) {
+                            if (results[q].id == itemtypes.TYPE.ITEM.SUPPLEMENTAL_PICKLIST) {
+                                supplementalPicklist = results[q];
+                            }
+                        }
+                        for (let w = 0; w < supplementalPicklist.items.length; w++) {
+                            supplementalPicklist.items[w].isSupplemental = true;
+                        }
+                        for (let q = 0; q < finalResults.length; q++) {
+                            if (finalResults[q].applySupplementalPicklist) {
+                                finalResults[q].items = finalResults[q].items.concat(supplementalPicklist.items).sort(function(a, b) {
+                                    if (a.name > b.name) {
+                                        return 1;
+                                    } else if (a.name < b.name) {
+                                        return -1;
+                                    } else {
+                                        return 0;
+                                    }
+                                });
+                            }
+                        }
+                        return callback(err, finalResults);
                     });
                 },
                 function proficiencies(resObj, callback) {
@@ -367,6 +523,96 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         let newPicklist = {};
                         newPicklist.id = itemtypes.TYPE.ITEM.PROFICIENCY;
                         newPicklist.name = 'Proficiency';
+                        newPicklist.isPicklist = true;
+                        newPicklist.applySupplementalPicklist = false;
+                        newPicklist.items = results;
+                        resObj.push(newPicklist);
+                        return callback(err, resObj);
+                    });
+                },
+                function equipment(resObj, callback) {
+                    results = [];
+                    sql = 'SELECT i."id", i."itemName" AS "name"';
+                    sql += ', get_item(i."resourceId") AS "resource"';
+                    sql += ', get_description(i.id, $2) AS "description"';
+                    sql += ', eq."cost", eq."weight", eq."isMagicItem"';
+                    sql += ', get_item(eq."categoryId") AS "category"';
+                    sql += ', CASE WHEN cntunit."count" IS NULL THEN 1 ELSE cntunit."count" END AS "count"';
+                    sql += ', CASE WHEN cntunit."unit" IS NULL THEN \'\' ELSE cntunit."unit" END AS "unit"';
+                    sql += ', CASE WHEN get_item(ammo."ammunitionId") IS NULL THEN \'{}\' ELSE get_item(ammo."ammunitionId") END AS "ammunition"';
+                    sql += ', CASE WHEN armor."baseArmorClass" IS NULL THEN \'{}\' ELSE ';
+                    sql += '    json_build_object(';
+                    sql += '        \'armorClass\', json_build_object(';
+                    sql += '            \'applyDexterity\', armor."applyDexterityModifier",';
+                    sql += '            \'base\', armor."baseArmorClass",';
+                    sql += '            \'isCumulative\', armor."isCumulative",';
+                    sql += '            \'maximumDexterity\', armor."maximumDexterityModifier",';
+                    sql += '            \'hasMaximumDexterity\', armor."hasMaximumDexterityModifier"';
+                    sql += '        ),';
+                    sql += '        \'minimumStrength\', armor."minimumStrength",';
+                    sql += '        \'hasMinimumStrength\', armor."hasMinimumStrength",';
+                    sql += '        \'stealthDisadvantage\', armor."stealthDisadvantage"';
+                    sql += '    ) END AS "armor"';
+                    sql += ', CASE WHEN carrycap."carryCapacity" IS NULL THEN 0 ELSE carrycap."carryCapacity" END AS "carryCapacity"';
+                    sql += ', CASE WHEN spd."speed" IS NULL THEN 0 ELSE spd."speed" END AS "speed"';
+                    sql += ', CASE WHEN get_item(prof."proficiencyId") IS NULL THEN \'{}\' ELSE get_item(prof."proficiencyId") END AS "proficiency"';
+                    sql += ', CASE WHEN prof."proficiencyId" IN ($3) THEN true ELSE false END AS "isImprovisedWeapon"';
+                    sql += ', CASE WHEN prof."proficiencyId" IN ($3, $4, $5) THEN ';
+                    sql += '    json_build_object(';
+                    sql += '        \'special\', CASE WHEN get_description(i.id, $6) IS NULL THEN \'\' ELSE get_description(i.id, $6) END,';
+                    sql += '        \'properties\', CASE WHEN get_weapon_properties(i.id, $7) IS NULL THEN \'[]\' ELSE get_weapon_properties(i.id, $7) END,';
+                    sql += '        \'class\', CASE WHEN get_item(wpn."classId") IS NULL THEN \'{}\' ELSE get_item(wpn."classId") END,';
+                    sql += '        \'range\', CASE WHEN rng."maximumRange" IS NULL THEN \'{}\' ELSE';
+                    sql += '            json_build_object(';
+                    sql += '                \'maximum\', rng."maximumRange",';
+                    sql += '                \'normal\', rng."normalRange"';
+                    sql += '            )';
+                    sql += '        END,';
+                    sql += '        \'damage\', CASE WHEN get_dice(dmg."diceId") IS NULL THEN \'{}\' ELSE ';
+                    sql += '            json_build_object(';
+                    sql += '                \'dice\', get_dice(dmg."diceId"),';
+                    sql += '                \'type\', get_item(dmg."typeId"),';
+                    sql += '                \'versatile\', CASE WHEN vdmg."diceId" IS NULL THEN \'{}\' ELSE ';
+                    sql += '                    json_build_object(';
+                    sql += '                        \'dice\', get_dice(vdmg."diceId")';
+                    sql += '                    )';
+                    sql += '                END ';
+                    sql += '            )';
+                    sql += '        END';
+                    sql += '    )';
+                    sql += ' ELSE \'{}\' END AS "weapon"';
+                    sql += ', \'[]\' AS "assignedEquipment"';
+                    sql += ' FROM adm_core_item i';
+                    sql += ' INNER JOIN adm_def_equipment eq ON eq."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_ammunition ammo ON ammo."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_armor armor ON armor."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_carry_capacity carrycap ON carrycap."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_proficiency prof ON prof."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_speed spd ON spd."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_unit cntunit ON cntunit."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_weapon wpn ON wpn."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_damage dmg ON dmg."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_range rng ON rng."equipmentId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_equipment_damage_versatile vdmg ON vdmg."equipmentId" = i.id';
+                    sql += ' WHERE i."typeId" = $1';
+                    sql += ' ORDER BY i."itemName"';
+                    vals = [
+                        itemtypes.TYPE.ITEM.EQUIPMENT,
+                        itemtypes.TYPE.DESCRIPTION.GENERAL,
+                        itemtypes.TYPE.PROFICIENCY.WEAPON.IMPROVISED,
+                        itemtypes.TYPE.PROFICIENCY.WEAPON.MARTIAL,
+                        itemtypes.TYPE.PROFICIENCY.WEAPON.SIMPLE,
+                        itemtypes.TYPE.DESCRIPTION.SPECIAL_WEAPON,
+                        itemtypes.TYPE.LINK.WEAPON_PROPERTY
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        let newPicklist = {};
+                        newPicklist.id = itemtypes.TYPE.ITEM.EQUIPMENT;
+                        newPicklist.name = 'Equipment';
                         newPicklist.isPicklist = true;
                         newPicklist.applySupplementalPicklist = false;
                         newPicklist.items = results;

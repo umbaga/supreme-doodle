@@ -10,6 +10,7 @@ class DndInput extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.renderSelectOneOption = this.renderSelectOneOption.bind(this);
+        this._renderName = this._renderName.bind(this);
     }
     
     setFocus() {
@@ -22,6 +23,13 @@ class DndInput extends React.Component {
         } else {
             return (<option value="0">{placeholderText}</option>);
         }
+    }
+    
+    _renderName(str, val) {
+        if (this.props.renderNameFunction !== undefined) {
+            return this.props.renderNameFunction(val);
+        }
+        return str;
     }
     
     render() {
@@ -47,11 +55,21 @@ class DndInput extends React.Component {
         let numberMinVal = this.props.numberMinVal ? this.props.numberMinVal : 0;
         let numberStepVal = this.props.numberStepVal ? this.props.numberStepVal : 1;
         let finalPicklist = this.props.picklist;
-        let textAreaHeight = this.props.longStringHeight ? this.props.longStringHeight + 'px' : '210px';
+        let textAreaHeight = this.props.longStringHeight ? this.props.longStringHeight + 'px' : '140px';
+        let auxiliaryInputs = null;
         
+        let refName = this.props.name;
+        let changeFocusOnButtonClick = false;
+        if (this.props.changeFocusRefName && this.props.changeFocusRefName.length != 0) {
+            refName = this.props.changeFocusRefName;
+            changeFocusOnButtonClick = true;
+        } else if (this.props.childName && this.props.childName.length != 0) {
+            refName = this.props.childName;
+        }
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.LIST.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
+            case util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 if (this.props.dataType.split('NEW').length > 1) {
                     if (!this.props.childValue || this.props.childValue.length == 0) {
@@ -60,6 +78,21 @@ class DndInput extends React.Component {
                 } else if (this.props.dataType.split('TAGS').length > 1) {
                     if (!this.props.childValue.name || this.props.childValue.name.length == 0) {
                         buttonDisabled = true;
+                    }
+                } else if (this.props.dataType.split('WITH_VALUE_PICKLIST_INT').length > 1) {
+                    if (!this.props.childValue.name || this.props.childValue.name.length == 0) {
+                        buttonDisabled = true;
+                    }
+                    for (let q = 0; q < this.props.childAuxiliaryValues.length; q++) {
+                        switch (this.props.childAuxiliaryDatatypes[q]) {
+                            case util.datatypes.NUMBER.INT:
+                                if (!this.props.childAuxiliaryValues[q] || this.props.childAuxiliaryValues[q] == 0) {
+                                    buttonDisabled = true;
+                                }
+                                break;
+                            default:
+                                console.error('Need datatype in auxiliary data validation for button disabling.');
+                        }
                     }
                 }
                 if (this.props.dataType.split('PICKLIST').length > 1) {
@@ -73,10 +106,36 @@ class DndInput extends React.Component {
                         return showThis;
                     }.bind(this));
                 }
+                if (this.props.childAuxiliaryDatatypes && this.props.childAuxiliaryDatatypes.length != 0) {
+                    auxiliaryInputs = (
+                        <fragment>
+                            {this.props.childAuxiliaryDatatypes.map(function(datatype, idx) {
+                                switch (datatype) {
+                                    case util.datatypes.NUMBER.INT:
+                                        return (
+                                            <input
+                                                key={idx}
+                                                type="number"
+                                                name={this.props.childAuxiliaryNames[idx]}
+                                                value={this.props.childAuxiliaryValues[idx]}
+                                                datatype={datatype}
+                                                onChange={this.props.onChangeChild}
+                                                className="form-control dnd-input-number"
+                                                min="1"
+                                                />
+                                        );
+                                    default:
+                                        return (<div>Need to add datatype to the switch for auxiliary inputs</div>);
+                                }
+                            }.bind(this))}
+                        </fragment>
+                    );
+                }
                 primaryInput = (this.props.dataType.split('NEW').length > 1) ? (
                     <input
                         type="text"
                         name={this.props.childName}
+                        ref={refName}
                         value={this.props.childValue}
                         datatype={this.props.dataType}
                         onChange={this.props.onChangeChild}
@@ -88,8 +147,8 @@ class DndInput extends React.Component {
                     <select
                         value={this.props.childValue.id}
                         name={this.props.childName}
-                        ref={this.props.childName}
-                        className="form-control"
+                        ref={refName}
+                        className="form-control dnd-max-width"
                         onChange={this.props.onChangeChild}
                         datatype={this.props.dataType}>
                         {this.renderSelectOneOption(placeholderText)}
@@ -98,7 +157,7 @@ class DndInput extends React.Component {
                                 <option
                                     key={idx}
                                     value={picklistItem.id}>
-                                    {picklistItem.name}
+                                    {this._renderName(picklistItem.name, picklistItem)}
                                 </option>
                             );
                         }.bind(this))}
@@ -125,6 +184,10 @@ class DndInput extends React.Component {
                         startScrollingAt={this.props.listTableStartScrollingAt}
                         rowHeight={this.props.listTableRowHeight}
                         hideScrolling={this.props.listTableHideScrolling}
+                        childAuxiliaryDatatypes={this.props.childAuxiliaryDatatypes}
+                        childAuxiliaryNames={this.props.childAuxiliaryNames}
+                        childAuxiliaryValues={this.props.childAuxiliaryValues}
+                        renderNameFunction={this.props.renderNameFunction}
                         />
                 );
                 break;
@@ -145,7 +208,7 @@ class DndInput extends React.Component {
             case util.datatypes.COMBO.DICE.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
-                    <div className=" input-group input-inline">
+                    <div className="input-group input-inline">
                         <input
                             type="text"
                             name={this.props.name + '.dice'}
@@ -253,7 +316,9 @@ class DndInput extends React.Component {
                 if (this.props.value) {
                     longValue = this.props.value;
                 } else {
-                    textAreaHeight = '35px';
+                    if (!this.props.notCollapsible) {
+                        textAreaHeight = '35px';
+                    }
                 }
                 primaryInput = (
                     <div
@@ -273,8 +338,9 @@ class DndInput extends React.Component {
                 primaryInput = (<div>Need to add dataType to switch in DndInput</div>);
         }
         finalButtonType = (this.props.buttonType && this.props.buttonType.length != 0) ? this.props.buttonType : 'additem';
-        const finalInput = hasButton ? (
+        /*const finalInput = hasButton ? (
             <div className="input-group">
+                {auxiliaryInputs}
                 {primaryInput}
                 <span className="input-group-btn">
                     <DndButton
@@ -284,10 +350,45 @@ class DndInput extends React.Component {
                         name={this.props.name}
                         dataType={this.props.buttonDatatype.ADD}
                         disabled={buttonDisabled}
+                        changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
+                        refs={this.refs}
                         />
                 </span>
             </div>
-        ) : primaryInput;
+        ) : primaryInput;*/
+        let finalInput = primaryInput;
+        /*if (auxiliaryInputs) {
+            finalInput = (
+                <div className="input-group">
+                    {finalInput}
+                </div>
+            );
+        }*/
+        //input-group input-inline dnd-max-width
+        if (hasButton) {
+            finalInput = (
+                <fragment>
+                <div className="input-group">
+                    <div className="dnd-max-width input-inline ">
+                        {auxiliaryInputs}
+                        {finalInput}
+                    </div>
+                    <span className="input-group-btn">
+                        <DndButton
+                            buttonType={finalButtonType}
+                            onClick={this.props.buttonOnClick}
+                            bsButtonStyle={this.props.bsButtonStyle}
+                            name={this.props.name}
+                            dataType={this.props.buttonDatatype.ADD}
+                            disabled={buttonDisabled}
+                            changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
+                            refs={this.refs}
+                            />
+                    </span>
+                </div>
+                    </fragment>
+            );
+        }
         
         if (this.props.hideLabel) {
             return (
@@ -331,6 +432,17 @@ DndInput.propTypes = {
         PropTypes.array,
         PropTypes.bool
     ]),
+    childAuxiliaryNames: PropTypes.array,
+    childAuxiliaryDatatypes: PropTypes.array,
+    childAuxiliaryValues: PropTypes.array,
+    /*childAuxiliaryName: PropTypes.string,
+    childAuxiliaryValue: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+        PropTypes.object,
+        PropTypes.array,
+        PropTypes.bool
+    ]),*/
     dataType: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object
@@ -346,6 +458,7 @@ DndInput.propTypes = {
     listTableHideScrolling: PropTypes.bool,
     longStringHeight: PropTypes.number,
     name: PropTypes.string.isRequired,
+    notCollapsible: PropTypes.bool,
     numberMaxVal: PropTypes.number,
     numberMinVal: PropTypes.number,
     numberStepVal: PropTypes.number,
@@ -354,6 +467,7 @@ DndInput.propTypes = {
     onChangeChild: PropTypes.func,
     picklist: PropTypes.array,
     placeholder: PropTypes.string,
+    renderNameFunction: PropTypes.func,
     stackLabel: PropTypes.bool,
     value: PropTypes.oneOfType([
         PropTypes.string,
@@ -361,7 +475,8 @@ DndInput.propTypes = {
         PropTypes.object,
         PropTypes.array,
         PropTypes.bool
-    ]).isRequired
+    ]).isRequired,
+    changeFocusRefName: PropTypes.string
 };
 
 export default DndInput;

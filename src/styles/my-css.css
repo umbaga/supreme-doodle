@@ -90,3 +90,11 @@ tr.found{
     padding-left: 10px;
     color:darkblue;
 }
+.dnd-input-number {
+    /*background-color: red;*/
+    width: 75px !important;
+}
+.dnd-max-width {
+    width: 100% !important;
+    /*background-color: blue;*/
+}

@@ -38,6 +38,19 @@ export default function picklistReducer(state = initialState.picklists, action) 
             newState.splice(indexOfPicklistToDelete, 1);
             return newState;
         }
+        case types.UPDATE_PICKLIST_ITEM_SUCCESS:
+            return state;
+            /*return [
+                Object.assign({}, action.picklist),
+                ...state.filter(picklist => picklist.id !== action.picklist.id)
+            ].sort(function(a, b){
+                if (a.name < b.name) {
+                    return -1;
+                } else if (a.name > b.name) {
+                    return 1;
+                }
+                return 0;
+            });*/
         default:
             return state;
     }

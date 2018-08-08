@@ -12,6 +12,7 @@ class EquipmentEntry extends React.Component {
         super(props, context);
         this.state = {
             editItem: Object.assign({}, util.objectModel.ITEM),
+            editEquipment: Object.assign({}, util.objectModel.ASSIGNED_EQUIPMENT),
             equipment: this.props.equipment,
             isCreate: this.props.isCreate,
             canEdit: this.props.canEdit,
@@ -25,6 +26,7 @@ class EquipmentEntry extends React.Component {
         this.saveAndBackEquipment = this.saveAndBackEquipment.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
         this.updateItemFormState = this.updateItemFormState.bind(this);
+        this.updateEquipmentFormState = this.updateEquipmentFormState.bind(this);
         this.clearInfoForCategory = this.clearInfoForCategory.bind(this);
     }
 
@@ -54,10 +56,8 @@ class EquipmentEntry extends React.Component {
 
     saveEquipment(event) {
         event.preventDefault();
-        let newEquipment = util.common.resetObject.equipment();
-        if (this.props.selectedCategory.id != 0) {
-            newEquipment.category = this.props.selectedCategory;
-        }
+        const oldEquipment = this.state.equipment;
+        let newEquipment = util.common.resetObject.equipment(this.props.selectedCategory, oldEquipment);
         this.setState({saving: true, equipment: newEquipment});
         this.props.actions.upsertEquipment(this.state.equipment);
     }
@@ -73,17 +73,27 @@ class EquipmentEntry extends React.Component {
     }
 
     updateFormState(event) {
-        let equipment = util.common.formState.standard(event, this.state.equipment, this.props.equipments, this.state.editItem);
+        let arrayItem = this.state.editItem;
+        if (util.common.formState.functions.set.fieldFromTargetName(event) == 'assignedEquipment') {
+            arrayItem = this.state.editEquipment;
+        }
+        let equipment = util.common.formState.standard(event, this.state.equipment, this.props.picklists, arrayItem);
         let newEditItem = Object.assign({}, util.common.resetObject.item(equipment.weapon.properties.length * -1));
+        let newEditEquipment = Object.assign({}, util.common.resetObject.assignedEquipment());
         if (event.target.getAttribute('name') == 'category') {
             equipment = this.clearInfoForCategory(equipment);
         }
-        return this.setState({equipment: equipment, editItem: newEditItem});
+        return this.setState({equipment: equipment, editItem: newEditItem, editEquipment: newEditEquipment});
     }
 
     updateItemFormState(event) {
-        let editItem = util.common.formState.standard(event, this.state.editItem, this.props.equipments);
+        let editItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists);
         return this.setState({editItem: editItem});
+    }
+    
+    updateEquipmentFormState(event) {
+        let editEquipment = util.common.formState.standard(event, this.state.editEquipment, this.props.picklists);
+        return this.setState({editEquipment: editEquipment});
     }
     
     clearInfoForCategory(equipment) {
@@ -116,6 +126,10 @@ class EquipmentEntry extends React.Component {
     }
     
     render() {
+        let equipment = this.state.equipment;
+        if (this.props.selectedCategory && this.props.selectedCategory.id && this.props.selectedCategory.id != 0) {
+            equipment.category = this.props.selectedCategory;
+        }
         return (
             <DndModal
                 headingCaption="Equipment"
@@ -131,7 +145,7 @@ class EquipmentEntry extends React.Component {
                 size="large">
                 <EquipmentForm
                     ref="form"
-                    equipment={this.state.equipment}
+                    equipment={equipment}
                     picklists={this.props.picklists}
                     onSave={this.saveAndBackEquipment}
                     onSaveNew={this.saveAndNewEquipment}
@@ -143,6 +157,8 @@ class EquipmentEntry extends React.Component {
                     saving={this.state.saving}
                     onChangeItem={this.updateItemFormState}
                     editItem={this.state.editItem}
+                    editEquipment={this.state.editEquipment}
+                    onChangeEquipment={this.updateEquipmentFormState}
                     />
             </DndModal>
         );
@@ -162,24 +178,26 @@ EquipmentEntry.propTypes = {
     selectedCategory: PropTypes.object.isRequired
 };
 
-function getEquipmentById(equipments, id) {
+function getEquipmentById(equipments, id, selectedCategory) {
     if (id != 0) {
         let equipment = equipments.find(equipment => equipment.id == id);
         return Object.assign({}, equipment);
     } else {
-        return Object.assign({}, util.objectModel.EQUIPMENT);
+        return Object.assign({}, util.common.resetObject.equipment(selectedCategory));
     }
 }
 
 function mapStateToProps(state, ownProps) {
-    let equipment = Object.assign({}, util.objectModel.EQUIPMENT);
+    let equipment = util.common.resetObject.equipment(ownProps.selectedCategory);
     const equipmentId = ownProps.selectedId;
     let isCreate = true;
     if (ownProps.selecetdId != 0) {
         if (equipmentId && state.equipments.length > 0) {
-            equipment = getEquipmentById(state.equipments, ownProps.selectedId);
+            equipment = getEquipmentById(state.equipments, ownProps.selectedId, ownProps.selectedCategory);
             isCreate = false;
         }
+    } else if (ownProps.selectedCategory && ownProps.selectedCategory.id && ownProps.selectedCategory.id != 0) {
+        equipment = getEquipmentById(state.equipments, ownProps.selectedId, ownProps.selectedCategory);
     }
     return {equipment: equipment, isCreate: isCreate};
 }

@@ -169,6 +169,7 @@ class EquipmentPage extends React.Component {
                                         value={this.state.selectedCategory}
                                         onChange={this.onChangeCategory}
                                         picklist={categories}
+                                        placeholder="All Categories"
                                         hideLabel
                                         />
                                 </th>
