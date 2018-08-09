@@ -69,13 +69,13 @@ class _TemplateEntry extends React.Component {
     }
 
     updateFormState(event) {
-        let _template = util.common.formState.standard(event, this.state._template, this.props._templates, this.state.editItem);
+        let _template = util.common.formState.standard(event, this.state._template, this.props.picklists, this.state.editItem);
         let newEditItem = Object.assign({}, util.common.resetObject.item(_template.items.length * -1));
         return this.setState({_template: _template, editItem: newEditItem});
     }
 
     updateItemFormState(event) {
-        let editItem = util.common.formState.standard(event, this.state.editItem, this.props._templates);
+        let editItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists);
         return this.setState({editItem: editItem});
     }
     render() {
@@ -102,7 +102,6 @@ class _TemplateEntry extends React.Component {
                     onCancel={this.cancel_Template}
                     onDelete={this.delete_Template}
                     isCreate={this.state.isCreate}
-                    _templates={this.props._templates}
                     saving={this.state.saving}
                     editItem={this.state.editItem}
                     />
@@ -113,14 +112,13 @@ class _TemplateEntry extends React.Component {
 
 _TemplateEntry.propTypes = {
     _template: PropTypes.object,
-    _templates: PropTypes.object,
+    picklists: PropTypes.object,
     actions: PropTypes.object,
     canEdit: PropTypes.bool,
     closeModal: PropTypes.func.isRequired,
     openModal: PropTypes.func.isRequired,
     showModal: PropTypes.bool.isRequired,
-    isCreate: PropTypes.bool,
-    picklists: PropTypes.array
+    isCreate: PropTypes.bool
 };
 
 function get_TemplateById(_templates, id) {

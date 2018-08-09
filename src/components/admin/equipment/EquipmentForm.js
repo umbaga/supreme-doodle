@@ -227,7 +227,6 @@ class EquipmentForm extends React.Component {
                         childAuxiliaryValues={[this.props.editEquipment.assigned]}
                         onChangeChild={this.props.onChangeEquipment}
                         
-                        assignedEquipment={equipments}
                         renderNameFunction={util.format.forDisplay.obj.equipmentName}
                         />
                 </div>

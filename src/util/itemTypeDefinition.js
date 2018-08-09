@@ -30,7 +30,8 @@ export const TYPE = {
     DESCRIPTION: {
         FLAVOR_TEXT: 99,
         GENERAL: 11,
-        SPECIAL_WEAPON: 84
+        SPECIAL_WEAPON: 84,
+        SUGGESTED_CHARACTERISTICS: 903
     },
     ITEM: {
         _TEMPLATE: 0,

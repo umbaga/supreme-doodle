@@ -18,8 +18,10 @@ class DndUniversalInput extends React.Component {
         const resourceLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Resource' : 'Resource';
         const nameLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Name' : 'Name';
         const descriptionLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Description' : 'Description';
+        let collapseDescription = this.props.collapseDescription ? true : false;
+        let colStyles = this.props.hideDescription ? 'col-sm-12' : 'col-sm-6';
         const resourceInput = this.props.picklists ? (
-            <div className="col-md-12">
+            <div className={colStyles}>
                 <DndInput
                     name="resource"
                     label={resourceLabel}
@@ -38,12 +40,13 @@ class DndUniversalInput extends React.Component {
                     dataType={util.datatypes.STRING.HTML.LONG}
                     value={this.props.referenceObject.description}
                     onChange={this.props.onChange}
+                    notCollapsible={!collapseDescription}
                     />
             </div>
         );
         return (
             <fragment>
-                <div className="col-md-12">
+                <div className={colStyles}>
                     <DndInput
                         name="name"
                         ref="name"
@@ -65,7 +68,8 @@ DndUniversalInput.propTypes = {
     picklists: PropTypes.array,
     referenceObject: PropTypes.object.isRequired,
     labelPrefix: PropTypes.string,
-    hideDescription: PropTypes.bool
+    hideDescription: PropTypes.bool,
+    collapseDescription: PropTypes.bool
 };
 
 export default DndUniversalInput;

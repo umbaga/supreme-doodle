@@ -24,6 +24,7 @@ class DndButton extends React.Component {
             extraClasses += ' badge ';
         }
         let finalDisabled = this.props.disabled ? this.props.disabled : false;
+        let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         extraClasses += ' ' + this.props.additionalButtonStyles;
         switch (this.props.buttonType.toLowerCase()) {
             case 'additem':
@@ -128,7 +129,9 @@ class DndButton extends React.Component {
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
         if (this.props.dataType && this.props.dataType.length != 0) {
             return (
-                <Button bsStyle={finalBootstrapStyle} onClick={this._onClick} datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}>
+                <Button bsStyle={finalBootstrapStyle} onClick={this._onClick}
+                    datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}
+                    data-task={dataTask}>
                     {renderedLabel}
                 </Button>
             );
@@ -154,7 +157,8 @@ DndButton.propTypes = {
     selectedIndex: PropTypes.number,
     disabled: PropTypes.bool,
     changeFocusRefName: PropTypes.string,
-    refs: PropTypes.object
+    refs: PropTypes.object,
+    dataTask: PropTypes.string
 };
 
 export default DndButton;

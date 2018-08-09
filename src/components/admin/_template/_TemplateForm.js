@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DndInput from '../../common/inputs/DndInput';
-import util from '../../../util/util';
+//import DndInput from '../../common/inputs/DndInput';
+import DndUniversalInput from '../../common/inputs/DndUniversalInput';
+//import util from '../../../util/util';
+import { Tabs, Tab } from 'react-bootstrap';
 
 class _TemplateForm extends React.Component {
     constructor(props) {
@@ -18,18 +20,29 @@ class _TemplateForm extends React.Component {
     }
     
     render() {
+        const _template = this.props._template;
+        const picklists = this.props.picklists;
         return (
             <div>
                 <form>
+                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                        <Tab eventKey={1} title="Description">
+                            <div>&nbsp;</div>
+                            <DndUniversalInput
+                                ref="name"
+                                referenceObject={_template}
+                                onChange={this.props.onChange}
+                                picklists={picklists}
+                                />
+                        </Tab>
+                    </Tabs>
                     <div className="modal-no-tabs">
                         <div className="col-md-12">
-                            <DndInput
-                                name="name"
+                            <DndUniversalInput
                                 ref="name"
-                                label="Name"
-                                dataType={util.datatypes.STRING.SHORT}
-                                value={this.props._template.name}
+                                referenceObject={_template}
                                 onChange={this.props.onChange}
+                                picklists={picklists}
                                 />
                         </div>
                     </div>

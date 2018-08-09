@@ -81,7 +81,7 @@ class DndList extends React.Component {
                                 <tr key={idx}>
                                     {this.renderAuxiliaryInputs(idx)}
                                     <td>{this._renderName(item[this.props.childName], item)}</td>
-                                    <td>
+                                    <td width="75px">
                                         <div className="pull-right">
                                             <DndButton
                                                 buttonType={buttonType}
@@ -115,7 +115,7 @@ DndList.propTypes = {
     dataType: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object
-    ]),
+    ]).isRequired,
     onChange: PropTypes.func.isRequired,
     name: PropTypes.string,
     value: PropTypes.oneOfType([

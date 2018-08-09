@@ -444,7 +444,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         if (resObj.permissions.need.damageVersatile) {
                             diceArr.push(resObj.equipment.weapon.damage.versatile.dice);
                         }
-                        common.getObjects.dice(diceArr, function(results) {
+                        common.manage.dice(diceArr, function(results) {
                             resObj.equipment.weapon.damage.dice = common.datatypes.dice.getObject(results, resObj.equipment.weapon.damage.dice);
                             if (resObj.permissions.need.damageVersatile) {
                                 resObj.equipment.weapon.damage.versatile.dice = common.datatypes.dice.getObject(results, resObj.equipment.weapon.damage.versatile.dice);
@@ -988,8 +988,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     results = [];
                     vals = [];
                     if ((resObj.permissions.need.description && resObj.permissions.has.description) || (resObj.permissions.need.specialDescription && resObj.permissions.has.specialDescription)) {
-                        sql = 'UPDATE adm_core_item AS i';
-                        sql += ' SET "itemName" = c."itemName"';
+                        sql = 'UPDATE adm_core_description AS i';
+                        sql += ' SET "description" = c."description"';
                         sql += ' FROM (VALUES';
                         addComma = false;
                         counter = 0;
@@ -1009,7 +1009,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             counter++;
                             addComma = true;
                         }
-                        sql += ') as c(id, "itemName") ';
+                        sql += ') as c(id, "description") ';
                         sql += 'WHERE c.id = i.id';
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
@@ -1153,6 +1153,13 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' where t."referenceId" = v."referenceId"';
                         sql += ' and t."targetId" = v."targetId"';
                         sql += ' and t."typeId" = v."typeId")';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
                     } else {
                         return callback(null, resObj);
                     }
@@ -1382,7 +1389,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         if (resObj.permissions.need.damageVersatile) {
                             diceArr.push(resObj.equipment.weapon.damage.versatile.dice);
                         }
-                        common.getObjects.dice(diceArr, function(results) {
+                        common.manage.dice(diceArr, function(results) {
                             resObj.equipment.weapon.damage.dice = common.datatypes.dice.getObject(results, resObj.equipment.weapon.damage.dice);
                             if (resObj.permissions.need.damageVersatile) {
                                 resObj.equipment.weapon.damage.versatile.dice = common.datatypes.dice.getObject(results, resObj.equipment.weapon.damage.versatile.dice);

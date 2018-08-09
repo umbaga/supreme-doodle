@@ -50,6 +50,7 @@ class DndInput extends React.Component {
         if (this.props.dataType == undefined) {
             console.error('datatype undefined: ' + this.props.name);
         }
+        let buttonName = (this.props.buttonName) ? this.props.buttonName : this.props.name;
         let listInput = null;
         let buttonDisabled = false;
         let numberMinVal = this.props.numberMinVal ? this.props.numberMinVal : 0;
@@ -57,7 +58,8 @@ class DndInput extends React.Component {
         let finalPicklist = this.props.picklist;
         let textAreaHeight = this.props.longStringHeight ? this.props.longStringHeight + 'px' : '140px';
         let auxiliaryInputs = null;
-        
+        let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
+        let buttonDataTask = (this.props.buttonDataTask) ? this.props.buttonDataTask : dataTask;
         let refName = this.props.name;
         let changeFocusOnButtonClick = false;
         if (this.props.changeFocusRefName && this.props.changeFocusRefName.length != 0) {
@@ -68,6 +70,7 @@ class DndInput extends React.Component {
         }
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.LIST.ADD.NEW:
+            case util.datatypes.ARRAY.TAGS.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
             case util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
@@ -122,6 +125,7 @@ class DndInput extends React.Component {
                                                 onChange={this.props.onChangeChild}
                                                 className="form-control dnd-input-number"
                                                 min="1"
+                                                data-task={dataTask}
                                                 />
                                         );
                                     default:
@@ -142,6 +146,7 @@ class DndInput extends React.Component {
                         className="form-control"
                         readOnly={isReadOnly}
                         placeholder={placeholderText}
+                        data-task={dataTask}
                         />
                 ) : (
                     <select
@@ -150,7 +155,9 @@ class DndInput extends React.Component {
                         ref={refName}
                         className="form-control dnd-max-width"
                         onChange={this.props.onChangeChild}
-                        datatype={this.props.dataType}>
+                        datatype={this.props.dataType}
+                        data-task={dataTask}
+                        >
                         {this.renderSelectOneOption(placeholderText)}
                         {finalPicklist.map(function(picklistItem, idx) {
                             return (
@@ -202,6 +209,7 @@ class DndInput extends React.Component {
                         onChange={this.props.onChange}
                         className="form-control checkbox-inline"
                         readOnly={isReadOnly}
+                        data-task={dataTask}
                         />
                 );
                 break;
@@ -219,6 +227,7 @@ class DndInput extends React.Component {
                             className="form-control"
                             readOnly={isReadOnly}
                             placeholder="Dice"
+                            data-task={dataTask}
                             />
                         <select
                             value={this.props.childValue.id}
@@ -226,7 +235,9 @@ class DndInput extends React.Component {
                             ref={this.props.childName}
                             className="form-control"
                             onChange={this.props.onChange}
-                            datatype={util.datatypes.PICKLIST}>
+                            datatype={util.datatypes.PICKLIST}
+                            data-task={dataTask}
+                            >
                             {this.renderSelectOneOption(placeholderText)}
                             {finalPicklist.map(function(picklistItem, idx) {
                                 return (
@@ -256,6 +267,7 @@ class DndInput extends React.Component {
                         step={numberStepVal}
                         min={numberMinVal}
                         readOnly={isReadOnly}
+                        data-task={dataTask}
                         />
                 );
                 break;
@@ -268,7 +280,9 @@ class DndInput extends React.Component {
                         ref={this.props.name}
                         className="form-control"
                         onChange={this.props.onChange}
-                        datatype={this.props.dataType}>
+                        datatype={this.props.dataType}
+                        data-task={dataTask}
+                        >
                         {this.renderSelectOneOption(placeholderText)}
                         {finalPicklist.map(function(picklistItem, idx) {
                             return (
@@ -294,6 +308,7 @@ class DndInput extends React.Component {
                         onKeyUp={this.props.onChange}
                         onChange={this.props.onChange}
                         className="form-control"
+                        data-task={dataTask}
                         />
                 );
                 break;
@@ -309,6 +324,7 @@ class DndInput extends React.Component {
                         className="form-control"
                         readOnly={isReadOnly}
                         placeholder={placeholderText}
+                        data-task={dataTask}
                         />
                 );
                 break;
@@ -331,6 +347,7 @@ class DndInput extends React.Component {
                         onBlur={this.props.onChange}
                         onClick={this.props.onChange}
                         onChange={this.props.onChange}
+                        data-task={dataTask}
                         />
                 );
                 break;
@@ -338,33 +355,7 @@ class DndInput extends React.Component {
                 primaryInput = (<div>Need to add dataType to switch in DndInput</div>);
         }
         finalButtonType = (this.props.buttonType && this.props.buttonType.length != 0) ? this.props.buttonType : 'additem';
-        /*const finalInput = hasButton ? (
-            <div className="input-group">
-                {auxiliaryInputs}
-                {primaryInput}
-                <span className="input-group-btn">
-                    <DndButton
-                        buttonType={finalButtonType}
-                        onClick={this.props.buttonOnClick}
-                        bsButtonStyle={this.props.bsButtonStyle}
-                        name={this.props.name}
-                        dataType={this.props.buttonDatatype.ADD}
-                        disabled={buttonDisabled}
-                        changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
-                        refs={this.refs}
-                        />
-                </span>
-            </div>
-        ) : primaryInput;*/
         let finalInput = primaryInput;
-        /*if (auxiliaryInputs) {
-            finalInput = (
-                <div className="input-group">
-                    {finalInput}
-                </div>
-            );
-        }*/
-        //input-group input-inline dnd-max-width
         if (hasButton) {
             finalInput = (
                 <fragment>
@@ -378,11 +369,12 @@ class DndInput extends React.Component {
                             buttonType={finalButtonType}
                             onClick={this.props.buttonOnClick}
                             bsButtonStyle={this.props.bsButtonStyle}
-                            name={this.props.name}
+                            name={buttonName}
                             dataType={this.props.buttonDatatype.ADD}
                             disabled={buttonDisabled}
                             changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
                             refs={this.refs}
+                            dataTask={buttonDataTask}
                             />
                     </span>
                 </div>
@@ -476,7 +468,10 @@ DndInput.propTypes = {
         PropTypes.array,
         PropTypes.bool
     ]).isRequired,
-    changeFocusRefName: PropTypes.string
+    changeFocusRefName: PropTypes.string,
+    dataTask: PropTypes.string,
+    buttonDataTask: PropTypes.string,
+    buttonName: PropTypes.string
 };
 
 export default DndInput;

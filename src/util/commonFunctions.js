@@ -92,6 +92,26 @@ export const resetObject = {
         retVal.language.rarity = {id: 0};
         retVal.language.script = {id: 0};
         return retVal;
+    },
+    select: {
+        proficiency: {
+            category: function() {
+                let retVal = Object.assign({}, util.objectModel.SELECT.PROFICIENCY.CATEGORY);
+                return retVal;
+            },
+            list: function() {
+                let retVal = Object.assign({}, util.objectModel.SELECT.PROFICIENCY.LIST);
+                retVal.proficiencies = [];
+                return retVal;
+            }
+        }
+    },
+    trinket: function(newId) {
+        let retVal = Object.assign({}, util.objectModel.TRINKET);
+        if (newId !== undefined) {
+            retVal.id = newId;
+        }
+        return retVal;
     }
 };
 
@@ -285,6 +305,7 @@ export const formState = {
                 util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
                 break;
             case util.datatypes.ARRAY.LIST.ADD.NEW:
+            case util.datatypes.ARRAY.TAGS.ADD.NEW:
             case util.datatypes.NUMBER.CHARACTER_LEVEL:
             case util.datatypes.NUMBER.INT:
             case util.datatypes.NUMBER.DEC:

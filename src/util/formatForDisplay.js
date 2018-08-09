@@ -543,34 +543,70 @@ obj.proficiency = {
         return retVal;
     }
 };
-obj.proficiencyGroup = function(val) {
-    let retVal = '';
-    switch (val.mechanic.id) {
-        case util.itemtypes.SELECTION_MECHANIC.ASSIGNMENT:
-            for (let x = 0; x < val.proficiencies.length; x++) {
-                retVal += val.proficiencies[x].name;
-                if (x < val.proficiencies.length - 1) {
-                    retVal += ', ';
+obj.proficiencyBlock = {
+    selectFrom: {
+        list: function(profBlock, catIds) {
+            let retVal = '';
+            let filteredProfBlock = profBlock.select.list.filter(function(blk) {
+                for (let q = 0; q < catIds.length; q++) {
+                    if (catIds[q] == blk.category.id) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            for (let q = 0; q < filteredProfBlock.length; q++) {
+                retVal += util.format.forDisplay.obj.proficiencyList(filteredProfBlock[q]);
+            }
+            return retVal;
+        },
+        category: function(profBlock, catIds) {
+            let retVal = '';
+            let filteredProfBlock = profBlock.select.category.filter(function(blk) {
+                for (let q = 0; q < catIds.length; q++) {
+                    if (catIds[q] == blk.id) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+            if (filteredProfBlock.length != 0) {
+                for (let q = 0; q < filteredProfBlock.length; q++) {
+                    retVal += q == 0 ? 'Select ' : ' and ';
+                    retVal += filteredProfBlock[q].count + ' ';
+                    retVal += util.format.forDisplay.string.renderSingularPlural(filteredProfBlock[q].name, filteredProfBlock[q].count);
                 }
             }
-            break;
-        case util.itemtypes.SELECTION_MECHANIC.SELECT_FROM.CATEGORY:
-            retVal = 'You gain proficiency with ' + util.format.forDisplay.number.renderAsWord(val.selectCount) + ' ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.selectCount);
-            break;
-        case util.itemtypes.SELECTION_MECHANIC.SELECT_FROM.LIST:
-            retVal = 'Select ' + util.format.forDisplay.number.renderAsWord(val.selectCount) + ' from the following: ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.selectCount) + ': ';
-            for (let x = 0; x < val.proficiencies.length; x++) {
-                retVal += val.proficiencies[x].name;
-                if (x < val.proficiencies.length - 1) {
-                    retVal += ', ';
+            return retVal;
+        }
+    },
+    assigned: function(profBlock, catIds) {
+        let retVal = '';
+        let filteredProfBlock = profBlock.assigned.filter(function(blk) {
+            for (let q = 0; q < catIds.length; q++) {
+                if (catIds[q] == blk.category.id) {
+                    return true;
                 }
             }
-            break;
-        case util.itemtypes.SELECTION_MECHANIC.CONDITIONAL:
-            retVal = 'You gain proficiency with ' + val.proficiencies[0].name + ' (' + val.conditionalText + ')';
-            break;
-        default:
-            retVal = 'Need to add new entry for slection mechanic';
+            return false;
+        });
+        if (filteredProfBlock.length != 0) {
+            retVal = 'Proficient with the following: ';
+            for (let q = 0; q < filteredProfBlock.length; q++) {
+                retVal += q != 0 && q != filteredProfBlock.length - 1 ? ', ' : '';
+                retVal += (q == filteredProfBlock.length - 1 && q != 0) ? ' and ' : '';
+                retVal += filteredProfBlock[q].name;
+            }
+        }
+        return retVal;
+    }
+};
+obj.proficiencyList = function(val) {
+    let retVal = 'Select ' + util.format.forDisplay.number.renderAsWord(val.count) + ' ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.count) + ' from the following: ';
+    for (let q = 0; q < val.proficiencies.length; q++) {
+        retVal += (q != 0) ? ', ' : '';
+        retVal += (q == val.proficiencies.length - 1) ? ' or ' : '';
+        retVal += val.proficiencies[q].name;
     }
     return retVal;
 };

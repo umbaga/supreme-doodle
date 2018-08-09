@@ -33,6 +33,7 @@ export const BACKGROUND = {
     name: '',
     resource: _RESOURCE,
     description: '',
+    suggestedCharacteristics: '',
     proficiencies: {
         assigned: [],
         select: {
@@ -154,4 +155,27 @@ export const PROFICIENCY = {
         rarity: _ID_NAME_OBJECT,
         script: _ID_NAME_OBJECT
     }
+};
+export const SELECT = {
+    PROFICIENCY: {
+        CATEGORY: {
+            id: 0,
+            name: '',
+            count: 1
+        },
+        LIST: {
+            id: 0,
+            count: 1,
+            category: {id: 0},
+            proficiencies: []
+        }
+    }
+};
+export const TRINKET = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE,
+    category: {id: itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET, name: 'Trinket'},
+    cost: 0,
+    weight: 0
 };

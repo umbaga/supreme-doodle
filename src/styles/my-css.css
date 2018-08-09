@@ -45,25 +45,44 @@ tr.found{
     color: red;
 }
 .tab-pane {
-    height: 425px;
+    height: 500px;
     overflow-y: scroll;
     overflow-x: hidden;
+    padding-top: 20px;
 }
 
 .tab-pane-double-row-of-tabs {
-    height: 470px !important;
+    height: 545px !important;
     overflow-y: scroll;
     overflow-x: hidden;
 }
 
 .tab-pane-triple-row-of-tabs {
-    height:  350px !important;
+    height:  425px !important;
     overflow-y: scroll;
     overflow-x: hidden;
 }
 
+.modal-dialog {
+    margin: 30px 5%;
+    width: 90%;
+}
+
+.modal-body {
+    
+}
+
+.modal-content {
+    height: 700px;
+    
+}
+
+.modal-footer {
+    
+}
+
 .modal-no-tabs {
-    height: 470px !important;
+    height: 535px !important;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -97,4 +116,26 @@ tr.found{
 .dnd-max-width {
     width: 100% !important;
     /*background-color: blue;*/
+}
+fieldset {
+    border: 2px groove threedface;
+    padding: 5px;
+}
+legend {
+    display: block;
+    width: auto;
+    padding: 0 5px;
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: inherit;
+    border: auto;
+    border-bottom: none;
+    font-weight: 700;
+}
+.hidden {
+    display: none !important;
+}
+.legend-icon {
+    color: red;
+    padding-right: 5px;
 }
