@@ -57,9 +57,9 @@ class BackgroundEntry extends React.Component {
 
     saveBackground(event) {
         event.preventDefault();
+        this.props.actions.upsertBackground(this.state.background);
         let newBackground = util.common.resetObject.background();
         this.setState({saving: true, background: newBackground});
-        this.props.actions.upsertBackground(this.state.background);
     }
 
     saveAndNewBackground(event) {

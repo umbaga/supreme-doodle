@@ -8,7 +8,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let parameterArray = null;
     let addComma = false;
     let counter = 0;
-    let stepInt = 0;
     app.delete('/api/adm/background/:id', function(req, res) {
         results = [];
         vals = [];
@@ -22,13 +21,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('delete-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-background-01');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_item';
@@ -45,8 +42,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function backgroundTable(resObj, callback) {
-                    console.log('delete-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-background-02');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_def_background';
@@ -63,8 +59,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function descriptionTable(resObj, callback) {
-                    console.log('delete-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-background-03');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_description';
@@ -81,8 +76,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function linkTable(resObj, callback) {
-                    console.log('delete-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-background-04');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_link';
@@ -98,6 +92,10 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     query.on('end', function() {
                         return callback(null, resObj);
                     });
+                },
+                function proficiencies(resObj, callback) {
+                    console.log('delete-background-05');
+                    return callback(null, resObj);
                 }
             ], function(error, result) {
                 done();
@@ -121,7 +119,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     resObj.permissions = {};
                     resObj.permissions.need = {};
@@ -131,11 +128,13 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions.need.anyLink = false;
                     resObj.permissions.need.description = false;
                     resObj.permissions.need.suggestedCharacteristics = false;
+                    resObj.permissions.need.proficiencies = false;
                     
                     resObj.permissions.has.anyDescription = false;
                     resObj.permissions.has.anyLink = false;
                     resObj.permissions.has.description = false;
                     resObj.permissions.has.suggestedCharacteristics = false;
+                    resObj.permissions.has.proficiencies = false;
                     
                     if (resObj.background.description && resObj.background.description.length != 0) {
                         resObj.permissions.need.anyDescription = true;
@@ -147,11 +146,21 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         resObj.permissions.need.anyLink = true;
                         resObj.permissions.need.suggestedCharacteristics = true;
                     }
+                    if (resObj.background.proficiencies) {
+                        if (resObj.background.proficiencies.assigned && resObj.background.proficiencies.assigned.length != 0) {
+                            resObj.permissions.need.proficiencies = true;
+                        }
+                        if (resObj.background.proficiencies.select) {
+                            if ((resObj.background.proficiencies.select.category && resObj.background.proficiencies.select.category.length != 0)
+                               || (resObj.background.proficiencies.select.list && resObj.background.proficiencies.select.category.list != 0)) {
+                                resObj.permissions.need.proficiencies = true;
+                            }
+                        }
+                    }
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-01');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_item';
@@ -170,8 +179,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function checkExistingStuff(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-02');
                     results = [];
                     vals = [];
                     sql = 'SELECT i.id';
@@ -207,8 +215,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function backgroundTable(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-03');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_def_background';
@@ -227,8 +234,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function updateDescriptionTable(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-04');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.need.description && resObj.permissions.has.description)
@@ -268,8 +274,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function insertDescriptionTable(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-05');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.need.description && !resObj.permissions.has.description)
@@ -316,8 +321,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function deleteDescriptionTable(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-06');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.has.description && !resObj.permissions.need.description)
@@ -351,7 +355,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function insertNewLinks(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
+                    console.log('update-background-07');
                     stepInt++;
                     results = [];
                     vals = [];
@@ -402,8 +406,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function deleteUnneededLinks(resObj, callback) {
-                    console.log('update-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-background-08');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.has.description && !resObj.permissions.need.description)
@@ -452,6 +455,13 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     } else {
                         return callback(null, resObj);
                     }
+                },
+                function manageProficiencies(resObj, callback) {
+                    if (resObj.permissions.need.proficiencies) {
+                        
+                    } else {
+                        return callback(null, resObj);
+                    }
                 }
             ], function(error, result) {
                 done();
@@ -475,7 +485,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     resObj.permissions = {};
                     resObj.permissions.need = {};
@@ -484,6 +493,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions.need.anyLink = false;
                     resObj.permissions.need.description = false;
                     resObj.permissions.need.suggestedCharacteristics = false;
+                    resObj.permissions.need.proficiencies = false;
+                    resObj.permissions.need.assignedEquipment = false;
+                    resObj.permissions.need.feature = false;
                     
                     if (resObj.background.description && resObj.background.description.length != 0) {
                         resObj.permissions.need.anyDescription = true;
@@ -495,21 +507,39 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         resObj.permissions.need.anyLink = true;
                         resObj.permissions.need.suggestedCharacteristics = true;
                     }
+                    if (resObj.background.proficiencies) {
+                        if (resObj.background.proficiencies.assigned && resObj.background.proficiencies.assigned.length != 0) {
+                            resObj.permissions.need.proficiencies = true;
+                        }
+                        if (resObj.background.proficiencies.select) {
+                            if ((resObj.background.proficiencies.select.category && resObj.background.proficiencies.select.category.length != 0)
+                               || (resObj.background.proficiencies.select.list && resObj.background.proficiencies.select.category.list != 0)) {
+                                resObj.permissions.need.proficiencies = true;
+                            }
+                        }
+                    }
+                    if (resObj.background.equipment && resObj.background.equipment.assigned && resObj.background.equipment.assigned.length != 0) {
+                        resObj.permissions.need.assignedEquipment = true;
+                    }
+                    if (resObj.background.feature && resObj.background.feature.name && resObj.background.feature.name.length != 0
+                       && resObj.background.feature.description && resObj.background.feature.description.length != 0) {
+                        resObj.permissions.need.feature = true;
+                    }
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('insert-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-background-01');
                     results = [];
                     vals = [];
-                    sql = 'INSERT INTO adm_core_item';
-                    sql += '("itemName", "typeId", "resourceId")';
-                    sql += 'VALUES ($1, $2, $3) RETURNING id;';
                     vals = [
                         resObj.background.name,
                         itemtypes.TYPE.ITEM.BACKGROUND,
                         resObj.background.resource.id
                     ];
+                    sql = 'INSERT INTO adm_core_item';
+                    sql += '("itemName", "typeId", "resourceId")';
+                    sql += ' VALUES ($1, $2, $3)';
+                    sql += ' RETURNING id;';
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
                         results.push(row);
@@ -520,11 +550,10 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function backgroundTable(resObj, callback) {
-                    console.log('insert-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-background-02');
                     results = [];
                     vals = [];
-                    sql = 'INSERT INTO adm_core_item';
+                    sql = 'INSERT INTO adm_def_background';
                     sql += '("backgroundId", "startingGold")';
                     sql += 'VALUES ($1, $2)';
                     vals = [
@@ -540,8 +569,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function descriptionTable(resObj, callback) {
-                    console.log('insert-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-background-03');
                     if (resObj.permissions.need.anyDescription) {
                         results = [];
                         vals = [];
@@ -552,7 +580,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' VALUES ';
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 2) + 1).toString() + ', $' + ((counter * 2) + 2).toString() + ')';
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.background.description);
                             vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
                             addComma = true;
@@ -560,7 +588,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         }
                         if (resObj.permissions.need.suggestedCharacteristics) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 2) + 1).toString() + ', $' + ((counter * 2) + 2).toString() + ')';
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.background.suggestedCharacteristics);
                             vals.push(itemtypes.TYPE.DESCRIPTION.SUGGESTED_CHARACTERISTICS);
                             addComma = true;
@@ -587,8 +615,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function linkTable(resObj, callback) {
-                    console.log('insert-background-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-background-04');
                     if (resObj.permissions.need.anyLink) {
                         results = [];
                         vals = [];
@@ -599,7 +626,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' VALUES ';
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 3) + 1).toString() + ', $' + ((counter * 3) + 2).toString() + ', $' + ((counter * 3) + 3).toString() + ')';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj.background.id);
                             vals.push(resObj.background.descriptionId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
@@ -608,7 +635,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         }
                         if (resObj.permissions.need.suggestedCharacteristics) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 3) + 1).toString() + ', $' + ((counter * 3) + 2).toString() + ', $' + ((counter * 3) + 3).toString() + ')';
+                            sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj.background.id);
                             vals.push(resObj.background.suggestedCharacteristicsId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
@@ -621,6 +648,37 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageProficiencies(resObj, callback) {
+                    console.log('insert-background-05');
+                    if (resObj.permissions.need.proficiencies) {
+                        common.insert.proficiencies(resObj.background, function(results) {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageAssignedEquipment(resObj, callback) {
+                    console.log('insert-background-06');
+                    if (resObj.permissions.need.assignedEquipment) {
+                        common.insert.assignedEquipment(resObj.background.equipment, function(results) {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageFeature(resObj, callback) {
+                    console.log('insert-background-07');
+                    if (resObj.permissions.need.feature) {
+                        common.insert.feature(resObj.background, function(results) {
+                            resObj.background.feature = results.feature;
                             return callback(null, resObj);
                         });
                     } else {
@@ -652,8 +710,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += '    \'startingGold\', bg."startingGold"';
             sql += '    , \'assignedEquipment\', \'[]\'';
             sql += ') AS "equipment"';
+            sql += ', CASE WHEN get_feature(i.id) IS NULL THEN \'{}\' ELSE get_feature(i.id) AS "feature"';
             sql += ', \'[]\' AS "charts"';
-            sql += ', \'{}\' AS "feature"';
             sql += ', \'{}\' AS "proficiencies"';
             sql += ' FROM adm_core_item i';
             sql += ' INNER JOIN adm_def_background bg ON bg."backgroundId" = i.id'

@@ -26,7 +26,6 @@ let results = [];
 let vals = [];
 let addComma = false;
 let parameterArray = [];
-let stepInt = 0;
 
 let common = {
     datatypes: {
@@ -145,6 +144,15 @@ let common = {
             }
             retVal += ')';
             return retVal;
+        },
+        getParameterString(startingValue, parameterCount) {
+            let retVal = '(';
+            for (let q = 1; q <= parameterCount; q++) {
+                retVal += (q != 1) ? ', ' : '';
+                retVal += '$' + ((startingValue * parameterCount) + q).toString();
+            }
+            retVal += ')';
+            return retVal;
         }
     },
     manage: {
@@ -159,8 +167,7 @@ let common = {
                         return callback(null, resObj);
                     },
                     function insertDiceTable(resObj, callback) {
-                        console.log('manage-dice-' + stepInt.toString());
-                        stepInt++;
+                        console.log('manage-dice-01');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -193,7 +200,7 @@ let common = {
                         sql += ' and t."modifier" = v."modifier"';
                         sql += ' and t."multiplier" = v."multiplier"';
                         sql += ' and t."divisor" = v."divisor")';
-                        sql += ' returning id AS "diceId";';
+                        sql += ' returning id AS "diceId"';
                         let query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
@@ -203,8 +210,7 @@ let common = {
                         });
                     },
                     function assignDiceIds(resObj, callback) {
-                        console.log('manage-dice-' + stepInt.toString());
-                        stepInt++;
+                        console.log('manage-dice-02');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -247,23 +253,266 @@ let common = {
                     return cb(result);
                 });
             });
+        }
+    },
+    insert: {
+        assignedEquipment: function (referenceObj, cb) {
+            pool.connect(function(err, client, done) {
+                async.waterfall([
+                    function init(callback) {
+                        let resObj = {};
+                        resObj.refId = referenceObj.id;
+                        resObj.resourceId = 0;
+                        resObj.assignedEquipment = referenceObj.assigned;
+                        resObj.permissions = {};
+                        resObj.permissions.has = {};
+                        resObj.permissions.has.trinkets = false;
+                        if (resObj.assignedEquipment && resObj.assignedEquipment.length != 0) {
+                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                                if (resObj.assignedEquipment[q].id <= 0 || resObj.assignedEquipment[q].category.id == itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET) {
+                                    resObj.assignedEquipment[q].isNewTrinket = true;
+                                    resObj.permissions.has.trinkets = true;
+                                } else {
+                                    resObj.assignedEquipment[q].isNewTrinket = false;
+                                }
+                            }
+                        }
+                        return callback(null, resObj);
+                    },
+                    function insertItemTableForTrinkets(resObj, callback) {
+                        console.log('insert-assignedEquipment-01');
+                        if (resObj.permissions.has.trinkets) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_core_item';
+                            sql += ' ("itemName", "typeId", "resourceId")';
+                            sql += ' VALUES ';
+                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                                if (resObj.assignedEquipment[q].isNewTrinket) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.assignedEquipment[q].name);
+                                    vals.push(itemtypes.TYPE.ITEM.EQUIPMENT);
+                                    vals.push(resObj.resourceId);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            sql += ' RETURNING id, "itemName" AS "name"';
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.assignedEquipment.length; w++) {
+                                        if (results[q].name == resObj.assignedEquipment[w].name) {
+                                            resObj.assignedEquipment[w].id = results[q].id;
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertEquipmentTableForTrinkets(resObj, callback) {
+                        console.log('insert-assignedEquipment-02');
+                        if (resObj.permissions.has.trinkets) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_def_equipment';
+                            sql += ' ("equipmentId", "cost", "weight", "categoryId", "isMagicItem")';
+                            sql += ' VALUES ';
+                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                                if (resObj.assignedEquipment[q].isNewTrinket) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 5);
+                                    vals.push(resObj.assignedEquipment[q].id);
+                                    vals.push(0);
+                                    vals.push(0);
+                                    vals.push(itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET);
+                                    vals.push(false);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.assignedEquipment.length; w++) {
+                                        if (results[q].name == resObj.assignedEquipment[w].name) {
+                                            resObj.assignedEquipment[w].id = results[q].id;
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkTable(resObj, callback) {
+                        console.log('insert-assignedEquipment-03');
+                        if (resObj.permissions.has.assigned || resObj.permissions.has.category || resObj.permissions.has.list) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_link';
+                            sql += ' ("referenceId", "targetId", "typeId")';
+                            sql += ' VALUES ';
+                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.refId);
+                                vals.push(resObj.assignedEquipment[q].id);
+                                vals.push(itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT);
+                                addComma = true;
+                                counter++;
+                            }
+                            sql += ' RETURNING id, "targetId", "typeId"';
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.assignedEquipment.length; w++) {
+                                        if (results[q].targetId == resObj.assignedEquipment[w].id) {
+                                            resObj.assignedEquipment[w].linkId = results[q].id;
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                        
+                    },
+                    function insertLinkCountTable(resObj, callback) {
+                        console.log('insert-assignedEquipment-04');
+                        if (resObj.permissions.has.category || resObj.permissions.has.list) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_link_count';
+                            sql += ' ("linkId", "count")';
+                            sql += ' VALUES ';
+                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.assignedEquipment[q].linkId);
+                                vals.push(resObj.assignedEquipment[q].assigned);
+                                addComma = true;
+                                counter++;
+                            }
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                        
+                    }
+                ], function(error, result) {
+                    done();
+                    if (error) {
+                        console.error(error);
+                    }
+                    return cb(result);
+                });
+            });
         },
-        proficiencies: function (referenceObj, cb) {
+        feature: function(referenceObj, cb) {
             pool.connect(function(err, client, done) {
                 async.waterfall([
                     function init(callback) {
                         stepInt = 0;
                         let resObj = {};
-                        resObj.proficiencies = referenceObj.proficiencies;
+                        resObj.refId = referenceObj.id;
+                        resObj.resourceId = referenceObj.resource.id;
+                        resObj.feature = referenceObj.feature;
                         resObj.permissions = {};
+                        resObj.permissions.has = {};
                         return callback(null, resObj);
                     },
-                    function insertDiceTable(resObj, callback) {
-                        console.log('manage-proficiencies-' + stepInt.toString());
-                        stepInt++;
+                    function itemTable(resObj, callback) {
+                        console.log('insert-feature-01');
                         vals = [];
                         results = [];
                         addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_item';
+                        sql += ' ("itemName", "typeId", "resourceId")';
+                        sql += ' VALUES ';
+                        sql += ' ($1, $2, $3)';
+                        sql += ' RETURNING id, "itemName" AS "name"';
+                        vals.push(resObj.feature.name);
+                        vals.push(itemtypes.TYPE.ITEM.FEATURE);
+                        vals.push(resObj.resourceId);
+                        let query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            resObj.feature.id = results[0].id;
+                            return callback(null, resObj);
+                        });
+                    },
+                    function descriptionTable(resObj, callback) {
+                        console.log('insert-feature-02');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_description';
+                        sql += ' ("description", "typeId")';
+                        sql += ' VALUES ';
+                        sql += ' ($1, $2) ';
+                        sql += ' RETURNING id';
+                        vals.push(resObj.feature.description);
+                        vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
+                        let query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            resObj.feature.descriptionId = results[0].id;
+                            return callback(null, resObj);
+                        });
+                    },
+                    function linkTable(resObj, callback) {
+                        console.log('insert-feature-03');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        sql += ' ($1, $2, $3) ';
+                        sql += ', ($4, $5, $6) ';
+                        vals.push(resObj.feature.id);
+                        vals.push(resObj.feature.descriptionId);
+                        vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                        vals.push(resObj.refId);
+                        vals.push(resObj.feature.id);
+                        vals.push(itemtypes.TYPE.LINK.FEATURE);
                         let query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
@@ -271,6 +520,191 @@ let common = {
                         query.on('end', function() {
                             return callback(null, resObj);
                         });
+                    }
+                ], function(error, result) {
+                    done();
+                    if (error) {
+                        console.error(error);
+                    }
+                    return cb(result);
+                });
+            });
+        },
+        proficiencies: function (referenceObj, cb) {
+            pool.connect(function(err, client, done) {
+                async.waterfall([
+                    function init(callback) {
+                        let resObj = {};
+                        resObj.refId = referenceObj.id;
+                        resObj.proficiencies = referenceObj.proficiencies;
+                        resObj.permissions = {};
+                        resObj.permissions.has = {};
+                        resObj.permissions.has.assigned = false;
+                        resObj.permissions.has.category = false;
+                        resObj.permissions.has.list = false;
+                        if (resObj.proficiencies.assigned && resObj.proficiencies.assigned.length != 0) {
+                            resObj.permissions.has.assigned = true;
+                        }
+                        if (resObj.proficiencies.select) {
+                            if (resObj.proficiencies.select.category && resObj.proficiencies.select.category.length != 0) {
+                                resObj.permissions.has.category = true;
+                            }
+                            if (resObj.proficiencies.select.list && resObj.proficiencies.select.list.length != 0) {
+                                resObj.permissions.has.list = true;
+                            }
+                        }
+                        return callback(null, resObj);
+                    },
+                    function insertListTable(resObj, callback) {
+                        console.log('insert-proficiencies-01');
+                        if (resObj.permissions.has.list) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            sql = 'INSERT INTO adm_core_list';
+                            sql += ' ("id") VALUES ';
+                            for (let q = 0; q < resObj.proficiencies.select.list.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += '(nextval(\'adm_seq_core\'))';
+                                addComma = true;
+                            }
+                            sql += ' RETURNING id';
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    resObj.proficiencies.select.list[q].listId = results[q].id;
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkTable(resObj, callback) {
+                        console.log('insert-proficiencies-02');
+                        if (resObj.permissions.has.assigned || resObj.permissions.has.category || resObj.permissions.has.list) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_link';
+                            sql += ' ("referenceId", "targetId", "typeId")';
+                            sql += ' VALUES ';
+                            if (resObj.permissions.has.assigned) {
+                                for (let q = 0; q < resObj.proficiencies.assigned.length; q++) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.refId);
+                                    vals.push(resObj.proficiencies.assigned[q].id);
+                                    vals.push(itemtypes.TYPE.LINK.PROFICIENCY.ASSIGNED);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            if (resObj.permissions.has.category) {
+                                for (let q = 0; q < resObj.proficiencies.select.category.length; q++) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.refId);
+                                    vals.push(resObj.proficiencies.select.category[q].id);
+                                    vals.push(itemtypes.TYPE.LINK.PROFICIENCY.SELECT.CATEGORY);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            if (resObj.permissions.has.list) {
+                                for (let q = 0; q < resObj.proficiencies.select.list.length; q++) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.refId);
+                                    vals.push(resObj.proficiencies.select.list[q].listId);
+                                    vals.push(itemtypes.TYPE.LINK.PROFICIENCY.SELECT.LIST);
+                                    addComma = true;
+                                    counter++;
+                                    for (let w = 0; w < resObj.proficiencies.select.list[q].proficiencies.length; w++) {
+                                        sql += addComma ? ', ' : '';
+                                        sql += common.parameterArray.getParameterString(counter, 3);
+                                        vals.push(resObj.proficiencies.select.list[q].listId);
+                                        vals.push(resObj.proficiencies.select.list[q].proficiencies[w].id);
+                                        vals.push(itemtypes.TYPE.LINK.LIST.PROFICIENCY);
+                                        addComma = true;
+                                        counter++;
+                                    }
+                                }
+                            }
+                            sql += ' RETURNING id, "targetId", "typeId"';
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    if (resObj.proficiencies.select.category.length != 0) {
+                                        for (let w = 0; w < resObj.proficiencies.select.category.length; w++) {
+                                            if (results[q].typeId == itemtypes.TYPE.LINK.PROFICIENCY.SELECT.CATEGORY) {
+                                                resObj.proficiencies.select.category[w].linkId = results[q].id;
+                                            }
+                                        }
+                                    }
+                                    if (resObj.proficiencies.select.list.length != 0) {
+                                        for (let w = 0; w < resObj.proficiencies.select.list.length; w++) {
+                                            if (results[q].typeId == itemtypes.TYPE.LINK.PROFICIENCY.SELECT.LIST) {
+                                                resObj.proficiencies.select.list[w].linkId = results[q].id;
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                        
+                    },
+                    function insertLinkCountTable(resObj, callback) {
+                        console.log('insert-proficiencies-03');
+                        if (resObj.permissions.has.category || resObj.permissions.has.list) {
+                            vals = [];
+                            results = [];
+                            addComma = false;
+                            counter = 0;
+                            sql = 'INSERT INTO adm_link_count';
+                            sql += ' ("linkId", "count")';
+                            sql += ' VALUES ';
+                            if (resObj.permissions.has.category) {
+                                for (let q = 0; q < resObj.proficiencies.select.category.length; q++) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.proficiencies.select.category[q].linkId);
+                                    vals.push(resObj.proficiencies.select.category[q].count);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            if (resObj.permissions.has.list) {
+                                for (let q = 0; q < resObj.proficiencies.select.list.length; q++) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.proficiencies.select.list[q].linkId);
+                                    vals.push(resObj.proficiencies.select.list[q].count);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            let query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                        
                     }
                 ], function(error, result) {
                     done();
@@ -284,99 +718,6 @@ let common = {
     },
     remove: {
         
-    },
-    _templates: {
-        _manage: function(referenceArray, referenceId, cb) {
-            pool.connect(function(err, client, done) {
-                /*if (err) {
-                    done();
-                    console.error(err);
-                    return res.status(500).json({ success: false, data: err});
-                }*/
-                async.waterfall([
-                    function init(callback) {
-                        let resObj = {};
-                        resObj.objectArray = referenceArray;
-                        resObj.referenceId = referenceId;
-                        resObj.permissions = {};
-                        return callback(null, resObj);
-                    },
-                    function insertCoreTable(resObj, callback) {
-                        vals = [];
-                        results = [];
-                        addComma = false;
-                        sql = 'INSERT INTO table';
-                        sql += ' ("col", "col")';
-                        sql += ' VALUES ';
-                        parameterArray = common.parameterArray.resetValues(2);
-                        for (let e = 0; e < resObj.objectArray.length; e++) {
-                            if (addComma) {
-                                sql += ', ';
-                            }
-                            sql += common.parameterArray.sql(parameterArray);
-                            vals.push(resObj.objectArray[e]);
-                            addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
-                        }
-                        sql += ' returning id';
-                        let query = client.query(new pg.Query(sql, vals));
-                        query.on('row', function(row) {
-                            results.push(row);
-                        });
-                        query.on('end', function() {
-                            done();
-                            for (let e = 0; e < results.length; e++) {
-                                for (let w = 0; w < resObj.objectArray.length; w++) {
-                                    if (resObj.objectArray[w].title == results[e].title) {
-                                        resObj.objectArray[w].id = results[e].chartId;
-                                    }
-                                }
-                            }
-                            return callback(null, resObj);
-                        });
-                    }
-                ], function(error, result) {
-                    if (error) {
-                        console.error(error);
-                    }
-                    return cb(result);
-                });
-            });
-        },
-        _remove: function(referenceId, cb) {
-            pool.connect(function(err, client, done) {
-                /*if (err) {
-                    done();
-                    console.error(err);
-                    return res.status(500).json({ success: false, data: err});
-                }*/
-                async.waterfall([
-                    function init(callback) {
-                        let refId = [referenceId];
-
-                        callback(null, refId);
-                    },
-                    function deleteTable(refId, callback) {
-                        sql = 'DELETE FROM table';
-                        sql += ' WHERE "column" = $1';
-                        let query = client.query(new pg.Query(sql, vals));
-                        query.on('row', function(row) {
-                            results.push(row);
-                        });
-                        query.on('end', function() {
-                            done();
-
-                            return callback(null, refId);
-                        });
-                    }
-                ], function(error, result) {
-                    if (error) {
-                        console.error(error);
-                    }
-                    return cb(result);
-                });
-            });
-        }
     }
 };
 

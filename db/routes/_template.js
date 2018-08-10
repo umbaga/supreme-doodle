@@ -440,7 +440,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     stepInt++;
                     results = [];
                     vals = [];
-                    sql = 'INSERT INTO adm_core_item';
+                    sql = 'INSERT INTO adm_core__template';
                     sql += '("_templateId")';
                     sql += 'VALUES ($1)';
                     vals = [

@@ -19,7 +19,12 @@ class DndUniversalInput extends React.Component {
         const nameLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Name' : 'Name';
         const descriptionLabel = this.props.labelPrefix && this.props.labelPrefix.length != 0 ? this.props.labelPrefix + ' Description' : 'Description';
         let collapseDescription = this.props.collapseDescription ? true : false;
-        let colStyles = this.props.hideDescription ? 'col-sm-12' : 'col-sm-6';
+        let colCount = this.props.hideDescription ? 12 : 6;
+        if (!this.props.picklists) {
+            colCount = 12;
+        }
+        
+        let colStyles = 'col-sm-' + colCount.toString();
         const resourceInput = this.props.picklists ? (
             <div className={colStyles}>
                 <DndInput

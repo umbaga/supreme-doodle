@@ -53,9 +53,9 @@ class _TemplateEntry extends React.Component {
 
     save_Template(event) {
         event.preventDefault();
+        this.props.actions.upsert_Template(this.state._template);
         let new_Template = util.common.resetObject._template();
         this.setState({saving: true, _template: new_Template});
-        this.props.actions.upsert_Template(this.state._template);
     }
 
     saveAndNew_Template(event) {

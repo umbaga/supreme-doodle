@@ -26,17 +26,17 @@ class BackgroundForm extends React.Component {
         const equipments = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT);
         
         let assignedEquipment = background.equipment.assigned.filter(function(equipment) {
-            return equipment.id > 0;
+            return equipment.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
         }.bind(this));
         
         let assignedTrinkets = background.equipment.assigned.filter(function(equipment) {
-            return equipment.id <= 0;
+            return equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
         }.bind(this));
         
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={2} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={5} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="Description">
                             <DndUniversalInput
                                 ref="name"
@@ -54,6 +54,13 @@ class BackgroundForm extends React.Component {
                                     notCollapsible
                                     />
                             </div>
+                        </Tab>
+                        <Tab eventKey={5} title="Feature">
+                            <DndUniversalInput
+                                ref="feature.name"
+                                referenceObject={background.feature}
+                                onChange={this.props.onChange}
+                                />
                         </Tab>
                         <Tab eventKey={2} title="Proficiencies">
                             <DndManageProficiencies

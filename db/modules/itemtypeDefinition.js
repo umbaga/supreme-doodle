@@ -57,6 +57,7 @@ module.exports = {TYPE: {
         DURATION: 283,
         EQUIPMENT: 435,
         EQUIPMENT_CATEGORY: 107,
+        FEATURE: 908,
         LANGUAGE_RARITY: 144,
         LANGUAGE_SCRIPT: 136,
         LIFESTYLE: 878,
@@ -95,12 +96,23 @@ module.exports = {TYPE: {
         CHART: 18,
         DESCRIPTION: 16,
         DIALECT: 325,
+        FEATURE: 909,
+        LIST: {
+            PROFICIENCY: 906
+        },
         MAP: {
             EQUIPMENT_CATEGORY_TO_PROFICIENCY_CATEGORY: 19,
             EQUIPMENT_CATEGORY_TO_FOCUS_TYPE: 450
         },
         MECHANIC: 21,
         PARENT_CHILD: 124,
+        PROFICIENCY: {
+            ASSIGNED: 907,
+            SELECT : {
+                CATEGORY: 905,
+                LIST: 904
+            }
+        },
         RACE: {
             SUBRACE: 20,
             VARIANT: 15
