@@ -167,7 +167,7 @@ let common = {
                         return callback(null, resObj);
                     },
                     function insertDiceTable(resObj, callback) {
-                        console.log('manage-dice-01');
+                        console.log('x-manage-dice-01');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -210,7 +210,7 @@ let common = {
                         });
                     },
                     function assignDiceIds(resObj, callback) {
-                        console.log('manage-dice-02');
+                        console.log('x-manage-dice-02');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -256,20 +256,20 @@ let common = {
         }
     },
     insert: {
-        assignedEquipment: function (referenceObj, cb) {
+        assignedEquipment: function (referenceObj, parentObj, cb) {
             pool.connect(function(err, client, done) {
                 async.waterfall([
                     function init(callback) {
                         let resObj = {};
-                        resObj.refId = referenceObj.id;
-                        resObj.resourceId = 0;
-                        resObj.assignedEquipment = referenceObj.assigned;
+                        resObj.referenceId = parentObj.id;
+                        resObj.resourceId = (parentObj.resource && parentObj.resource.id) ? parentObj.resource.id : 0;
+                        resObj.assignedEquipment = referenceObj;
                         resObj.permissions = {};
                         resObj.permissions.has = {};
                         resObj.permissions.has.trinkets = false;
                         if (resObj.assignedEquipment && resObj.assignedEquipment.length != 0) {
                             for (let q = 0; q < resObj.assignedEquipment.length; q++) {
-                                if (resObj.assignedEquipment[q].id <= 0 || resObj.assignedEquipment[q].category.id == itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET) {
+                                if (resObj.assignedEquipment[q].id <= 0 && resObj.assignedEquipment[q].category.id == itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET) {
                                     resObj.assignedEquipment[q].isNewTrinket = true;
                                     resObj.permissions.has.trinkets = true;
                                 } else {
@@ -280,7 +280,7 @@ let common = {
                         return callback(null, resObj);
                     },
                     function insertItemTableForTrinkets(resObj, callback) {
-                        console.log('insert-assignedEquipment-01');
+                        console.log('x-insert-assignedEquipment-01');
                         if (resObj.permissions.has.trinkets) {
                             vals = [];
                             results = [];
@@ -320,7 +320,7 @@ let common = {
                         }
                     },
                     function insertEquipmentTableForTrinkets(resObj, callback) {
-                        console.log('insert-assignedEquipment-02');
+                        console.log('x-insert-assignedEquipment-02');
                         if (resObj.permissions.has.trinkets) {
                             vals = [];
                             results = [];
@@ -361,73 +361,63 @@ let common = {
                         }
                     },
                     function insertLinkTable(resObj, callback) {
-                        console.log('insert-assignedEquipment-03');
-                        if (resObj.permissions.has.assigned || resObj.permissions.has.category || resObj.permissions.has.list) {
-                            vals = [];
-                            results = [];
-                            addComma = false;
-                            counter = 0;
-                            sql = 'INSERT INTO adm_link';
-                            sql += ' ("referenceId", "targetId", "typeId")';
-                            sql += ' VALUES ';
-                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 3);
-                                vals.push(resObj.refId);
-                                vals.push(resObj.assignedEquipment[q].id);
-                                vals.push(itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT);
-                                addComma = true;
-                                counter++;
-                            }
-                            sql += ' RETURNING id, "targetId", "typeId"';
-                            let query = client.query(new pg.Query(sql, vals));
-                            query.on('row', function(row) {
-                                results.push(row);
-                            });
-                            query.on('end', function() {
-                                for (let q = 0; q < results.length; q++) {
-                                    for (let w = 0; w < resObj.assignedEquipment.length; w++) {
-                                        if (results[q].targetId == resObj.assignedEquipment[w].id) {
-                                            resObj.assignedEquipment[w].linkId = results[q].id;
-                                        }
+                        console.log('x-insert-assignedEquipment-03');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.referenceId);
+                            vals.push(resObj.assignedEquipment[q].id);
+                            vals.push(itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "targetId", "typeId"';
+                        let query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                for (let w = 0; w < resObj.assignedEquipment.length; w++) {
+                                    if (results[q].targetId == resObj.assignedEquipment[w].id) {
+                                        resObj.assignedEquipment[w].linkId = results[q].id;
                                     }
                                 }
-                                return callback(null, resObj);
-                            });
-                        } else {
+                            }
                             return callback(null, resObj);
-                        }
-                        
+                        });
                     },
                     function insertLinkCountTable(resObj, callback) {
-                        console.log('insert-assignedEquipment-04');
-                        if (resObj.permissions.has.category || resObj.permissions.has.list) {
-                            vals = [];
-                            results = [];
-                            addComma = false;
-                            counter = 0;
-                            sql = 'INSERT INTO adm_link_count';
-                            sql += ' ("linkId", "count")';
-                            sql += ' VALUES ';
-                            for (let q = 0; q < resObj.assignedEquipment.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 2);
-                                vals.push(resObj.assignedEquipment[q].linkId);
-                                vals.push(resObj.assignedEquipment[q].assigned);
-                                addComma = true;
-                                counter++;
-                            }
-                            let query = client.query(new pg.Query(sql, vals));
-                            query.on('row', function(row) {
-                                results.push(row);
-                            });
-                            query.on('end', function() {
-                                return callback(null, resObj);
-                            });
-                        } else {
-                            return callback(null, resObj);
+                        console.log('x-insert-assignedEquipment-04');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_count';
+                        sql += ' ("linkId", "count")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 2);
+                            vals.push(resObj.assignedEquipment[q].linkId);
+                            vals.push(resObj.assignedEquipment[q].assigned);
+                            addComma = true;
+                            counter++;
                         }
-                        
+                        let query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
                     }
                 ], function(error, result) {
                     done();
@@ -438,21 +428,21 @@ let common = {
                 });
             });
         },
-        feature: function(referenceObj, cb) {
+        feature: function(referenceObj, parentObj, cb) {
             pool.connect(function(err, client, done) {
                 async.waterfall([
                     function init(callback) {
                         stepInt = 0;
                         let resObj = {};
-                        resObj.refId = referenceObj.id;
-                        resObj.resourceId = referenceObj.resource.id;
-                        resObj.feature = referenceObj.feature;
+                        resObj.referenceId = parentObj.id;
+                        resObj.resourceId = (parentObj.resource && parentObj.resource.id) ? parentObj.resource.id : 0;
+                        resObj.feature = referenceObj;
                         resObj.permissions = {};
                         resObj.permissions.has = {};
                         return callback(null, resObj);
                     },
                     function itemTable(resObj, callback) {
-                        console.log('insert-feature-01');
+                        console.log('x-insert-feature-01');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -475,7 +465,7 @@ let common = {
                         });
                     },
                     function descriptionTable(resObj, callback) {
-                        console.log('insert-feature-02');
+                        console.log('x-insert-feature-02');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -497,7 +487,7 @@ let common = {
                         });
                     },
                     function linkTable(resObj, callback) {
-                        console.log('insert-feature-03');
+                        console.log('x-insert-feature-03');
                         vals = [];
                         results = [];
                         addComma = false;
@@ -510,7 +500,7 @@ let common = {
                         vals.push(resObj.feature.id);
                         vals.push(resObj.feature.descriptionId);
                         vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
-                        vals.push(resObj.refId);
+                        vals.push(resObj.referenceId);
                         vals.push(resObj.feature.id);
                         vals.push(itemtypes.TYPE.LINK.FEATURE);
                         let query = client.query(new pg.Query(sql, vals));
@@ -530,13 +520,13 @@ let common = {
                 });
             });
         },
-        proficiencies: function (referenceObj, cb) {
+        proficiencies: function (referenceObj, parentObj, cb) {
             pool.connect(function(err, client, done) {
                 async.waterfall([
                     function init(callback) {
                         let resObj = {};
-                        resObj.refId = referenceObj.id;
-                        resObj.proficiencies = referenceObj.proficiencies;
+                        resObj.referenceId = parentObj.id;
+                        resObj.proficiencies = referenceObj;
                         resObj.permissions = {};
                         resObj.permissions.has = {};
                         resObj.permissions.has.assigned = false;
@@ -556,7 +546,7 @@ let common = {
                         return callback(null, resObj);
                     },
                     function insertListTable(resObj, callback) {
-                        console.log('insert-proficiencies-01');
+                        console.log('x-insert-proficiencies-01');
                         if (resObj.permissions.has.list) {
                             vals = [];
                             results = [];
@@ -584,7 +574,7 @@ let common = {
                         }
                     },
                     function insertLinkTable(resObj, callback) {
-                        console.log('insert-proficiencies-02');
+                        console.log('x-insert-proficiencies-02');
                         if (resObj.permissions.has.assigned || resObj.permissions.has.category || resObj.permissions.has.list) {
                             vals = [];
                             results = [];
@@ -597,7 +587,7 @@ let common = {
                                 for (let q = 0; q < resObj.proficiencies.assigned.length; q++) {
                                     sql += addComma ? ', ' : '';
                                     sql += common.parameterArray.getParameterString(counter, 3);
-                                    vals.push(resObj.refId);
+                                    vals.push(resObj.referenceId);
                                     vals.push(resObj.proficiencies.assigned[q].id);
                                     vals.push(itemtypes.TYPE.LINK.PROFICIENCY.ASSIGNED);
                                     addComma = true;
@@ -608,7 +598,7 @@ let common = {
                                 for (let q = 0; q < resObj.proficiencies.select.category.length; q++) {
                                     sql += addComma ? ', ' : '';
                                     sql += common.parameterArray.getParameterString(counter, 3);
-                                    vals.push(resObj.refId);
+                                    vals.push(resObj.referenceId);
                                     vals.push(resObj.proficiencies.select.category[q].id);
                                     vals.push(itemtypes.TYPE.LINK.PROFICIENCY.SELECT.CATEGORY);
                                     addComma = true;
@@ -619,7 +609,7 @@ let common = {
                                 for (let q = 0; q < resObj.proficiencies.select.list.length; q++) {
                                     sql += addComma ? ', ' : '';
                                     sql += common.parameterArray.getParameterString(counter, 3);
-                                    vals.push(resObj.refId);
+                                    vals.push(resObj.referenceId);
                                     vals.push(resObj.proficiencies.select.list[q].listId);
                                     vals.push(itemtypes.TYPE.LINK.PROFICIENCY.SELECT.LIST);
                                     addComma = true;
@@ -645,14 +635,18 @@ let common = {
                                     if (resObj.proficiencies.select.category.length != 0) {
                                         for (let w = 0; w < resObj.proficiencies.select.category.length; w++) {
                                             if (results[q].typeId == itemtypes.TYPE.LINK.PROFICIENCY.SELECT.CATEGORY) {
-                                                resObj.proficiencies.select.category[w].linkId = results[q].id;
+                                                if (results[q].targetId == resObj.proficiencies.select.category[w].id) {
+                                                    resObj.proficiencies.select.category[w].linkId = results[q].id;
+                                                }
                                             }
                                         }
                                     }
                                     if (resObj.proficiencies.select.list.length != 0) {
                                         for (let w = 0; w < resObj.proficiencies.select.list.length; w++) {
                                             if (results[q].typeId == itemtypes.TYPE.LINK.PROFICIENCY.SELECT.LIST) {
-                                                resObj.proficiencies.select.list[w].linkId = results[q].id;
+                                                if (results[q].targetId == resObj.proficiencies.select.list[w].listId) {
+                                                    resObj.proficiencies.select.list[w].linkId = results[q].id;
+                                                }
                                             }
                                         }
                                     }
@@ -665,7 +659,7 @@ let common = {
                         
                     },
                     function insertLinkCountTable(resObj, callback) {
-                        console.log('insert-proficiencies-03');
+                        console.log('x-insert-proficiencies-03');
                         if (resObj.permissions.has.category || resObj.permissions.has.list) {
                             vals = [];
                             results = [];

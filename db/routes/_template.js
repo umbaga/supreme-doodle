@@ -8,7 +8,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let parameterArray = null;
     let addComma = false;
     let counter = 0;
-    let stepInt = 0;
     app.delete('/api/adm/_template/:id', function(req, res) {
         results = [];
         vals = [];
@@ -27,8 +26,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('delete-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-_template-01');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_item';
@@ -45,8 +43,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function _templateTable(resObj, callback) {
-                    console.log('delete-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-_template-02');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_def__template';
@@ -63,8 +60,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function descriptionTable(resObj, callback) {
-                    console.log('delete-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-_template-03');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_description';
@@ -81,8 +77,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function linkTable(resObj, callback) {
-                    console.log('delete-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('delete-_template-04');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_link';
@@ -137,8 +132,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-01');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_item';
@@ -157,8 +151,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function checkExistingStuff(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-02');
                     results = [];
                     vals = [];
                     sql = 'SELECT i.id';
@@ -183,8 +176,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function _templateTable(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-03');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_def__template';
@@ -202,8 +194,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function updateDescriptionTable(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-04');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.need.description && resObj.permissions.has.description)) {
@@ -234,8 +225,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function insertDescriptionTable(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-05');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.need.description && !resObj.permissions.has.description)) {
@@ -270,8 +260,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function deleteDescriptionTable(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-06');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.has.description && !resObj.permissions.need.description)) {
@@ -297,8 +286,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function insertNewLinks(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-07');
                     results = [];
                     vals = [];
                     if (resObj.permissions.need.description) {
@@ -337,8 +325,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function deleteUnneededLinks(resObj, callback) {
-                    console.log('update-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('update-_template-08');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.has.description && !resObj.permissions.need.description)) {
@@ -414,8 +401,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('insert-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-_template-01');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_item';
@@ -436,8 +422,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function _templateTable(resObj, callback) {
-                    console.log('insert-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-_template-02');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core__template';
@@ -455,8 +440,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function descriptionTable(resObj, callback) {
-                    console.log('insert-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-_template-03');
                     if (resObj.permissions.need.description) {
                         results = [];
                         vals = [];
@@ -494,8 +478,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function linkTable(resObj, callback) {
-                    console.log('insert-_template-' + stepInt.toString());
-                    stepInt++;
+                    console.log('insert-_template-04');
                     if (resObj.permissions.need.description) {
                         results = [];
                         vals = [];
@@ -519,6 +502,37 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             results.push(row);
                         });
                         query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageProficiencies(resObj, callback) {
+                    console.log('x-insert-_template-05');
+                    if (resObj.permissions.need.proficiencies) {
+                        common.insert.proficiencies(resObj._template.proficiencies, resObj._template, function(results) {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageFeature(resObj, callback) {
+                    console.log('x-insert-_template-07');
+                    if (resObj.permissions.need.feature) {
+                        common.insert.feature(resObj._template.feature, resObj._template, function(results) {
+                            resObj._template.feature = results.feature;
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageAssignedEquipment(resObj, callback) {
+                    console.log('x-insert-_template-06');
+                    if (resObj.permissions.need.assignedEquipment) {
+                        common.insert.assignedEquipment(resObj._template.equipment.assigned, resObj._template, function(results) {
                             return callback(null, resObj);
                         });
                     } else {
