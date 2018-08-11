@@ -74,6 +74,7 @@ export const TYPE = {
         MOVEMENT_TYPE: 207,
         NATURAL_WEAPON_TYPE: 305,
         OTHER_EFFECT: 255,
+        PICKLIST: 0,
         PROFICIENCY: 323,
         PROFICIENCY_CATEGORY: 125,
         RANGE: 28,

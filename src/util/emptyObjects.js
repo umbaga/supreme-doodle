@@ -15,7 +15,8 @@ const _DICE = {
     dieType: 0,
     modifier: 0,
     multiplier: 1,
-    divisor: 1
+    divisor: 1,
+    rendered: ''
 };
 export const examples = exampleObjects;
 
@@ -219,12 +220,13 @@ export const CHART = {
     columnCount: 1,
     columns: [CHART_COLUMN],
     dice: _DICE,
-    entries: [CHART_ENTRY, CHART_ENTRY],
+    entries: [CHART_ENTRY],
+    isNewType: false,
     orderIndex: 0,
-    rowCount: 2,
+    rowCount: 1,
     rows: [CHART_ROW],
     selectItemType: _ID_NAME_OBJECT,
-    type: _ID_NAME_OBJECT
+    type: {id: 1063}
 };
 export const CHART_COLUMN = {
     id: 0,

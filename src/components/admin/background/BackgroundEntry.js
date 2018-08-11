@@ -77,6 +77,9 @@ class BackgroundEntry extends React.Component {
         let arrayItem = null;
         let newStateObj = {};
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
+            case 'chart':
+                arrayItem = this.state.editChart;
+                break;
             case 'proficiency':
                 arrayItem = this.state.editProficiency;
                 break;
@@ -116,7 +119,12 @@ class BackgroundEntry extends React.Component {
     updateChildFormState(event) {
         let newStateObj = {};
         let newItem = {};
+        console.log(util.common.formState.functions.set.valueFromTarget(event, 'data-task'));
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
+            case 'chart':
+                newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists);
+                newStateObj.editChart = newItem;
+                break;
             case 'proficiency':
                 newItem = util.common.formState.standard(event, this.state.editProficiency, this.props.picklists);
                 newStateObj.editProficiency = newItem;
@@ -141,7 +149,6 @@ class BackgroundEntry extends React.Component {
                 console.error('updateChildFormState no data-task');
         }
         return this.setState(newStateObj);
-        
     }
     
     render() {

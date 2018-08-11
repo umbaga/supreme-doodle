@@ -26,7 +26,8 @@ class DndButton extends React.Component {
         let finalDisabled = this.props.disabled ? this.props.disabled : false;
         let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         extraClasses += ' ' + this.props.additionalButtonStyles;
-        switch (this.props.buttonType.toLowerCase()) {
+        let finalButtonType = (this.props.buttonType) ? this.props.buttonType : 'cog';
+        switch (finalButtonType.toLowerCase()) {
             case 'additem':
                 fontawesomeStyle += 'plus-circle';
                 bootstrapStyle += 'default';
@@ -117,10 +118,10 @@ class DndButton extends React.Component {
                 bootstrapStyle += 'primary';
                 break;
             default:
-                fontawesomeStyle += 'cog';
+                fontawesomeStyle += finalButtonType.toLowerCase();
                 bootstrapStyle += 'primary';
         }
-        const renderedLabel = (this.props.label && this.props.label.length != 0 && this.props.buttonType.toLowerCase() == 'label') ? (
+        const renderedLabel = (this.props.label && this.props.label.length != 0 && finalButtonType.toLowerCase() == 'label') ? (
             <div>{this.props.label}</div>
         ) : (
             <div><i className={fontawesomeStyle + extraClasses}></i>{extraText}</div>
@@ -146,7 +147,7 @@ class DndButton extends React.Component {
 }
 
 DndButton.propTypes = {
-    buttonType: PropTypes.string.isRequired,
+    buttonType: PropTypes.string,
     onClick: PropTypes.func,
     isBadge: PropTypes.bool,
     additionalButtonStyles: PropTypes.string,

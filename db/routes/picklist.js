@@ -491,6 +491,19 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 });
                             }
                         }
+                        let picklistPicklist = {};
+                        picklistPicklist.applySupplementalPicklist = false;
+                        picklistPicklist.id = 0;
+                        picklistPicklist.name = 'Picklist';
+                        picklistPicklist.items = [];
+                        let newPicklistItem = {};
+                        for (let q = 0; q < results.length; q++) {
+                            newPicklistItem = {};
+                            newPicklistItem.id = results[q].id;
+                            newPicklistItem.name = results[q].name;
+                            picklistPicklist.items.push(newPicklistItem);
+                        }
+                        finalResults.push(picklistPicklist);
                         return callback(err, finalResults);
                     });
                 },

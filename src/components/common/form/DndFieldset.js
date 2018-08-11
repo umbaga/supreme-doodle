@@ -40,6 +40,7 @@ class DndFieldset extends React.Component {
 
 DndFieldset.propTypes = {
     children: PropTypes.oneOfType([
+        PropTypes.string,
         PropTypes.object,
         PropTypes.array
     ]),

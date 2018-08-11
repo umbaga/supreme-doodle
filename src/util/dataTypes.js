@@ -1,4 +1,7 @@
 export const ACTION = {
+    CHART: {
+        EXPAND: 'DATATYPE_ACTON_CHART_EXPAND'
+    },
     LIST: {
         PICKLIST: {
             ADD: 'DATATYPE_ACTION_LIST_FROM_PICKLIST_ADD',

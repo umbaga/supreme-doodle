@@ -67,16 +67,37 @@ class _TemplateEntry extends React.Component {
         this.save_Template(event);
         this.postAction();
     }
-
+    
     updateFormState(event) {
-        let _template = util.common.formState.standard(event, this.state._template, this.props.picklists, this.state.editItem);
-        let newEditItem = Object.assign({}, util.common.resetObject.item(_template.items.length * -1));
-        return this.setState({_template: _template, editItem: newEditItem});
+        let arrayItem = null;
+        let newStateObj = {};
+        switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
+            case 'item':
+                arrayItem = this.state.editItem;
+            case 'normal':
+                break;
+            default:
+                console.error('updateFormState no data-task');
+        }
+        let _template = util.common.formState.standard(event, this.state._template, this.props.picklists, arrayItem);
+        let newEditItem = Object.assign({}, util.common.resetObject.item());
+        newStateObj._template = _template;
+        newStateObj.editItem = newEditItem;
+        return this.setState(newStateObj);
     }
-
-    updateItemFormState(event) {
-        let editItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists);
-        return this.setState({editItem: editItem});
+    
+    updateChildFormState(event) {
+        let newStateObj = {};
+        let newItem = {};
+        switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
+            case 'item':
+                newItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists);
+                newStateObj.editProficiency = newItem;
+                break;
+            default:
+                console.error('updateChildFormState no data-task');
+        }
+        return this.setState(newStateObj);
     }
     render() {
         return (

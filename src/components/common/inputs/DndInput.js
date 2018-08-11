@@ -52,7 +52,7 @@ class DndInput extends React.Component {
         }
         let buttonName = (this.props.buttonName) ? this.props.buttonName : this.props.name;
         let listInput = null;
-        let buttonDisabled = false;
+        let buttonDisabled = (this.props.buttonDisabled) ? this.props.buttonDisabled : false;
         let numberMinVal = this.props.numberMinVal ? this.props.numberMinVal : 0;
         let numberStepVal = this.props.numberStepVal ? this.props.numberStepVal : 1;
         let finalPicklist = this.props.picklist;
@@ -68,6 +68,7 @@ class DndInput extends React.Component {
         } else if (this.props.childName && this.props.childName.length != 0) {
             refName = this.props.childName;
         }
+        let buttonAction = (this.props.buttonOverwriteAction) ? this.props.buttonOverwriteAction : 'ADD';
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.LIST.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.NEW:
@@ -299,6 +300,7 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.SPECIAL.DICE:
+                
                 primaryInput = (
                     <input
                         type="text"
@@ -372,7 +374,7 @@ class DndInput extends React.Component {
                             onClick={this.props.buttonOnClick}
                             bsButtonStyle={this.props.bsButtonStyle}
                             name={buttonName}
-                            dataType={this.props.buttonDatatype.ADD}
+                            dataType={this.props.buttonDatatype[buttonAction]}
                             disabled={buttonDisabled}
                             changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
                             refs={this.refs}
@@ -429,14 +431,6 @@ DndInput.propTypes = {
     childAuxiliaryNames: PropTypes.array,
     childAuxiliaryDatatypes: PropTypes.array,
     childAuxiliaryValues: PropTypes.array,
-    /*childAuxiliaryName: PropTypes.string,
-    childAuxiliaryValue: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-        PropTypes.object,
-        PropTypes.array,
-        PropTypes.bool
-    ]),*/
     dataType: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object
@@ -473,7 +467,9 @@ DndInput.propTypes = {
     changeFocusRefName: PropTypes.string,
     dataTask: PropTypes.string,
     buttonDataTask: PropTypes.string,
-    buttonName: PropTypes.string
+    buttonName: PropTypes.string,
+    buttonOverwriteAction: PropTypes.string,
+    buttonDisabled: PropTypes.bool
 };
 
 export default DndInput;

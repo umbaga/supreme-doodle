@@ -128,6 +128,14 @@ export const replace = {
     }
 };
 
+export const charts = {
+    expand: function(chart) {
+        let retVal = chart;
+        
+        return retVal;
+    }
+};
+
 export const formState = {
     functions: {
         set: {
