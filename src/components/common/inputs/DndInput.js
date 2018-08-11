@@ -180,6 +180,7 @@ class DndInput extends React.Component {
                         startScrollingAt={this.props.listTableStartScrollingAt}
                         rowHeight={this.props.listTableRowHeight}
                         hideScrolling={this.props.listTableHideScrolling}
+                        data-task={dataTask}
                         />
                 ) : (
                     <DndList
@@ -195,6 +196,7 @@ class DndInput extends React.Component {
                         childAuxiliaryNames={this.props.childAuxiliaryNames}
                         childAuxiliaryValues={this.props.childAuxiliaryValues}
                         renderNameFunction={this.props.renderNameFunction}
+                        data-task={dataTask}
                         />
                 );
                 break;

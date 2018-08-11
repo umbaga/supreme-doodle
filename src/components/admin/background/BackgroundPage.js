@@ -67,6 +67,7 @@ class BackgroundPage extends React.Component {
     render() {
         const backgrounds = this.props.backgrounds;
         const picklists = this.props.picklists;
+        console.log(backgrounds);
         return (
             <div className="col-md-12">
                 <div>

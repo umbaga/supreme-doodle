@@ -14,6 +14,12 @@ export const resetObject = {
         
         return retVal;
     },
+    chart: function(currentChartCount) {
+        let retVal = Object.assign({}, util.objectModel.BACKGROUND);
+        retVal.id = -1 * currentChartCount;
+        retVal.orderIndex = currentChartCount;
+        return retVal;
+    },
     equipment: function(equipmentCategory, oldEquipment) {
         let retVal = Object.assign({}, util.objectModel.EQUIPMENT);
         retVal.ammunition = {id: 0};

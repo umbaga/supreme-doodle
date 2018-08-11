@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import DndInput from '../../common/inputs/DndInput';
 import DndUniversalInput from '../../common/inputs/DndUniversalInput';
 import DndManageProficiencies from '../../common/inputs/manage/DndManageProficiencies';
+import DndManageCharts from '../../common/inputs/manage/DndManageCharts';
 import util from '../../../util/util';
 import { Tabs, Tab } from 'react-bootstrap';
 
@@ -23,7 +24,9 @@ class BackgroundForm extends React.Component {
     render() {
         const background = this.props.background;
         const picklists = this.props.picklists;
-        const equipments = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT);
+        const equipments = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT).filter(function(eq) {
+            return eq.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
+        });
         
         let assignedEquipment = background.equipment.assigned.filter(function(equipment) {
             return equipment.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
@@ -67,7 +70,7 @@ class BackgroundForm extends React.Component {
                                 onChange={this.props.onChange}
                                 value={background.proficiencies}
                                 picklists={picklists}
-                                onChangeChild={this.props.onChangeProficiency}
+                                onChangeChild={this.props.onChangeChild}
                                 editProficiency={this.props.editProficiency}
                                 editCategory={this.props.editProficiencyCategory}
                                 editProficiencyList={this.props.editProficiencyList}
@@ -90,12 +93,13 @@ class BackgroundForm extends React.Component {
                                     dataType={util.datatypes.ARRAY.TAGS.ADD.NEW}
                                     value={assignedTrinkets}
                                     onChange={this.props.onChange}
-                                    childValue={this.props.editEquipment.name}
+                                    childValue={this.props.editTrinket.name}
                                     childName="name"
                                     buttonOnClick={this.props.onChange}
-                                    onChangeChild={this.props.onChangeEquipment}
+                                    onChangeChild={this.props.onChangeChild}
                                     buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
                                     changeFocusRefName="equipment.assigned"
+                                    dataTask="assignedequipment-trinket"
                                     />
                             </div>
                             <div className="col-md-12">
@@ -114,13 +118,20 @@ class BackgroundForm extends React.Component {
                                     childAuxiliaryNames={['assigned']}
                                     childAuxiliaryDatatypes={[util.datatypes.NUMBER.INT]}
                                     childAuxiliaryValues={[this.props.editEquipment.assigned]}
-                                    onChangeChild={this.props.onChangeEquipment}
+                                    onChangeChild={this.props.onChangeChild}
                                     renderNameFunction={util.format.forDisplay.obj.equipmentName}
+                                    dataTask="assignedequipment"
                                     />
                             </div>
                         </Tab>
                         <Tab eventKey={4} title="Charts">
-                            Charts
+                            <DndManageCharts
+                                onChange={this.props.onChange}
+                                onChangeChild={this.props.onChangeChild}
+                                picklists={picklists}
+                                value={background.charts}
+                                editChart={this.props.editChart}
+                                />
                         </Tab>
                     </Tabs>
                 </form>
@@ -130,16 +141,17 @@ class BackgroundForm extends React.Component {
 }
 
 BackgroundForm.propTypes = {
+    editEquipment: PropTypes.object.isRequired,
+    editTrinket: PropTypes.object.isRequired,
     editProficiency: PropTypes.object.isRequired,
     editProficiencyCategory: PropTypes.object.isRequired,
     editProficiencyList: PropTypes.object.isRequired,
-    onChangeProficiency: PropTypes.func.isRequired,
-    editEquipment: PropTypes.object.isRequired,
+    editChart: PropTypes.object.isRequired,
+    onChangeChild: PropTypes.func.isRequired,
     background: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
     onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    onChangeEquipment: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,

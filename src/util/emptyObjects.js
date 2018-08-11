@@ -29,6 +29,132 @@ export const ASSIGNED_EQUIPMENT = {
     cost: 0,
     weight: 0
 };
+export const _BACKGROUND = {
+    id: 0,
+    name: '--test background',
+    resource: _RESOURCE,
+    description: '--test background description description description description description',
+    suggestedCharacteristics: '--test background suggested characteristics',
+    proficiencies: {
+        assigned: [
+            {
+                category: {id: 129, name: 'Language'},
+                id: '406',
+                name: 'Common'
+            },
+            {
+                category: {id: 134, name: 'Weapon'},
+                id: '407',
+                name: 'Simple'
+            },
+            {
+                category: {id: 134, name: 'Weapon'},
+                id: '380',
+                name: 'Martial'
+            }
+        ],
+        select: {
+            category: [
+                {
+                    count: 1,
+                    id: 133,
+                    name: 'Tool'
+                },
+                {
+                    count: 2,
+                    id: 129,
+                    name: 'Language'
+                }
+            ],
+            list: [
+                {
+                    category: {id: 127, name: 'Artisan\'s Tool'},
+                    count: 2,
+                    proficiencies: [
+                        {
+                            category: {id: 127, name: 'Artisan\'s Tool'},
+                            id: '791',
+                            name: 'Weaver\'s Tools'
+                        },
+                        {
+                            category: {id: 127, name: 'Artisan\'s Tool'},
+                            id: '785',
+                            name: 'Potter\'s Tools'
+                        },
+                        {
+                            category: {id: 127, name: 'Artisan\'s Tool'},
+                            id: '787',
+                            name: 'Smith\'s Tools'
+                        }
+                    ]
+                },
+                {
+                    category: {id: 132, name: 'Skill'},
+                    count: 1,
+                    proficiencies: [
+                        {
+                            category: {id: 132, name: 'Skill'},
+                            id: '386',
+                            name: 'Arcana'
+                        },
+                        {
+                            category: {id: 132, name: 'Skill'},
+                            id: '387',
+                            name: 'History'
+                        },
+                        {
+                            category: {id: 132, name: 'Skill'},
+                            id: '390',
+                            name: 'Religion'
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    equipment: {
+        startingGold: 10,
+        assigned: [
+            {
+                assigned: 1,
+                cost: '2',
+                count: 1,
+                id: '618',
+                name: 'Abacus',
+                unit: '',
+                weight: '2',
+                category: {id: 114, name: 'General'}
+            },
+            {
+                assigned: '2',
+                cost: '0.4',
+                count: 1,
+                id: '628',
+                name: 'Basket',
+                unit: '',
+                weight: '2',
+                category: {id: 114, name: 'General'}
+            },
+            {
+                assigned: 1,
+                cost: 0,
+                count: 1,
+                id: 0,
+                name: '--test trinkt',
+                unit: '',
+                weight: 0,
+                category: {id: 887, name: 'Trinket'}
+            }
+        ]
+    },
+    charts: [],
+    feature: {
+        id: 0,
+        name: '--test feature',
+        description: '--test feature description'
+    },
+    variants: []
+};
 export const BACKGROUND = {
     id: 0,
     name: '',
@@ -85,6 +211,44 @@ export const BACKGROUND_VARIANT = {
         gain: [],
         lose: []
     }
+};
+export const CHART = {
+    id: 0,
+    title: '',
+    description: '',
+    columnCount: 1,
+    columns: [CHART_COLUMN],
+    dice: _DICE,
+    entries: [CHART_ENTRY, CHART_ENTRY],
+    orderIndex: 0,
+    rowCount: 2,
+    rows: [CHART_ROW],
+    selectItemType: _ID_NAME_OBJECT,
+    type: _ID_NAME_OBJECT
+};
+export const CHART_COLUMN = {
+    id: 0,
+    text: '',
+    columnIndex: 0,
+    dataType: _ID_NAME_OBJECT,
+    selectItemType: _ID_NAME_OBJECT
+};
+export const CHART_ENTRY = {
+    id: 0,
+    text: '',
+    columnIndex: 0,
+    rowIndex: 0,
+    selectedItem: _ID_NAME_OBJECT
+};
+export const CHART_ROW = {
+    id: 0,
+    text: '',
+    diceRange: {
+        maximum: 0,
+        minimum: 0
+    },
+    rowIndex: 0,
+    selectedItem: _ID_NAME_OBJECT
 };
 export const EQUIPMENT = {
     id: 0,

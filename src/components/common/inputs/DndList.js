@@ -53,6 +53,7 @@ class DndList extends React.Component {
     }
     
     render() {
+        let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         let buttonType = 'removeitem';
         if (this.props.buttonType && this.props.buttonType.length != 0) {
             buttonType = this.props.buttonType;
@@ -127,7 +128,8 @@ DndList.propTypes = {
     ]).isRequired,
     startScrollingAt: PropTypes.number,
     rowHeight: PropTypes.number,
-    hideScrolling: PropTypes.bool
+    hideScrolling: PropTypes.bool,
+    dataTask: PropTypes.string
 };
 
 export default DndList;

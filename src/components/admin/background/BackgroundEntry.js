@@ -11,10 +11,12 @@ class BackgroundEntry extends React.Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
+            editTrinket: Object.assign({}, util.objectModel.TRINKET),
             editEquipment: Object.assign({}, util.objectModel.ASSIGNED_EQUIPMENT),
             editProficiency: Object.assign({}, util.objectModel.PROFICIENCY),
             editProficiencyCategory: Object.assign({}, util.objectModel.SELECT.PROFICIENCY.CATEGORY),
             editProficiencyList: Object.assign({}, util.objectModel.SELECT.PROFICIENCY.LIST),
+            editChart: Object.assign({}, util.objectModel.CHART),
             background: this.props.background,
             isCreate: this.props.isCreate,
             canEdit: this.props.canEdit,
@@ -27,8 +29,7 @@ class BackgroundEntry extends React.Component {
         this.saveAndNewBackground = this.saveAndNewBackground.bind(this);
         this.saveAndBackBackground = this.saveAndBackBackground.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
-        this.updateEquipmentFormState = this.updateEquipmentFormState.bind(this);
-        this.updateProficiencyFormState = this.updateProficiencyFormState.bind(this);
+        this.updateChildFormState = this.updateChildFormState.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -73,31 +74,46 @@ class BackgroundEntry extends React.Component {
     }
 
     updateFormState(event) {
-        let arrayItem = this.state.editItem;
-        if (util.common.formState.functions.set.fieldFromTargetName(event) == 'equipment.assigned') {
-            arrayItem = this.state.editEquipment;
-        } else if (util.common.formState.functions.set.fieldFromTargetName(event) == 'proficiencies.assigned') {
-            arrayItem = this.state.editProficiency;
-        } else if (util.common.formState.functions.set.fieldFromTargetName(event) == 'proficiencies.select.category') {
-            arrayItem = this.state.editProficiencyCategory;
-        } else {
-            arrayItem = this.state.editProficiencyList;
+        let arrayItem = null;
+        let newStateObj = {};
+        switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
+            case 'proficiency':
+                arrayItem = this.state.editProficiency;
+                break;
+            case 'proficiencycategory':
+                arrayItem = this.state.editProficiencyCategory;
+                break;
+            case 'proficiencylist':
+                arrayItem = this.state.editProficiencyList;
+                break;
+            case 'assignedequipment':
+                arrayItem = this.state.editEquipment;
+                break;
+            case 'assignedequipment-trinket':
+                arrayItem = this.state.editTrinket;
+            case 'normal':
+                break;
+            default:
+                console.error('updateFormState no data-task');
         }
         let background = util.common.formState.standard(event, this.state.background, this.props.picklists, arrayItem);
-        let newEditItem = Object.assign({}, util.common.resetObject.trinket(background.equipment.assigned.length * -1));
+        let newEditTrinket = Object.assign({}, util.common.resetObject.trinket(background.equipment.assigned.length * -1));
         let newEditEquipment = Object.assign({}, util.common.resetObject.assignedEquipment());
         let newEditProficiency = Object.assign({}, util.common.resetObject.proficiency());
         let newEditProficiencyCategory = Object.assign({}, util.common.resetObject.select.proficiency.category());
         let newEditProficiencyList = Object.assign({}, util.common.resetObject.select.proficiency.list());
-        return this.setState({background: background, editItem: newEditItem, editEquipment: newEditEquipment, editProficiency: newEditProficiency, editProficiencyCategory: newEditProficiencyCategory, editProficiencyList: newEditProficiencyList});
-    }
-
-    updateEquipmentFormState(event) {
-        let editEquipment = util.common.formState.standard(event, this.state.editEquipment, this.props.picklists);
-        return this.setState({editEquipment: editEquipment});
+        let newEditChart = Object.assign({}, util.common.resetObject.chart(background.charts.length));
+        newStateObj.background = background;
+        newStateObj.editTrinket = newEditTrinket;
+        newStateObj.editEquipment = newEditEquipment;
+        newStateObj.eeditProficiency = newEditProficiency;
+        newStateObj.editProficiencyCategory = newEditProficiencyCategory;
+        newStateObj.editProficiencyList = newEditProficiencyList;
+        newStateObj.editChart = newEditChart;
+        return this.setState(newStateObj);
     }
     
-    updateProficiencyFormState(event) {
+    updateChildFormState(event) {
         let newStateObj = {};
         let newItem = {};
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
@@ -113,10 +129,19 @@ class BackgroundEntry extends React.Component {
                 newItem = util.common.formState.standard(event, this.state.editProficiencyList, this.props.picklists, this.state.editProficiency);
                 newStateObj.editProficiencyList = newItem;
                 break;
+            case 'assignedequipment':
+                newItem = util.common.formState.standard(event, this.state.editEquipment, this.props.picklists);
+                newStateObj.editEquipment = newItem;
+                break;
+            case 'assignedequipment-trinket':
+                newItem = util.common.formState.standard(event, this.state.editTrinket, this.props.picklists);
+                newStateObj.editTrinket = newItem;
+                break;
             default:
-                console.error('updateProficiencyFormState no data-task');
+                console.error('updateChildFormState no data-task');
         }
         return this.setState(newStateObj);
+        
     }
     
     render() {
@@ -144,12 +169,13 @@ class BackgroundEntry extends React.Component {
                     isCreate={this.state.isCreate}
                     backgrounds={this.props.backgrounds}
                     saving={this.state.saving}
+                    editTrinket={this.state.editTrinket}
                     editEquipment={this.state.editEquipment}
-                    onChangeEquipment={this.updateEquipmentFormState}
                     editProficiency={this.state.editProficiency}
-                    onChangeProficiency={this.updateProficiencyFormState}
                     editProficiencyCategory={this.state.editProficiencyCategory}
                     editProficiencyList={this.state.editProficiencyList}
+                    editChart={this.state.editChart}
+                    onChangeChild={this.updateChildFormState}
                     />
             </DndModal>
         );

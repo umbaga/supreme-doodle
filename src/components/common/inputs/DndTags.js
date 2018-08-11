@@ -8,6 +8,7 @@ class DndTags extends React.Component {
     }
     
     render() {
+        let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         let scrollingStyle = {};
         if (!this.props.hideScrolling) {
             let rowHeight = 50;
@@ -35,6 +36,7 @@ class DndTags extends React.Component {
                                 name={this.props.name}
                                 datatype={this.props.dataType.REMOVE}
                                 value={idx}
+                                data-task={dataTask}
                                 ></i>
                         </div>
                     );
@@ -65,7 +67,8 @@ DndTags.propTypes = {
     ]).isRequired,
     startScrollingAt: PropTypes.number,
     rowHeight: PropTypes.number,
-    hideScrolling: PropTypes.bool
+    hideScrolling: PropTypes.bool,
+    dataTask: PropTypes.string
 };
 
 export default DndTags;

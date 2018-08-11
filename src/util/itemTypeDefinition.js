@@ -1,4 +1,9 @@
 export const TYPE = {
+    CHART: {
+        DICE: 1062,
+        SELECT: 1063,
+        STANDARD: 1064
+    },
     EQUIPMENT_CATEGORY: {
         AMMUNITION: 108,
         ARCANE_FOCUS: 109,
@@ -46,6 +51,7 @@ export const TYPE = {
         AMMUNITION_TYPE: 436,
         ATTACK_TYPE: 228,
         BACKGROUND: 902,
+        CHART: 1061,
         CHECK_TYPE: 248,
         CONDITION: 43,
         COVER: 238,

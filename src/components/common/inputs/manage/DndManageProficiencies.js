@@ -160,8 +160,7 @@ class DndManageProficiencies extends React.Component {
         );
     }
 }
-/*                            buttonDataTask
-                            bsButtonStyle*/
+
 DndManageProficiencies.propTypes = {
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func.isRequired,
