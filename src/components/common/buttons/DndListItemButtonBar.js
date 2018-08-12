@@ -80,17 +80,17 @@ class DndListItemButtonBar extends React.Component {
 }
 
 DndListItemButtonBar.propTypes = {
-    listItem: PropTypes.object.isRequired,
-    onEdit: PropTypes.func.isRequired,
-    onDelete: PropTypes.func,
-    onViewDetails: PropTypes.func,
-    hideDeleteButton: PropTypes.bool,
-    showDetailsButton: PropTypes.bool,
+    dataType: PropTypes.string,
     deleteAction: PropTypes.string,
     editAction: PropTypes.string,
+    hideDeleteButton: PropTypes.bool,
+    listItem: PropTypes.object.isRequired,
+    name: PropTypes.string,
+    onDelete: PropTypes.func,
+    onEdit: PropTypes.func.isRequired,
+    onViewDetails: PropTypes.func,
     returnCompleteObject: PropTypes.bool,
-    dataType: PropTypes.string,
-    name: PropTypes.string
+    showDetailsButton: PropTypes.bool
 };
 
 export default DndListItemButtonBar;

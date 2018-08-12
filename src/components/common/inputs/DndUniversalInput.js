@@ -69,12 +69,12 @@ class DndUniversalInput extends React.Component {
 }
 
 DndUniversalInput.propTypes = {
+    collapseDescription: PropTypes.bool,
+    hideDescription: PropTypes.bool,
+    labelPrefix: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     picklists: PropTypes.array,
-    referenceObject: PropTypes.object.isRequired,
-    labelPrefix: PropTypes.string,
-    hideDescription: PropTypes.bool,
-    collapseDescription: PropTypes.bool
+    referenceObject: PropTypes.object.isRequired
 };
 
 export default DndUniversalInput;

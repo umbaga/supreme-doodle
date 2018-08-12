@@ -48,18 +48,18 @@ class DndDataEntryButtonBar extends React.Component {
 }
 
 DndDataEntryButtonBar.propTypes = {
+    cancelAction: PropTypes.string,
+    deleteAction: PropTypes.string,
     isCreate: PropTypes.bool,
+    name: PropTypes.string,
     onCancel: PropTypes.func,
     onDelete: PropTypes.func,
     onReset: PropTypes.func,
     onSave: PropTypes.func,
     onSaveNew: PropTypes.func,
-    saving: PropTypes.bool,
-    cancelAction: PropTypes.string,
-    deleteAction: PropTypes.string,
     resetAction: PropTypes.string,
     saveAction: PropTypes.string,
-    name: PropTypes.string
+    saving: PropTypes.bool
 };
 
 export default DndDataEntryButtonBar;

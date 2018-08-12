@@ -40,15 +40,15 @@ class DndFieldset extends React.Component {
 
 DndFieldset.propTypes = {
     children: PropTypes.oneOfType([
-        PropTypes.string,
+        PropTypes.array,
         PropTypes.object,
-        PropTypes.array
+        PropTypes.string
     ]),
     collapsible: PropTypes.bool,
-    startCollapsed: PropTypes.bool,
     iconCollapse: PropTypes.string,
     iconExpand: PropTypes.string,
-    legend: PropTypes.string
+    legend: PropTypes.string,
+    startCollapsed: PropTypes.bool
 };
 
 export default DndFieldset;

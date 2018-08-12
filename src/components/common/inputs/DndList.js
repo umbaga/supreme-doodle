@@ -108,28 +108,28 @@ DndList.propTypes = {
     buttonDatatype: PropTypes.string,
     buttonOnClick: PropTypes.func,
     buttonType: PropTypes.string,
-    childName: PropTypes.string,
     childAuxiliaryDatatypes: PropTypes.array,
     childAuxiliaryNames: PropTypes.array,
     childAuxiliaryValues: PropTypes.array,
-    renderNameFunction: PropTypes.func,
+    childName: PropTypes.string,
+    dataTask: PropTypes.string,
     dataType: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
+        PropTypes.object,
+        PropTypes.string
     ]).isRequired,
-    onChange: PropTypes.func.isRequired,
+    hideScrolling: PropTypes.bool,
     name: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    renderNameFunction: PropTypes.func,
+    rowHeight: PropTypes.number,
+    startScrollingAt: PropTypes.number,
     value: PropTypes.oneOfType([
-        PropTypes.string,
+        PropTypes.array,
+        PropTypes.bool,
         PropTypes.number,
         PropTypes.object,
-        PropTypes.array,
-        PropTypes.bool
-    ]).isRequired,
-    startScrollingAt: PropTypes.number,
-    rowHeight: PropTypes.number,
-    hideScrolling: PropTypes.bool,
-    dataTask: PropTypes.string
+        PropTypes.string
+    ]).isRequired
 };
 
 export default DndList;

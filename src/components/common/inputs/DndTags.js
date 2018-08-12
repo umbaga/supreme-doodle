@@ -52,23 +52,23 @@ DndTags.propTypes = {
     buttonOnClick: PropTypes.func,
     buttonType: PropTypes.string,
     childName: PropTypes.string,
+    dataTask: PropTypes.string,
     dataType: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
+        PropTypes.object,
+        PropTypes.string
     ]),
-    onChange: PropTypes.func.isRequired,
+    hideScrolling: PropTypes.bool,
     name: PropTypes.string,
+    onChange: PropTypes.func.isRequired,
+    rowHeight: PropTypes.number,
+    startScrollingAt: PropTypes.number,
     value: PropTypes.oneOfType([
-        PropTypes.string,
+        PropTypes.array,
+        PropTypes.bool,
         PropTypes.number,
         PropTypes.object,
-        PropTypes.array,
-        PropTypes.bool
-    ]).isRequired,
-    startScrollingAt: PropTypes.number,
-    rowHeight: PropTypes.number,
-    hideScrolling: PropTypes.bool,
-    dataTask: PropTypes.string
+        PropTypes.string
+    ]).isRequired
 };
 
 export default DndTags;

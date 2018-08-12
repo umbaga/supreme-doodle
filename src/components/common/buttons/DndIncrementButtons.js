@@ -33,15 +33,15 @@ class DndIncrementButtons extends React.Component {
 }
 
 DndIncrementButtons.propTypes = {
+    dataType: PropTypes.string,
+    downIcon: PropTypes.string,
     item: PropTypes.object.isRequired,
     items: PropTypes.array.isRequired,
-    onMoveItem: PropTypes.func.isRequired,
-    downIcon: PropTypes.string,
-    upIcon: PropTypes.string,
     moveItemDownAction: PropTypes.string,
     moveItemUpAction: PropTypes.string,
-    dataType: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
+    onMoveItem: PropTypes.func.isRequired,
+    upIcon: PropTypes.string
 };
 
 export default DndIncrementButtons;

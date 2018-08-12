@@ -74,6 +74,7 @@ class _TemplateEntry extends React.Component {
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
             case 'item':
                 arrayItem = this.state.editItem;
+                break;
             case 'normal':
                 break;
             default:

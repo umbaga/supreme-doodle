@@ -94,6 +94,7 @@ class BackgroundEntry extends React.Component {
                 break;
             case 'assignedequipment-trinket':
                 arrayItem = this.state.editTrinket;
+                break;
             case 'normal':
                 break;
             default:
@@ -119,7 +120,6 @@ class BackgroundEntry extends React.Component {
     updateChildFormState(event) {
         let newStateObj = {};
         let newItem = {};
-        console.log(util.common.formState.functions.set.valueFromTarget(event, 'data-task'));
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
             case 'chart':
                 newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists);

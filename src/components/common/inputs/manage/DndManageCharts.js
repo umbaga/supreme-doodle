@@ -50,8 +50,6 @@ class DndManageCharts extends React.Component {
         if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
             disableRowInput = true;
         } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-            console.log('x');
-            console.log(chart.isNewType);
             disableRowInput = !chart.isNewType;
         }
         return (chart.type.id != 0) ? (
@@ -83,7 +81,7 @@ class DndManageCharts extends React.Component {
         ) : '';
     }
     
-    renderIsNewTypeCheckbox(chart, colRowDivStyle) {
+    renderIsNewTypeCheckbox(chart) {
         let retVal = null;
         if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
             retVal = (
@@ -102,7 +100,7 @@ class DndManageCharts extends React.Component {
         return retVal;
     }
     
-    renderRowDeterminationInput(chart, picklistTypes, colRowDivStyle) {
+    renderRowDeterminationInput(chart, picklistTypes) {
         let retVal = null;
         if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
             retVal = (
@@ -167,7 +165,7 @@ class DndManageCharts extends React.Component {
         const picklists = this.props.picklists;
         const chartTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.CHART);
         const picklistTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.PICKLIST);
-        let colRowColSpan = 6;//(chart.type.id == util.itemtypes.TYPE.CHART.STANDARD) ? 6 : 4;
+        let colRowColSpan = 6;
         if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
             colRowColSpan = 4;
         } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
@@ -214,14 +212,14 @@ class DndManageCharts extends React.Component {
 }
 
 DndManageCharts.propTypes = {
+    editChart: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func.isRequired,
     picklists: PropTypes.array.isRequired,
     value: PropTypes.oneOfType([
-        PropTypes.object,
-        PropTypes.array
-    ]),
-    editChart: PropTypes.object.isRequired
+        PropTypes.array,
+        PropTypes.object
+    ]).isRequired
 };
 
 export default DndManageCharts;

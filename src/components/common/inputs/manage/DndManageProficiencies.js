@@ -162,13 +162,13 @@ class DndManageProficiencies extends React.Component {
 }
 
 DndManageProficiencies.propTypes = {
+    editCategory: PropTypes.object.isRequired,
+    editProficiency: PropTypes.object.isRequired,
+    editProficiencyList: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func.isRequired,
     picklists: PropTypes.array.isRequired,
-    value: PropTypes.object.isRequired,
-    editProficiency: PropTypes.object.isRequired,
-    editCategory: PropTypes.object.isRequired,
-    editProficiencyList: PropTypes.object.isRequired
+    value: PropTypes.object.isRequired
 };
 
 export default DndManageProficiencies;

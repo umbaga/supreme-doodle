@@ -414,62 +414,62 @@ class DndInput extends React.Component {
 
 DndInput.propTypes = {
     bsButtonStyle: PropTypes.string,
+    buttonDataTask: PropTypes.string,
     buttonDatatype: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
+        PropTypes.object,
+        PropTypes.string
     ]),
+    buttonDisabled: PropTypes.bool,
+    buttonName: PropTypes.string,
     buttonOnClick: PropTypes.func,
+    buttonOverwriteAction: PropTypes.string,
     buttonType: PropTypes.string,
+    changeFocusRefName: PropTypes.string,
+    childAuxiliaryDatatypes: PropTypes.array,
+    childAuxiliaryNames: PropTypes.array,
+    childAuxiliaryValues: PropTypes.array,
     childName: PropTypes.string,
     childValue: PropTypes.oneOfType([
-        PropTypes.string,
+        PropTypes.array,
+        PropTypes.bool,
         PropTypes.number,
         PropTypes.object,
-        PropTypes.array,
-        PropTypes.bool
+        PropTypes.string
     ]),
-    childAuxiliaryNames: PropTypes.array,
-    childAuxiliaryDatatypes: PropTypes.array,
-    childAuxiliaryValues: PropTypes.array,
+    dataTask: PropTypes.string,
     dataType: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
+        PropTypes.object,
+        PropTypes.string
     ]).isRequired,
     hideLabel: PropTypes.bool,
     hideSelectOneOption: PropTypes.bool,
-    isReadOnly: PropTypes.bool,
     inputCols: PropTypes.number,
+    isReadOnly: PropTypes.bool,
     label: PropTypes.string,
     labelCols: PropTypes.number,
-    listTableStartScrollingAt: PropTypes.number,
-    listTableRowHeight: PropTypes.number,
     listTableHideScrolling: PropTypes.bool,
+    listTableRowHeight: PropTypes.number,
+    listTableStartScrollingAt: PropTypes.number,
     longStringHeight: PropTypes.number,
     name: PropTypes.string.isRequired,
     notCollapsible: PropTypes.bool,
     numberMaxVal: PropTypes.number,
     numberMinVal: PropTypes.number,
     numberStepVal: PropTypes.number,
-    selectBoxSize: PropTypes.number,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func,
     picklist: PropTypes.array,
     placeholder: PropTypes.string,
     renderNameFunction: PropTypes.func,
+    selectBoxSize: PropTypes.number,
     stackLabel: PropTypes.bool,
     value: PropTypes.oneOfType([
-        PropTypes.string,
+        PropTypes.array,
+        PropTypes.bool,
         PropTypes.number,
         PropTypes.object,
-        PropTypes.array,
-        PropTypes.bool
-    ]).isRequired,
-    changeFocusRefName: PropTypes.string,
-    dataTask: PropTypes.string,
-    buttonDataTask: PropTypes.string,
-    buttonName: PropTypes.string,
-    buttonOverwriteAction: PropTypes.string,
-    buttonDisabled: PropTypes.bool
+        PropTypes.string
+    ]).isRequired
 };
 
 export default DndInput;

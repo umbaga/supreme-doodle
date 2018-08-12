@@ -47,8 +47,8 @@ class DndInputWrapper extends React.Component {
 
 DndInputWrapper.propTypes = {
     children: PropTypes.oneOfType([
-        PropTypes.object,
-        PropTypes.array
+        PropTypes.array,
+        PropTypes.object
     ]),
     dataType: PropTypes.string,
     inputCols: PropTypes.number,

@@ -147,19 +147,19 @@ class DndButton extends React.Component {
 }
 
 DndButton.propTypes = {
-    buttonType: PropTypes.string,
-    onClick: PropTypes.func,
-    isBadge: PropTypes.bool,
     additionalButtonStyles: PropTypes.string,
-    label: PropTypes.string,
     bsButtonStyle: PropTypes.string,
-    dataType: PropTypes.string,
-    name: PropTypes.string,
-    selectedIndex: PropTypes.number,
-    disabled: PropTypes.bool,
+    buttonType: PropTypes.string,
     changeFocusRefName: PropTypes.string,
+    dataTask: PropTypes.string,
+    dataType: PropTypes.string,
+    disabled: PropTypes.bool,
+    isBadge: PropTypes.bool,
+    label: PropTypes.string,
+    name: PropTypes.string,
+    onClick: PropTypes.func,
     refs: PropTypes.object,
-    dataTask: PropTypes.string
+    selectedIndex: PropTypes.number
 };
 
 export default DndButton;

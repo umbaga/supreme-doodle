@@ -79,12 +79,17 @@ class DndToggleBoxes extends React.Component {
                         size={selectBoxSize}
                         datatype={this.props.dataType}
                         onDoubleClick={this.props.onAddItem}>
-                        {util.common.picklists.filterPicklistByAssigned(this.props.unselectedItemArray, this.props.selectedItemArray).map(picklistItem =>
-                                                                                                                    <option
-                                                                                                                        key={picklistItem[idKey]}
-                                                                                                                        value={picklistItem[idKey]}>
-                                                                                                                        {picklistItem[textKey]}
-                                                                                                                    </option>)}
+                        {util.common.picklists.filterPicklistByAssigned(this.props.unselectedItemArray, this.props.selectedItemArray).map(function(picklistItem) {
+                            return (
+                                <option
+                                    key={picklistItem[idKey]}
+                                    value={picklistItem[idKey]}
+                                    >
+                                    {picklistItem[textKey]}
+                                </option>
+                            
+                            );
+                        }.bind(this))}
                     </select>
                 </div>
                 <div className="col-sm-6">
@@ -95,12 +100,16 @@ class DndToggleBoxes extends React.Component {
                         size={selectBoxSize}
                         datatype={this.props.dataType}
                         onDoubleClick={this.props.onRemoveItem}>
-                        {this.props.selectedItemArray.map(picklistItem =>
-                                                   <option
-                                                       key={picklistItem[idKey]}
-                                                       value={picklistItem[idKey]}>
-                                                       {picklistItem[textKey]}
-                                                   </option>)}
+                        {this.props.selectedItemArray.map(function(picklistItem) {
+                            return (
+                                <option
+                                    key={picklistItem[idKey]}
+                                    value={picklistItem[idKey]}
+                                    >
+                                    {picklistItem[textKey]}
+                                </option>
+                            );
+                        }.bind(this))}
                     </select>
                 </div>
             </div>
@@ -110,17 +119,17 @@ class DndToggleBoxes extends React.Component {
 
 DndToggleBoxes.propTypes = {
     dataType: PropTypes.string.isRequired,
-    onAddItem: PropTypes.func.isRequired,
-    onRemoveItem: PropTypes.func.isRequired,
-    onAddAllItems: PropTypes.func,
-    onRemoveAllItems: PropTypes.func,
-    unselectedItemArray: PropTypes.array.isRequired,
-    selectedItemArray: PropTypes.array.isRequired,
-    listOptionValueKey: PropTypes.string,
     listOptionTextKey: PropTypes.string,
-    selectBoxSize: PropTypes.number,
+    listOptionValueKey: PropTypes.string,
     name: PropTypes.string.isRequired,
-    showButtons: PropTypes.bool
+    onAddAllItems: PropTypes.func,
+    onAddItem: PropTypes.func.isRequired,
+    onRemoveAllItems: PropTypes.func,
+    onRemoveItem: PropTypes.func.isRequired,
+    selectBoxSize: PropTypes.number,
+    selectedItemArray: PropTypes.array.isRequired,
+    showButtons: PropTypes.bool,
+    unselectedItemArray: PropTypes.array.isRequired
 };
 
 export default DndToggleBoxes;
