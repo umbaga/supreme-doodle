@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import DndDataEntryButtonBar from './buttons/DndDataEntryButtonBar';
+import DndDataEntryButtonBar from '../buttons/DndDataEntryButtonBar';
 
 class DndModal extends React.Component {
     constructor(props, context) {
@@ -36,7 +36,8 @@ class DndModal extends React.Component {
                             onSaveNew={this.props.onSaveNew}
                             onCancel={this.props.onCancel}
                             onDelete={this.props.onDelete}
-                            isCreate={this.props.isCreate} />
+                            isCreate={this.props.isCreate}
+                            />
                     </Modal.Footer>
                 </Modal>
             );

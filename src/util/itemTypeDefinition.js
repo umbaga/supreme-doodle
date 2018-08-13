@@ -26,10 +26,10 @@ export const TYPE = {
         WEAPON: 123
     },
     DATA_TYPE: {
-        ARRAY_OF: {
-            ITEMS: 320
-        },
         BOOL: 321,
+        DICE: 1067,
+        NUMBER: 1065,
+        PICKLIST: 1066,
         STRING: 322
     },
     DESCRIPTION: {

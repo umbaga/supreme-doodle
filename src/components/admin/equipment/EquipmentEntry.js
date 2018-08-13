@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as equipmentActions from '../../../actions/admin/equipmentActions';
 import EquipmentForm from './EquipmentForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class EquipmentEntry extends React.Component {
     constructor(props, context) {

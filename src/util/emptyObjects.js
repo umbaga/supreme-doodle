@@ -19,6 +19,30 @@ const _DICE = {
     rendered: ''
 };
 export const examples = exampleObjects;
+const _CHART_COLUMN = {
+    id: 0,
+    text: '',
+    columnIndex: 0,
+    dataType: {id: itemtypes.TYPE.DATA_TYPE.STRING},
+    selectItemType: _ID_NAME_OBJECT
+};
+const _CHART_ENTRY = {
+    id: 0,
+    columnIndex: 0,
+    rowIndex: 0,
+    selectedItem: _ID_NAME_OBJECT,
+    value: 0
+};
+const _CHART_ROW = {
+    id: 0,
+    text: '',
+    diceRange: {
+        maximum: 0,
+        minimum: 0
+    },
+    rowIndex: 0,
+    selectedItem: _ID_NAME_OBJECT
+};
 
 export const ASSIGNED_EQUIPMENT = {
     id: 0,
@@ -217,41 +241,33 @@ export const CHART = {
     id: 0,
     title: '',
     description: '',
-    columnCount: 1,
-    columns: [CHART_COLUMN],
+    columnCount: 0,
+    columns: [],
     dice: _DICE,
-    entries: [CHART_ENTRY],
+    entries: [],
     isNewType: false,
     orderIndex: 0,
-    rowCount: 1,
-    rows: [CHART_ROW],
+    rowCount: 0,
+    rows: [],
     selectItemType: _ID_NAME_OBJECT,
-    type: {id: 1063}
+    type: {id: 1064}
 };
-export const CHART_COLUMN = {
-    id: 0,
-    text: '',
-    columnIndex: 0,
-    dataType: _ID_NAME_OBJECT,
-    selectItemType: _ID_NAME_OBJECT
-};
-export const CHART_ENTRY = {
-    id: 0,
-    text: '',
-    columnIndex: 0,
-    rowIndex: 0,
-    selectedItem: _ID_NAME_OBJECT
-};
-export const CHART_ROW = {
-    id: 0,
-    text: '',
-    diceRange: {
-        maximum: 0,
-        minimum: 0
-    },
-    rowIndex: 0,
-    selectedItem: _ID_NAME_OBJECT
-};
+export function CHART_COLUMN(newIndex) {
+    let retVal = _CHART_COLUMN;
+    retVal.columnIndex = newIndex;
+    return retVal;
+}
+export function CHART_ENTRY(newColumnIndex, newRowIndex) {
+    let retVal = Object.assign({}, _CHART_ENTRY);
+    retVal.columnIndex = newColumnIndex;
+    retVal.rowIndex = newRowIndex;
+    return retVal;
+}
+export function CHART_ROW(newIndex) {
+    let retVal = _CHART_ROW;
+    retVal.rowIndex = newIndex;
+    return retVal;
+}
 export const EQUIPMENT = {
     id: 0,
     name: '',

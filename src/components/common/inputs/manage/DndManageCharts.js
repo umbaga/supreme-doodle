@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DndInput from '../DndInput';
+import DndNestedCheckbox from '../DndNestedCheckbox';
 import DndList from '../DndList';
+import DndChart from '../DndChart';
 import DndFieldset from '../../form/DndFieldset';
 import util from '../../../../util/util';
 
@@ -12,12 +14,11 @@ class DndManageCharts extends React.Component {
         this.renderDescription = this.renderDescription.bind(this);
         this.renderColumnsAndRows = this.renderColumnsAndRows.bind(this);
         this.renderRowDeterminationInput = this.renderRowDeterminationInput.bind(this);
-        this.renderIsNewTypeCheckbox = this.renderIsNewTypeCheckbox.bind(this);
     }
     
     renderTitle(chart) {
         return (chart.type.id != 0) ? (
-            <div className="col-md-12">
+            <div className="col-md-6">
                 <DndInput
                     name="title"
                     label="Title"
@@ -25,6 +26,7 @@ class DndManageCharts extends React.Component {
                     onChange={this.props.onChangeChild}
                     dataTask="chart"
                     value={chart.title}
+                    stackLabel
                     />
             </div>
         ) : '';
@@ -40,12 +42,15 @@ class DndManageCharts extends React.Component {
                     onChange={this.props.onChangeChild}
                     dataTask="chart"
                     value={chart.description}
+                    stackLabel
+                    notCollapsible
+                    longStringHeight={185}
                     />
             </div>
         ) : '';
     }
     
-    renderColumnsAndRows(chart, picklistTypes, colRowDivStyle) {
+    renderColumnsAndRows(chart, picklistTypes) {
         let disableRowInput = false;
         if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
             disableRowInput = true;
@@ -54,50 +59,32 @@ class DndManageCharts extends React.Component {
         }
         return (chart.type.id != 0) ? (
             <fragment>
-                {this.renderIsNewTypeCheckbox(chart, colRowDivStyle)}
-                {this.renderRowDeterminationInput(chart, picklistTypes, colRowDivStyle)}
-                <div className="col-md-12">
+                {this.renderRowDeterminationInput(chart, picklistTypes)}
+                <div className="col-md-6">
                     <DndInput
                         name="rowCount"
                         label="Rows"
-                        dataType={util.datatypes.NUMBER.INT}
+                        dataType={util.datatypes.SPECIAL.CHART.ROW.COUNT}
                         onChange={this.props.onChangeChild}
                         dataTask="chart"
                         value={chart.rowCount}
                         isReadOnly={disableRowInput}
+                        stackLabel
                         />
                 </div>
-                <div className="col-md-12">
+                <div className="col-md-6">
                     <DndInput
                         name="columnCount"
                         label="Columns"
-                        dataType={util.datatypes.NUMBER.INT}
+                        dataType={util.datatypes.SPECIAL.CHART.COLUMN.COUNT}
                         onChange={this.props.onChangeChild}
                         dataTask="chart"
                         value={chart.columnCount}
+                        stackLabel
                         />
                 </div>
             </fragment>
         ) : '';
-    }
-    
-    renderIsNewTypeCheckbox(chart) {
-        let retVal = null;
-        if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-            retVal = (
-                <div className="col-md-12">
-                    <DndInput
-                        name="isNewType"
-                        label="Is New"
-                        dataType={util.datatypes.BOOL}
-                        onChange={this.props.onChangeChild}
-                        dataTask="chart"
-                        value={chart.isNewType}
-                        />
-                </div>
-            );
-        }
-        return retVal;
     }
     
     renderRowDeterminationInput(chart, picklistTypes) {
@@ -117,61 +104,74 @@ class DndManageCharts extends React.Component {
                         buttonOverwriteAction="EXPAND"
                         buttonOnClick={this.props.onChangeChild}
                         buttonDisabled={!util.datatypes.compareDataType(chart.dice.rendered, util.datatypes.SPECIAL.DICE, [0, 1, 2])}
+                        stackLabel
                         />
                 </div>
             );
         } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-            if (chart.isNewType) {
-                retVal = (
-                    <div className="col-md-12">
-                        <DndInput
-                            name="selectItemType"
-                            label="Type"
-                            dataType={util.datatypes.STRING.SHORT}
-                            onChange={this.props.onChangeChild}
-                            dataTask="chart"
-                            value={chart.selectItemType.name}
-                            placeholder="New Type Name"
-                            />
-                    </div>
-                );
-            } else {
-                retVal = (
-                    <div className="col-md-12">
-                        <DndInput
-                            name="selectItemType"
-                            label="Type"
-                            dataType={util.datatypes.PICKLIST}
-                            onChange={this.props.onChangeChild}
-                            dataTask="chart"
-                            value={chart.selectItemType}
-                            picklist={picklistTypes}
-                            buttonType="fill"
-                            buttonDatatype={util.datatypes.ACTION.CHART}
-                            buttonOverwriteAction="EXPAND"
-                            buttonOnClick={this.props.onChangeChild}
-                            buttonDisabled={chart.selectItemType.id == 0}
-                            />
-                    </div>
-                );
-            }
+            let whichControl = (chart.isNewType) ? (
+                <DndInput
+                    name="selectItemType"
+                    label="Type"
+                    dataType={util.datatypes.STRING.SHORT}
+                    onChange={this.props.onChangeChild}
+                    dataTask="chart"
+                    value={chart.selectItemType.name}
+                    placeholder="New Type Name"
+                    hideLabel
+                    />
+            ) : (
+                <DndInput
+                    name="selectItemType"
+                    label="Type"
+                    dataType={util.datatypes.PICKLIST}
+                    onChange={this.props.onChangeChild}
+                    dataTask="chart"
+                    value={chart.selectItemType}
+                    picklist={picklistTypes}
+                    buttonType="fill"
+                    buttonDatatype={util.datatypes.ACTION.CHART}
+                    buttonOverwriteAction="EXPAND"
+                    buttonOnClick={this.props.onChangeChild}
+                    buttonDisabled={chart.selectItemType.id == 0}
+                    hideLabel
+                    />
+            );
+            retVal = (
+                <div className="col-md-12">
+                    <DndNestedCheckbox
+                        value={chart.isNewType}
+                        label="(Is New) Item Type"
+                        stackLabel
+                        onChange={this.props.onChangeChild}
+                        name="isNewType"
+                        dataTask="chart"
+                        >
+                        {whichControl}
+                    </DndNestedCheckbox>
+                </div>
+            );
         }
         return retVal;
     }
-    
+        
     render() {
         const chart = this.props.editChart;
         const charts = this.props.value;
         const picklists = this.props.picklists;
         const chartTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.CHART);
         const picklistTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.PICKLIST);
-        let colRowColSpan = 6;
-        if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
-            colRowColSpan = 4;
-        } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-            colRowColSpan = 3;
-        }
-        let colRowDivStyle = 'col-md-' + colRowColSpan.toString();
+        let finalChart = (util.validation.isReadyToShow.chart(chart)) ? (
+            <div className="col-md-12">
+                <DndChart
+                    onSave={this.props.onChange}
+                    onChange={this.props.onChange}
+                    onChangeChild={this.props.onChangeChild}
+                    picklists={picklists}
+                    value={chart}
+                    />
+            </div>
+        ) : null;
         return (
             <fragment>
                 <DndFieldset
@@ -179,32 +179,35 @@ class DndManageCharts extends React.Component {
                     collapsible
                     startCollapsed={charts.length != 0}
                     >
-                    <div className="col-md-4">
-                        <div className="col-md-12">
-                            <DndInput
-                                name="type"
-                                label="Type (Row Definition)"
-                                dataType={util.datatypes.PICKLIST}
-                                onChange={this.props.onChangeChild}
-                                dataTask="chart"
-                                picklist={chartTypes}
-                                value={chart.type}
-                                />
+                    <div className="col-md-12">
+                        <div className="col-md-6">
+                            <div className="col-md-6">
+                                <DndInput
+                                    name="type"
+                                    label="Type (Row Definition)"
+                                    dataType={util.datatypes.PICKLIST}
+                                    onChange={this.props.onChangeChild}
+                                    dataTask="chart"
+                                    picklist={chartTypes}
+                                    value={chart.type}
+                                    stackLabel
+                                    />
+                            </div>
+                            {this.renderTitle(chart)}
+                            {this.renderColumnsAndRows(chart, picklistTypes)}
                         </div>
-                        {this.renderTitle(chart)}
-                        {this.renderDescription(chart)}
-                        {this.renderColumnsAndRows(chart, picklistTypes, colRowDivStyle)}
+                        <div className="col-md-6">
+                            {this.renderDescription(chart)}
+                        </div>
                     </div>
-                    <div className="col-md-8">
-                        THIS IS WHERE THE CHART FORM GOES
-                    </div>
+                    {finalChart}
                 </DndFieldset>
                 <DndFieldset
                     legend="Exisitng Charts"
                     collapsible
                     startCollapsed={charts.length == 0}
                     >
-                    Existing Charts
+                    <div>EXISTING CHARTS</div>
                 </DndFieldset>
             </fragment>
         );

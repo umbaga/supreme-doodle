@@ -26,10 +26,10 @@ module.exports = {TYPE: {
         WEAPON: 123
     },
     DATA_TYPE: {
-        ARRAY_OF: {
-            ITEMS: 320
-        },
         BOOL: 321,
+        DICE: 1067,
+        NUMBER: 1065,
+        PICKLIST: 1066,
         STRING: 322
     },
     DESCRIPTION: {
@@ -74,6 +74,7 @@ module.exports = {TYPE: {
         MOVEMENT_TYPE: 207,
         NATURAL_WEAPON_TYPE: 305,
         OTHER_EFFECT: 255,
+        PICKLIST: 0,
         PROFICIENCY: 323,
         PROFICIENCY_CATEGORY: 125,
         RANGE: 28,
@@ -114,7 +115,7 @@ module.exports = {TYPE: {
         PARENT_CHILD: 124,
         PROFICIENCY: {
             ASSIGNED: 907,
-            SELECT : {
+            SELECT: {
                 CATEGORY: 905,
                 LIST: 904
             }

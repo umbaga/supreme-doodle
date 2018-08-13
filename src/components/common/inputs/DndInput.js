@@ -202,6 +202,7 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.BOOL:
+            case util.datatypes.SPECIAL.CHART.ENTRY.BOOL:
                 primaryInput = (
                     <input
                         type="checkbox"
@@ -257,6 +258,9 @@ class DndInput extends React.Component {
                 break;
             case util.datatypes.NUMBER.DEC:
             case util.datatypes.NUMBER.INT:
+            case util.datatypes.SPECIAL.CHART.ENTRY.NUMBER:
+            case util.datatypes.SPECIAL.CHART.COLUMN.COUNT:
+            case util.datatypes.SPECIAL.CHART.ROW.COUNT:
                 primaryInput = (
                     <input
                         type="number"
@@ -275,6 +279,9 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.PICKLIST:
+            case util.datatypes.SPECIAL.CHART.COLUMN.DATA_TYPE:
+            case util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST:
+            case util.datatypes.SPECIAL.CHART.ENTRY.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
                     <select
@@ -300,7 +307,6 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.SPECIAL.DICE:
-                
                 primaryInput = (
                     <input
                         type="text"

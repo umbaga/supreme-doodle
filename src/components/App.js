@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Header from './common/DndHeader';
+import Header from './common/form/DndHeader';
 
 class App extends React.Component {
     render() {

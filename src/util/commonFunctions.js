@@ -15,7 +15,7 @@ export const resetObject = {
         return retVal;
     },
     chart: function(currentChartCount) {
-        let retVal = Object.assign({}, util.objectModel.BACKGROUND);
+        let retVal = Object.assign({}, util.objectModel.CHART);
         retVal.id = -1 * currentChartCount;
         retVal.orderIndex = currentChartCount;
         return retVal;
@@ -133,11 +133,88 @@ export const charts = {
         let retVal = chart;
         
         return retVal;
+    },
+    refactorIndexes: {
+        columns: function(columns) {
+            let retVal = columns.sort(function(a, b) {
+                return a.columnIndex - b.columnIndex;
+            });
+            for (let q = 0; q < columns.length; q++) {
+                retVal[q].columnIndex = q;
+            }
+            return retVal;
+        },
+        entries: function(entries, rows, columns) {
+            let retVal = entries.sort(function(a, b) {
+                if (a.rowIndex != b.rowIndex) {
+                    return a.rowIndex - b.rowIndex;
+                } else {
+                    return a.columnIndex - b.columnIndex;
+                }
+            });
+            let counter = 0;
+            for (let q = 0; q < columns.length; q++) {
+                for (let w = 0; w < rows.length; w++) {
+                    entries[counter].rowIndex = q;
+                    entries[counter].columnIndex = w;
+                    counter++;
+                }
+            }
+            retVal = retVal.sort(function(a, b) {
+                if (a.rowIndex == b.rowIndex) {
+                    return a.columnIndex - b.columnIndex;
+                } else {
+                    return a.rowIndex - b.rowIndex;
+                }
+            });
+            return retVal;
+        },
+        rows: function(rows) {
+            let retVal = rows.sort(function(a, b) {
+                return a.rowIndex - b.rowIndex;
+            });
+            for (let q = 0; q < rows.length; q++) {
+                retVal[q].rowIndex = q;
+            }
+            return retVal;
+        }
+    }
+};
+
+export const calculate = {
+    dice: {
+        minimum: function(val) {
+            let retVal = val.dieCount;
+            retVal += val.modifier;
+            retVal *= val.multiplier;
+            retVal /= val.divisor;
+            return retVal;
+        },
+        maximum: function(val) {
+            let retVal = val.dieCount * val.dieType;
+            retVal += val.modifier;
+            retVal *= val.multiplier;
+            retVal /= val.divisor;
+            return retVal;
+        }
     }
 };
 
 export const formState = {
     functions: {
+        get: {
+            objectValue: function(obj, prop) {
+                if (typeof prop === 'string') {
+                    return util.common.formState.functions.get.objectValue(obj, prop.split('.'));
+                } else if (prop.length == 1) {
+                    return obj[prop[0]];
+                } else if (prop.length == 0) {
+                    return obj;
+                } else {
+                    return util.common.formState.functions.get.objectValue(obj[prop[0]], prop.slice(1));
+                }
+            }
+        },
         set: {
             objectValue: function(obj, prop, val, action, idx, subfield) {
                 if (typeof prop === 'string') {
@@ -308,8 +385,51 @@ export const formState = {
         let newSelectedValue = {};
         let inputType = event.target.type;
         let selectedIndex = util.common.formState.functions.set.valueFromTarget(event, 'value');
+        let dataTask = util.common.formState.functions.set.valueFromTarget(event, 'data-task');
         let tmpText = '';
+        let tmpVal = null;
+        let newRowIndex = 0;
+        let newColIndex = 0;
+        let oldRowCount = 0;
+        let oldColumnCount = 0;
         switch (dataType) {
+            case util.datatypes.ACTION.CHART.COLUMN.ADD:
+                newColIndex = util.common.formState.functions.set.objectValue(retVal, field).length;
+                util.common.formState.functions.set.objectValue(retVal, field, Object.assign({}, util.objectModel.CHART_COLUMN(newColIndex)), 'add');
+                retVal.columnCount++;
+                for (let q = 0; q < retVal.rows.length; q++) {
+                    retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(newColIndex, q)));
+                }
+                break;
+            case util.datatypes.ACTION.CHART.COLUMN.REMOVE:
+                util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
+                retVal.columnCount--;
+                retVal.columns = util.common.charts.refactorIndexes.columns(retVal.columns);
+                retVal.entries = retVal.entries.filter(function(entry) {
+                    return entry.columnIndex != selectedIndex;
+                });
+                retVal.entries = util.common.charts.refactorIndexes.entries(retVal.entries, retVal.rows, retVal.columns);
+                break;
+            case util.datatypes.ACTION.CHART.CANCEL:
+                retVal = util.common.resetObject.chart(arrayObject.length);
+                break;
+            case util.datatypes.ACTION.CHART.ROW.ADD:
+                newRowIndex = util.common.formState.functions.set.objectValue(retVal, field).length;
+                util.common.formState.functions.set.objectValue(retVal, field, Object.assign({}, util.objectModel.CHART_ROW(newRowIndex)), 'add');
+                retVal.rowCount++;
+                for (let q = 0; q < retVal.columns.length; q++) {
+                    retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(q, newRowIndex)));
+                }
+                break;
+            case util.datatypes.ACTION.CHART.ROW.REMOVE:
+                util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
+                retVal.rowCount--;
+                retVal.rows = util.common.charts.refactorIndexes.rows(retVal.rows);
+                retVal.entries = retVal.entries.filter(function(entry) {
+                    return entry.rowIndex != selectedIndex;
+                });
+                retVal.entries = util.common.charts.refactorIndexes.entries(retVal.entries, retVal.rows, retVal.columns);
+                break;
             case util.datatypes.ACTION.LIST.NEW.ADD:
             case util.datatypes.ACTION.LIST.PICKLIST.ADD:
                 util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
@@ -317,20 +437,6 @@ export const formState = {
             case util.datatypes.ACTION.LIST.NEW.REMOVE:
             case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
                 util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
-                break;
-            case util.datatypes.ARRAY.LIST.ADD.NEW:
-            case util.datatypes.ARRAY.TAGS.ADD.NEW:
-            case util.datatypes.NUMBER.CHARACTER_LEVEL:
-            case util.datatypes.NUMBER.INT:
-            case util.datatypes.NUMBER.DEC:
-            case util.datatypes.NUMBER.SPELL_LEVEL:
-            case util.datatypes.STRING.SHORT:
-            case util.datatypes.STRING.LONG:
-                if (arrayItemIndex == -1) {
-                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
-                } else {
-                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value, 'edit', arrayItemIndex, subfield);
-                }
                 break;
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
                 if (field.split('_').length == 1) {
@@ -370,12 +476,93 @@ export const formState = {
                     util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue);
                 }
                 break;
+            case util.datatypes.SPECIAL.CHART.COLUMN.DATA_TYPE:
+            case util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST:
+            case util.datatypes.SPECIAL.CHART.ENTRY.PICKLIST:
+                newSelectedValue = util.common.picklists.getPicklistItem(picklists, event.target.value);
+                util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue, 'edit', arrayItemIndex, subfield);
+                break;
+            case util.datatypes.SPECIAL.CHART.COLUMN.STRING:
+            case util.datatypes.SPECIAL.CHART.ENTRY.STRING:
+            case util.datatypes.SPECIAL.CHART.ROW.STRING:
+                tmpText = util.common.replace.description(event.target.innerHTML);
+                util.common.formState.functions.set.objectValue(retVal, field, tmpText.trim(), 'edit', arrayItemIndex, subfield);
+                break;
             case util.datatypes.SPECIAL.DICE:
                 util.common.formState.functions.set.objectValue(retVal, field, formState.dice(event));
+                if (dataTask == 'chart') {
+                    tmpVal = util.common.formState.functions.get.objectValue(retVal, field);
+                    if (util.datatypes.compareDataType(tmpVal.rendered, util.datatypes.SPECIAL.DICE, [0, 1, 2])) {
+                        if (retVal.rows.length == 1) {
+                            retVal.rows[0].diceRange.minimum = util.common.calculate.dice.minimum(tmpVal);
+                            retVal.rows[0].diceRange.maximum = util.common.calculate.dice.maximum(tmpVal);
+                        }
+                    }
+                }
+                break;
+            case util.datatypes.SPECIAL.CHART.COLUMN.COUNT:
+                oldRowCount = parseInt(retVal.rowCount);
+                oldColumnCount = parseInt(retVal.columnCount);
+                util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                if (oldColumnCount > retVal.columnCount) {
+                    retVal.columns = retVal.columns.filter(function(column) {
+                        return column.columnIndex < retVal.columnCount;
+                    });
+                    retVal.entries = retVal.entries.filter(function(entry) {
+                        return entry.columnIndex < retVal.columnCount;
+                    });
+                } else if (oldColumnCount < retVal.columnCount) {
+                    for (let q = oldColumnCount; q < retVal.columnCount; q++) {
+                        retVal.columns.push(Object.assign({}, util.objectModel.CHART_COLUMN(q)));
+                        for (let w = 0; w < retVal.rows.length; w++) {
+                            retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(q, w)));
+                        }
+                    }
+                }
+                break;
+            case util.datatypes.SPECIAL.CHART.ENTRY.BOOL:
+                util.common.formState.functions.set.objectValue(retVal, field, event.target.checked, 'edit', arrayItemIndex, subfield);
+                break;
+            case util.datatypes.SPECIAL.CHART.ENTRY.NUMBER:
+                util.common.formState.functions.set.objectValue(retVal, field, event.target.value, 'edit', arrayItemIndex, subfield);
+                break;
+            case util.datatypes.SPECIAL.CHART.ROW.COUNT:
+                oldRowCount = parseInt(retVal.rowCount);
+                oldColumnCount = parseInt(retVal.columnCount);
+                util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                if (oldRowCount > retVal.rowCount) {
+                    retVal.rows = retVal.rows.filter(function(row) {
+                        return row.rowIndex < retVal.rowCount;
+                    });
+                    retVal.entries = retVal.entries.filter(function(entry) {
+                        return entry.rowIndex < retVal.rowCount;
+                    });
+                } else if (oldRowCount < retVal.rowCount) {
+                    for (let q = oldRowCount; q < retVal.rowCount; q++) {
+                        retVal.rows.push(Object.assign({}, util.objectModel.CHART_ROW(q)));
+                        for (let w = 0; w < retVal.columns.length; w++) {
+                            retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(w, q)));
+                        }
+                    }
+                }
                 break;
             case util.datatypes.STRING.HTML.LONG:
                 tmpText = util.common.replace.description(event.target.innerHTML);
                 util.common.formState.functions.set.objectValue(retVal, field, tmpText.trim());
+                break;
+            case util.datatypes.STRING.SHORT:
+            case util.datatypes.STRING.LONG:
+            case util.datatypes.ARRAY.LIST.ADD.NEW:
+            case util.datatypes.ARRAY.TAGS.ADD.NEW:
+            case util.datatypes.NUMBER.CHARACTER_LEVEL:
+            case util.datatypes.NUMBER.INT:
+            case util.datatypes.NUMBER.DEC:
+            case util.datatypes.NUMBER.SPELL_LEVEL:
+                if (arrayItemIndex == -1) {
+                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value);
+                } else {
+                    util.common.formState.functions.set.objectValue(retVal, field, event.target.value, 'edit', arrayItemIndex, subfield);
+                }
                 break;
             default:
                 console.error('Missing Datatype in switch: ' + dataType);

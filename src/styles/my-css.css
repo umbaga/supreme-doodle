@@ -42,7 +42,6 @@ tr.found{
 }
 .input-inline {
     display: inline-flex !important;
-    color: red;
 }
 .tab-pane {
     height: 500px;
@@ -91,13 +90,50 @@ tr.found{
     max-height:565px;
     overflow-y:scroll;
 }
-.tableBodyScroll thead, tbody tr {
+.tableBodyScroll thead, tfoot, tbody, tr {
     display:table;
     width:100%;
     table-layout:fixed;
 }
+
+table.tableChartEditing {
+    padding: 0px !important;
+    border: 2px groove gray;
+}
+
+td.tableChartEditing, th.tableChartEditing {
+    border-left: 1px groove lightgray;
+    border-bottom: 1px groove lightgray;
+    padding-left: 5px !important;
+    text-align: center;
+}
+
+td.tableChartEditingRow, th.tableChartEditingRow {
+    border-left: 1px groove lightgray;
+    border-bottom: 1px groove lightgray;
+    padding-left: 5px !important;
+}
+
+td.tableChartEditingButton {
+    border-left: 1px groove lightgray;
+    border-bottom: 1px groove lightgray;
+    height: 35px;
+    width: 40px;
+}
+
+th.tableChartEditingButton {
+    border-left: 1px groove lightgray;
+    border-bottom: 1px groove lightgray;
+    width: 57px;
+}
+
+tbody.tableChartEditing {
+    padding: 0px !important;
+    max-height: 450px !important;
+}
+
 .dnd-tag {
-    background-color:darkgoldenrod;
+    background-color: darkgoldenrod;
     vertical-align: middle;
     margin: 5px;
 }
@@ -110,12 +146,10 @@ tr.found{
     color:darkblue;
 }
 .dnd-input-number {
-    /*background-color: red;*/
     width: 75px !important;
 }
 .dnd-max-width {
     width: 100% !important;
-    /*background-color: blue;*/
 }
 fieldset {
     border: 2px groove threedface;

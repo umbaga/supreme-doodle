@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as picklistActions from '../../../actions/admin/picklistActions';
 import PicklistForm from './PicklistForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class PicklistEntry extends React.Component {
     constructor(props, context) {

@@ -9,7 +9,7 @@ class DndDataEntryButtonBar extends React.Component {
         this.renderButton = this.renderButton.bind(this);
     }
     
-    renderButton(onClickFunction, buttonType, action, name) {
+    renderButton(onClickFunction, buttonType, action, name, dataTask, disabled) {
         if (onClickFunction) {
             return (
                 <DndButton
@@ -17,6 +17,8 @@ class DndDataEntryButtonBar extends React.Component {
                     buttonType={buttonType}
                     dataType={action}
                     name={name}
+                    dataTask={dataTask}
+                    disbaled={disabled}
                     />
             );
         }
@@ -25,14 +27,20 @@ class DndDataEntryButtonBar extends React.Component {
     
     render() {
         let wrapperClass = 'form-group';
-        const cancelButton = this.renderButton(this.props.onCancel, 'cancel', this.props.cancelAction, this.props.name);
-        const deleteButton = this.renderButton(this.props.onDelete, 'delete', this.props.deleteAction, this.props.name);
-        const resetButton = this.renderButton(this.props.onReset, 'reset', this.props.resetAction, this.props.name);
-        const saveButton = this.renderButton(this.props.onSave, 'save', this.props.saveAction, this.props.name);
-        const saveNewButton = this.renderButton(this.props.onSaveNew, 'savenew', this.props.saveAction, this.props.name);
+        let cancelDataTask = (this.props.cancelDataTask) ? this.props.cancelDataTask : (this.props.dataTask) ? this.props.dataTask : 'normal';
+        let deleteDataTask = (this.props.deleteDataTask) ? this.props.deleteDataTask : (this.props.dataTask) ? this.props.dataTask : 'normal';
+        let resetDataTask = (this.props.resetDataTask) ? this.props.resetDataTask : (this.props.dataTask) ? this.props.dataTask : 'normal';
+        let saveDataTask = (this.props.saveDataTask) ? this.props.saveDataTask : (this.props.dataTask) ? this.props.dataTask : 'normal';
+        let saveDisabled = (this.props.saveDisabled) ? this.props.saveDisabled : false;
+        const cancelButton = this.renderButton(this.props.onCancel, 'cancel', this.props.cancelAction, this.props.name, cancelDataTask, false);
+        const deleteButton = this.renderButton(this.props.onDelete, 'delete', this.props.deleteAction, this.props.name, deleteDataTask, false);
+        const resetButton = this.renderButton(this.props.onReset, 'reset', this.props.resetAction, this.props.name, resetDataTask, false);
+        const saveButton = this.renderButton(this.props.onSave, 'save', this.props.saveAction, this.props.name, saveDataTask, false);
+        const saveNewButton = this.renderButton(this.props.onSaveNew, 'savenew', this.props.saveAction, this.props.name, saveDataTask, saveDisabled);
+        let pullClass = (this.props.pullLeft) ? 'pull-left' : 'pull-right';
         return (
             <div className={wrapperClass}>
-                <div className="pull-right">
+                <div className={pullClass}>
                     <ButtonGroup>
                         {deleteButton}
                         {resetButton}
@@ -49,7 +57,10 @@ class DndDataEntryButtonBar extends React.Component {
 
 DndDataEntryButtonBar.propTypes = {
     cancelAction: PropTypes.string,
+    cancelDataTask: PropTypes.string,
+    dataTask: PropTypes.string,
     deleteAction: PropTypes.string,
+    deleteDataTask: PropTypes.string,
     isCreate: PropTypes.bool,
     name: PropTypes.string,
     onCancel: PropTypes.func,
@@ -58,7 +69,11 @@ DndDataEntryButtonBar.propTypes = {
     onSave: PropTypes.func,
     onSaveNew: PropTypes.func,
     resetAction: PropTypes.string,
+    resetDataTask: PropTypes.string,
+    pullLeft: PropTypes.bool,
     saveAction: PropTypes.string,
+    saveDataTask: PropTypes.string,
+    saveDisabled: PropTypes.bool,
     saving: PropTypes.bool
 };
 

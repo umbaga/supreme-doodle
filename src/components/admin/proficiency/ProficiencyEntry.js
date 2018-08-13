@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as proficiencyActions from '../../../actions/admin/proficiencyActions';
 import ProficiencyForm from './ProficiencyForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class ProficiencyEntry extends React.Component {
     constructor(props, context) {

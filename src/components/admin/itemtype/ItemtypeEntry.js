@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as itemtypeActions from '../../../actions/admin/itemtypeActions';
 import ItemtypeForm from './ItemtypeForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class ItemtypeEntry extends React.Component {
     constructor(props, context) {

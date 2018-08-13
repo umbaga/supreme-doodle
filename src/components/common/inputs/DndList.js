@@ -90,6 +90,7 @@ class DndList extends React.Component {
                                                 name={this.props.name}
                                                 dataType={this.props.dataType.REMOVE}
                                                 selectedIndex={idx}
+                                                dataTask={dataTask}
                                                 />
                                         </div>
                                     </td>

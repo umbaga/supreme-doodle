@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link, IndexLink } from 'react-router';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import * as sessionActions from '../../actions/sessionActions';
+import * as sessionActions from '../../../actions/sessionActions';
 
 class Header extends React.Component {
     constructor() {

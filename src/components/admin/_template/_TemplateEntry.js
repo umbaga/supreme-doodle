@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as _templateActions from '../../../actions/admin/_templateActions';
 import _TemplateForm from './_TemplateForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class _TemplateEntry extends React.Component {
     constructor(props, context) {

@@ -1,5 +1,16 @@
 export const ACTION = {
     CHART: {
+        ADD: 'DATATYPE_ACTION_CHART_ADD',
+        COLUMN: {
+            ADD: 'DATATYPE_ACTION_CHART_COLUMN_ADD',
+            REMOVE: 'DATATYPE_ACTION_CHART_COLUMN_REMOVE'
+        },
+        CANCEL: 'DATATYPE_ACTION_CHART_CANCEL',
+        REMOVE: 'DATATYPE_ACTION_CHART_REMOVE',
+        ROW: {
+            ADD: 'DATATYPE_ACTION_CHART_ROW_ADD',
+            REMOVE: 'DATATYPE_ACTION_CHART_ROW_REMOVE'
+        },
         EXPAND: 'DATATYPE_ACTON_CHART_EXPAND'
     },
     LIST: {
@@ -73,6 +84,27 @@ export const NUMBER = {
 export const PICKLIST = 'DATATYPE_PICKLIST';
 
 export const SPECIAL = {
+    CHART: {
+        COLUMN: {
+            COUNT: 'DATATYPE_SPECIAL_CHART_COLUMN_COUNT',
+            DATA_TYPE: 'DATATYPE_SPECIAL_CHART_COLUMN_DATA_TYPE',
+            PICKLIST: 'DATATYPE_SPECIAL_CHART_COLUMN_PICKLIST',
+            STRING: 'DATATYPE_SPECIAL_CHART_COLUMN_STRING'
+        },
+        ENTRY: {
+            BOOL: 'DATATYPE_SPECIAL_CHART_ENTRY_BOOL',
+            DICE: 'DATATYPE_SPECIAL_CHART_ENTRY_DICE',
+            NUMBER: 'DATATYPE_SPECIAL_CHART_ENTRY_NUMBER',
+            PICKLIST: 'DATATYPE_SPECIAL_CHART_ENTRY_PICKLIST',
+            STRING: 'DATATYPE_SPECIAL_CHART_ENTRY_STRING'
+        },
+        ROW: {
+            COUNT: 'DATATYPE_SPECIAL_CHART_COLUMN_ROW',
+            DICE_RANGE: 'DATATYPE_SPECIAL_CHART_ROW_DICE_RANGE',
+            PICKLIST: 'DATATYPE_SPECIAL_CHART_ROW_PICKLIST',
+            STRING: 'DATATYPE_SPECIAL_CHART_ROW_STRING'
+        }
+    },
     DICE: 'DATATYPE_SPECIAL_DICE'
 };
 
@@ -141,6 +173,13 @@ export function compareDataType (val, dataType, disallowValues) {
                             }
                         } else {
                             retVal = false;
+                        }
+                        if (tmpArr.length == 3) {
+                            if (Number.isInteger(parseInt(tmpArr[2]))) {
+                                retVal = true;
+                            } else {
+                                retVal = false;
+                            }
                         }
                     } else {
                         retVal = false;

@@ -8,6 +8,7 @@ import unicode from './unicode';
 import * as common from './commonFunctions';
 import * as hardCoded from './hardcoded';
 import * as styles from './styles';
+import * as validation from './validation';
 //import * as hardCodedPicklists from './hardCodedPicklists';
 
 let util = {};
@@ -24,4 +25,5 @@ util.common = common;
 util.itemtypes = itemTypeDefinition;
 util.hardCoded = hardCoded;
 util.styles = styles;
+util.validation = validation;
 export default util;

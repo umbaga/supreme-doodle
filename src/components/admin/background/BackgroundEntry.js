@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import * as backgroundActions from '../../../actions/admin/backgroundActions';
 import BackgroundForm from './BackgroundForm';
 import util from '../../../util/util';
-import DndModal from '../../common/DndModal';
+import DndModal from '../../common/form/DndModal';
 
 class BackgroundEntry extends React.Component {
     constructor(props, context) {
@@ -122,7 +122,7 @@ class BackgroundEntry extends React.Component {
         let newItem = {};
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
             case 'chart':
-                newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists);
+                newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists, this.state.background.charts);
                 newStateObj.editChart = newItem;
                 break;
             case 'proficiency':
