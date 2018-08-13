@@ -51,12 +51,6 @@ class DndManageCharts extends React.Component {
     }
     
     renderColumnsAndRows(chart, picklistTypes) {
-        let disableRowInput = false;
-        if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
-            disableRowInput = true;
-        } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-            disableRowInput = !chart.isNewType;
-        }
         return (chart.type.id != 0) ? (
             <fragment>
                 {this.renderRowDeterminationInput(chart, picklistTypes)}
@@ -68,7 +62,7 @@ class DndManageCharts extends React.Component {
                         onChange={this.props.onChangeChild}
                         dataTask="chart"
                         value={chart.rowCount}
-                        isReadOnly={disableRowInput}
+                        isReadOnly={chart.type.id == util.itemtypes.TYPE.CHART.DICE}
                         stackLabel
                         />
                 </div>

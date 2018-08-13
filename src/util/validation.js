@@ -1,19 +1,29 @@
+import util from './util';
+
 export const isReadyToSave = {
     chart: function(val) {
-        let retVal = true;
-        
-        return retVal;
+        return true;
     }
 };
 export const isReadyToShow = {
     chart: function(val) {
-        let retVal = true;
         if (val.columnCount == 0) {
-            retVal = false;
+            return false;
         }
         if (val.rowCount == 0) {
-            retVal = false;
+            return false;
         }
-        return retVal;
+        if (val.type.id == util.itemtypes.TYPE.CHART.SELECT) {
+            if (!val.isNewType) {
+                if (!val.selectItemType || val.selectItemType.id == 0) {
+                    return false;
+                }
+            }
+        } else if (val.type.id == util.itemtypes.TYPE.CHART.DICE) {
+            if (!util.datatypes.compareDataType(val.dice.rendered, util.datatypes.SPECIAL.DICE, [0, 1, 2])) {
+                return true;
+            }
+        }
+        return true;
     }
 };

@@ -11,6 +11,7 @@ class DndChart extends React.Component {
         this.renderHeader = this.renderHeader.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
         this.renderCellInput = this.renderCellInput.bind(this);
+        this.renderRowCell = this.renderRowCell.bind(this);
     }
     
     renderHeader(chart) {
@@ -218,6 +219,67 @@ class DndChart extends React.Component {
         return retVal;
     }
     
+    renderRowCell(chart, row, idx) {
+        let chartRowPicklist = null;
+        let retVal = (
+            <th
+                className="tableChartEditing"
+                name={'rows_idx_' + idx.toString() + '_idx_text'}
+                datatype={util.datatypes.SPECIAL.CHART.ROW.STRING}
+                contentEditable
+                onBlur={this.props.onChangeChild}
+                id={'rows_idx_' + idx.toString() + '_idx_text'}
+                data-task="chart"
+                >
+                {row.text}
+            </th>
+        );
+        if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT && !chart.isNewType) {
+            chartRowPicklist = util.common.picklists.getPicklistItems(this.props.picklists, chart.selectItemType.id);
+            retVal = (
+                <th className="tableChartEditing">
+                    <DndInput
+                        name={'rows_idx_' + idx.toString() + '_idx_selectedItem'}
+                        dataType={util.datatypes.SPECIAL.CHART.ROW.PICKLIST}
+                        value={row.selectedItem}
+                        onChange={this.props.onChangeChild}
+                        hideLabel
+                        dataTask="chart"
+                        picklist={chartRowPicklist}
+                        />
+                </th>
+            );
+        } else if (chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
+            chartRowPicklist = [];
+            for (let q = row.diceRange.minimum; q <= row.diceRange.maximum; q++) {
+                let newDicePicklistItem = {};
+                newDicePicklistItem.id = q;
+                if (q == row.diceRange.minimum) {
+                    newDicePicklistItem.name = q.toString();
+                } else {
+                    newDicePicklistItem.name = row.diceRange.minimum.toString() + '-' + q;
+                }
+                chartRowPicklist.push(newDicePicklistItem);
+            }
+            let selectedDieRange = {id: row.diceRange.maximum};
+            retVal = (
+                <th className="tableChartEditing">
+                    <DndInput
+                        name={'rows_idx_' + idx.toString() + '_idx_diceRange.maximum'}
+                        dataType={util.datatypes.SPECIAL.CHART.ROW.DICE_RANGE}
+                        value={selectedDieRange}
+                        onChange={this.props.onChangeChild}
+                        hideLabel
+                        dataTask="chart"
+                        picklist={chartRowPicklist}
+                        hideSelectOneOption
+                        />
+                </th>
+            );
+        }
+        return retVal;
+    }
+    
     render() {
         const chart = this.props.value;
         return (
@@ -240,17 +302,7 @@ class DndChart extends React.Component {
                         }
                         return (
                             <tr key={idx}>
-                                <th
-                                    className="tableChartEditing"
-                                    name={'rows_idx_' + idx.toString() + '_idx_text'}
-                                    datatype={util.datatypes.SPECIAL.CHART.ROW.STRING}
-                                    contentEditable
-                                    onBlur={this.props.onChangeChild}
-                                    id={'rows_idx_' + idx.toString() + '_idx_text'}
-                                    data-task="chart"
-                                    >
-                                    {row.text}
-                                </th>
+                                {this.renderRowCell(chart, row, idx)}
                                 {chart.entries.filter(function(entry) {
                                     return entry.rowIndex == row.rowIndex;
                                 }).sort(function(a, b) {

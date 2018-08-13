@@ -282,6 +282,8 @@ class DndInput extends React.Component {
             case util.datatypes.SPECIAL.CHART.COLUMN.DATA_TYPE:
             case util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST:
             case util.datatypes.SPECIAL.CHART.ENTRY.PICKLIST:
+            case util.datatypes.SPECIAL.CHART.ROW.DICE_RANGE:
+            case util.datatypes.SPECIAL.CHART.ROW.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
                     <select

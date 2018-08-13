@@ -250,7 +250,7 @@ export const CHART = {
     rowCount: 0,
     rows: [],
     selectItemType: _ID_NAME_OBJECT,
-    type: {id: 1064}
+    type: {id: 1062}
 };
 export function CHART_COLUMN(newIndex) {
     let retVal = _CHART_COLUMN;

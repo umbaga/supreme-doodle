@@ -155,8 +155,8 @@ export const charts = {
             let counter = 0;
             for (let q = 0; q < columns.length; q++) {
                 for (let w = 0; w < rows.length; w++) {
-                    entries[counter].rowIndex = q;
-                    entries[counter].columnIndex = w;
+                    entries[counter].rowIndex = w;
+                    entries[counter].columnIndex = q;
                     counter++;
                 }
             }
@@ -169,12 +169,32 @@ export const charts = {
             });
             return retVal;
         },
-        rows: function(rows) {
+        rows: function(rows, chart) {
             let retVal = rows.sort(function(a, b) {
                 return a.rowIndex - b.rowIndex;
             });
             for (let q = 0; q < rows.length; q++) {
                 retVal[q].rowIndex = q;
+            }
+            if (chart && chart.type.id == util.itemtypes.TYPE.CHART.DICE) {
+                for (let q = 0; q < retVal.length; q++) {
+                    if (q == 0) {
+                        if (retVal[0].diceRange.minimum > util.common.calculate.dice.minimum(chart.dice)) {
+                            retVal[0].diceRange.minimum = util.common.calculate.dice.minimum(chart.dice);
+                        }
+                    } else if (q == retVal.length - 1) {
+                        if (retVal[retVal.length - 1].diceRange.maximum < util.common.calculate.dice.maximum(chart.dice)) {
+                            retVal[retVal.length - 1].diceRange.maximum = util.common.calculate.dice.maximum(chart.dice);
+                        }
+                        if ((retVal[q].diceRange.minimum - retVal[q - 1].diceRange.maximum) > 1) {
+                            retVal[q - 1].diceRange.maximum = retVal[q].diceRange.minimum - 1;
+                        }
+                    } else {
+                        if ((retVal[q].diceRange.minimum - retVal[q - 1].diceRange.maximum) > 1) {
+                            retVal[q - 1].diceRange.maximum = retVal[q].diceRange.minimum - 1;
+                        }
+                    }
+                }
             }
             return retVal;
         }
@@ -388,10 +408,12 @@ export const formState = {
         let dataTask = util.common.formState.functions.set.valueFromTarget(event, 'data-task');
         let tmpText = '';
         let tmpVal = null;
+        let tmpObj = null;
         let newRowIndex = 0;
         let newColIndex = 0;
         let oldRowCount = 0;
         let oldColumnCount = 0;
+        let counter = 0;
         switch (dataType) {
             case util.datatypes.ACTION.CHART.COLUMN.ADD:
                 newColIndex = util.common.formState.functions.set.objectValue(retVal, field).length;
@@ -421,10 +443,39 @@ export const formState = {
                     retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(q, newRowIndex)));
                 }
                 break;
+            case util.datatypes.ACTION.CHART.EXPAND:
+                if (retVal.type.id == util.itemtypes.TYPE.CHART.SELECT) {
+                    tmpVal = util.common.picklists.getPicklistItems(picklists, retVal.selectItemType.id);
+                    for (let q = retVal.rows.length; q < tmpVal.length; q++) {
+                        retVal.rows.push(Object.assign({}, util.objectModel.CHART_ROW(q)));
+                        retVal.rowCount++;
+                    }
+                    for (let q = 0; q < tmpVal.length; q++) {
+                        retVal.rows[q].selectedItem = tmpVal[q];
+                    }
+                } else if (retVal.type.id == util.itemtypes.TYPE.CHART.DICE){
+                    counter = 0;
+                    for (let q = util.common.calculate.dice.minimum(retVal.dice); q <= util.common.calculate.dice.maximum(retVal.dice); q++) {
+                        if (retVal.rows[counter]) {
+                            retVal.rows[counter].diceRange = {};
+                            retVal.rows[counter].diceRange.minimum = q;
+                            retVal.rows[counter].diceRange.maximum = q;
+                        } else {
+                            tmpObj = Object.assign({}, util.objectModel.CHART_ROW(retVal.rows.length));
+                            tmpObj.diceRange = {};
+                            tmpObj.diceRange.minimum = q;
+                            tmpObj.diceRange.maximum = q;
+                            retVal.rows.push(tmpObj);
+                            retVal.rowCount++;
+                        }
+                        counter++;
+                    }
+                }
+                break;
             case util.datatypes.ACTION.CHART.ROW.REMOVE:
                 util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
                 retVal.rowCount--;
-                retVal.rows = util.common.charts.refactorIndexes.rows(retVal.rows);
+                retVal.rows = util.common.charts.refactorIndexes.rows(retVal.rows, retVal);
                 retVal.entries = retVal.entries.filter(function(entry) {
                     return entry.rowIndex != selectedIndex;
                 });
@@ -479,6 +530,7 @@ export const formState = {
             case util.datatypes.SPECIAL.CHART.COLUMN.DATA_TYPE:
             case util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST:
             case util.datatypes.SPECIAL.CHART.ENTRY.PICKLIST:
+            case util.datatypes.SPECIAL.CHART.ROW.PICKLIST:
                 newSelectedValue = util.common.picklists.getPicklistItem(picklists, event.target.value);
                 util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue, 'edit', arrayItemIndex, subfield);
                 break;
@@ -493,7 +545,13 @@ export const formState = {
                 if (dataTask == 'chart') {
                     tmpVal = util.common.formState.functions.get.objectValue(retVal, field);
                     if (util.datatypes.compareDataType(tmpVal.rendered, util.datatypes.SPECIAL.DICE, [0, 1, 2])) {
-                        if (retVal.rows.length == 1) {
+                        if (retVal.rows.length == 0) {
+                            retVal.rowCount++;
+                            tmpObj = Object.assign({}, util.objectModel.CHART_ROW(0));
+                            tmpObj.diceRange.minimum = util.common.calculate.dice.minimum(tmpVal);
+                            tmpObj.diceRange.maximum = util.common.calculate.dice.maximum(tmpVal);
+                            retVal.rows.push(tmpObj);
+                        } else if (retVal.rows.length == 1) {
                             retVal.rows[0].diceRange.minimum = util.common.calculate.dice.minimum(tmpVal);
                             retVal.rows[0].diceRange.maximum = util.common.calculate.dice.maximum(tmpVal);
                         }
@@ -543,6 +601,21 @@ export const formState = {
                         for (let w = 0; w < retVal.columns.length; w++) {
                             retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(w, q)));
                         }
+                    }
+                }
+                break;
+            case util.datatypes.SPECIAL.CHART.ROW.DICE_RANGE:
+                retVal.rows[arrayItemIndex].diceRange.maximum = event.target.value;
+                if (arrayItemIndex < retVal.rows.length - 1) {
+                    retVal.rows[parseInt(arrayItemIndex) + 1].diceRange.minimum = parseInt(retVal.rows[arrayItemIndex].diceRange.maximum) + 1;
+                } else {
+                    tmpObj = Object.assign({}, util.objectModel.CHART_ROW(retVal.rows.length));
+                    tmpObj.diceRange = {};
+                    tmpObj.diceRange.minimum = parseInt(retVal.rows[arrayItemIndex].diceRange.maximum) + 1;
+                    tmpObj.diceRange.maximum = util.common.calculate.dice.maximum(retVal.dice);
+                    retVal.rows.push(tmpObj);
+                    for (let q = 0; q < retVal.columns.length; q++) {
+                        retVal.entries.push(Object.assign({}, util.objectModel.CHART_ENTRY(q, retVal.rows.length - 1)));
                     }
                 }
                 break;
