@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import util from '../../../util/util';
 import DndButton from '../buttons/DndButton';
+import DndListItemButtonBar from '../buttons/DndListItemButtonBar';
 
 class DndList extends React.Component {
     constructor(props, context) {
@@ -9,6 +10,7 @@ class DndList extends React.Component {
         this._renderName = this._renderName.bind(this);
         this._onChangeWithIndex = this._onChangeWithIndex.bind(this);
         this.renderAuxiliaryInputs = this.renderAuxiliaryInputs.bind(this);
+        this.renderButtonInput = this.renderButtonInput.bind(this);
     }
     
     _renderName(str, val) {
@@ -52,7 +54,45 @@ class DndList extends React.Component {
         }
     }
     
+    renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle) {
+        if (this.props.isEditable) {
+            return (
+                <DndButton
+                    buttonType={buttonType}
+                    onClick={buttonOnClick}
+                    name={this.props.name}
+                    dataType={buttonDatatype.REMOVE}
+                    selectedIndex={idx}
+                    dataTask={dataTask}
+                    bsButtonStyle={bsButtonStyle}
+                    />
+            );
+        } else {
+            return (
+                <DndListItemButtonBar
+                    deleteAction={buttonDatatype.REMOVE}
+                    editAction={buttonDatatype.SELECT}
+                    onDelete={buttonOnClick}
+                    onEdit={this.props.onChangeChild}
+                    name={this.props.name}
+                    listItem={item}
+                    dataTask={dataTask}
+                    selectedIndex={idx}
+                    returnCompleteObject
+                    />
+            );
+        }
+    }
+    
     render() {
+        let isCollapsible = (this.props.isCollapsible) ? this.props.isCollapsible : false;
+        let isEditable = (this.props.isEditable) ? this.props.isEditable : false;
+        let isOrdering = (this.props.isOrdering) ? this.props.isOrdering : false;
+        
+        let buttonDatatype = (this.props.buttonDatatype) ? this.props.buttonDatatype : this.props.dataType;
+        let buttonOnClick = (this.props.buttonOnClick) ? this.props.buttonOnClick : this.props.onChange;
+        let bsButtonStyle = this.props.bsButtonStyle;
+        
         let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         let buttonType = 'removeitem';
         if (this.props.buttonType && this.props.buttonType.length != 0) {
@@ -84,14 +124,7 @@ class DndList extends React.Component {
                                     <td>{this._renderName(item[this.props.childName], item)}</td>
                                     <td width="75px">
                                         <div className="pull-right">
-                                            <DndButton
-                                                buttonType={buttonType}
-                                                onClick={this.props.onChange}
-                                                name={this.props.name}
-                                                dataType={this.props.dataType.REMOVE}
-                                                selectedIndex={idx}
-                                                dataTask={dataTask}
-                                                />
+                                            {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle)}
                                         </div>
                                     </td>
                                 </tr>
@@ -105,22 +138,43 @@ class DndList extends React.Component {
 }
 
 DndList.propTypes = {
-    bsButtonStyle: PropTypes.string,
-    buttonDatatype: PropTypes.string,
-    buttonOnClick: PropTypes.func,
-    buttonType: PropTypes.string,
+    bsButtonStyle: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.string
+    ]),
+    buttonDatatype: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.string
+    ]),
+    buttonOnClick: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.object
+    ]),
+    buttonType: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.string
+    ]),
     childAuxiliaryDatatypes: PropTypes.array,
     childAuxiliaryNames: PropTypes.array,
     childAuxiliaryValues: PropTypes.array,
     childName: PropTypes.string,
+    children: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.object,
+        PropTypes.string
+    ]),
     dataTask: PropTypes.string,
     dataType: PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.string
     ]).isRequired,
     hideScrolling: PropTypes.bool,
+    isCollapsible: PropTypes.bool,
+    isEditable: PropTypes.bool,
+    isOrdering: PropTypes.bool,
     name: PropTypes.string,
     onChange: PropTypes.func.isRequired,
+    onChangeChild: PropTypes.func,
     renderNameFunction: PropTypes.func,
     rowHeight: PropTypes.number,
     startScrollingAt: PropTypes.number,

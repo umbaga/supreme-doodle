@@ -18,7 +18,7 @@ class DndDataEntryButtonBar extends React.Component {
                     dataType={action}
                     name={name}
                     dataTask={dataTask}
-                    disbaled={disabled}
+                    disabled={disabled}
                     />
             );
         }
@@ -35,8 +35,8 @@ class DndDataEntryButtonBar extends React.Component {
         const cancelButton = this.renderButton(this.props.onCancel, 'cancel', this.props.cancelAction, this.props.name, cancelDataTask, false);
         const deleteButton = this.renderButton(this.props.onDelete, 'delete', this.props.deleteAction, this.props.name, deleteDataTask, false);
         const resetButton = this.renderButton(this.props.onReset, 'reset', this.props.resetAction, this.props.name, resetDataTask, false);
-        const saveButton = this.renderButton(this.props.onSave, 'save', this.props.saveAction, this.props.name, saveDataTask, false);
-        const saveNewButton = this.renderButton(this.props.onSaveNew, 'savenew', this.props.saveAction, this.props.name, saveDataTask, saveDisabled);
+        const saveButton = this.renderButton(this.props.onSave, 'save', this.props.saveAction, this.props.name, saveDataTask, saveDisabled);
+        const saveNewButton = this.renderButton(this.props.onSaveNew, 'savenew', this.props.saveAction, this.props.name, saveDataTask, false);
         let pullClass = (this.props.pullLeft) ? 'pull-left' : 'pull-right';
         return (
             <div className={wrapperClass}>

@@ -23,7 +23,7 @@ class DndButton extends React.Component {
         if (this.props.isBadge) {
             extraClasses += ' badge ';
         }
-        let finalDisabled = this.props.disabled ? this.props.disabled : false;
+        let finalDisabled = (this.props.disabled) ? this.props.disabled : false;
         let dataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         extraClasses += ' ' + this.props.additionalButtonStyles;
         let finalButtonType = (this.props.buttonType) ? this.props.buttonType : 'cog';

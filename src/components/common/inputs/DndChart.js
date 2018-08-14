@@ -17,7 +17,6 @@ class DndChart extends React.Component {
     renderHeader(chart) {
         const dataTypes = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.DATA_TYPE);
         const picklistTypes = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.PICKLIST);
-        
         return (
             <thead>
                 <tr>
@@ -72,9 +71,11 @@ class DndChart extends React.Component {
                     <th className="tableChartEditingRow">
                         <DndDataEntryButtonBar
                             dataTask="chart"
+                            name="charts"
                             onSave={this.props.onChange}
                             onCancel={this.props.onChangeChild}
                             cancelAction={util.datatypes.ACTION.CHART.CANCEL}
+                            saveAction={util.datatypes.ACTION.CHART.ADD}
                             pullLeft
                             saveDisabled={!util.validation.isReadyToSave.chart(chart)}
                             />
@@ -173,9 +174,9 @@ class DndChart extends React.Component {
                 retVal = (
                     <td key={currentIndex}>
                         <DndInput
-                            name={'entries_idx_' + currentIndex.toString() + '_idx_value'}
+                            name={'entries_idx_' + currentIndex.toString() + '_idx_boolValue'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.BOOL}
-                            value={item.value}
+                            value={item.boolValue}
                             onChange={this.props.onChangeChild}
                             hideLabel
                             dataTask="chart"
@@ -187,9 +188,9 @@ class DndChart extends React.Component {
                 retVal = (
                     <td key={currentIndex}>
                         <DndInput
-                            name={'entries_idx_' + currentIndex.toString() + '_idx_value'}
+                            name={'entries_idx_' + currentIndex.toString() + '_idx_numberValue'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.NUMBER}
-                            value={item.value}
+                            value={item.numberValue}
                             onChange={this.props.onChangeChild}
                             hideLabel
                             dataTask="chart"
@@ -209,6 +210,20 @@ class DndChart extends React.Component {
                             hideLabel
                             dataTask="chart"
                             picklist={columnPicklist}
+                            />
+                    </td>
+                );
+                break;
+            case util.itemtypes.TYPE.DATA_TYPE.DICE:
+                retVal = (
+                    <td key={currentIndex}>
+                        <DndInput
+                            name={'entries_idx_' + currentIndex.toString() + '_idx_diceValue'}
+                            dataType={util.datatypes.SPECIAL.CHART.ENTRY.DICE}
+                            value={item.diceValue}
+                            onChange={this.props.onChangeChild}
+                            hideLabel
+                            dataTask="chart"
                             />
                     </td>
                 );

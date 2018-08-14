@@ -309,6 +309,7 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.SPECIAL.DICE:
+            case util.datatypes.SPECIAL.CHART.ENTRY.DICE:
                 primaryInput = (
                     <input
                         type="text"

@@ -6,6 +6,7 @@ import DndList from '../DndList';
 import DndChart from '../DndChart';
 import DndFieldset from '../../form/DndFieldset';
 import util from '../../../../util/util';
+import DndDisplayChart from '../../display/DndDisplayChart';
 
 class DndManageCharts extends React.Component {
     constructor(props, context) {
@@ -201,7 +202,20 @@ class DndManageCharts extends React.Component {
                     collapsible
                     startCollapsed={charts.length == 0}
                     >
-                    <div>EXISTING CHARTS</div>
+                    <DndList
+                        name="charts"
+                        value={charts}
+                        dataTask="chart"
+                        dataType={util.datatypes.ACTION.CHART}
+                        childName="title"
+                        onChange={this.props.onChange}
+                        onChangeChild={this.props.onChangeChild}
+                        isCollapsible
+                        childObjectKeys={['displayObject']}
+                        childObjectValues={['value']}
+                        >
+                        <DndDisplayChart/>
+                    </DndList>
                 </DndFieldset>
             </fragment>
         );

@@ -46,15 +46,17 @@ class DndListItemButtonBar extends React.Component {
     render() {
         let wrapperClass = 'form-group';
         let deleteButton = null;
+        let dataTask = this.props.dataTask;
+        let selectedIndex = (this.props.selectedIndex) ? this.props.selectedIndex : -1;
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
         if (this.props.hideDeleteButton) {
             deleteButton = null;
         } else {
-            deleteButton = (<DndButton onClick={this._onDelete} buttonType="delete" dataType={this.props.deleteAction} name={name}/>);
+            deleteButton = (<DndButton onClick={this._onDelete} buttonType="delete" dataType={this.props.deleteAction} name={name} dataTask={dataTask} value={selectedIndex} selectedIndex={selectedIndex}/>);
         }
         let detailsButton = null;
         if (this.props.showDetailsButton) {
-            detailsButton = (<DndButton onClick={this._onViewDetails} buttonType="view" />);
+            detailsButton = (<DndButton onClick={this._onViewDetails} buttonType="view" dataTask={dataTask} value={selectedIndex} selectedIndex={selectedIndex}/>);
         } else {
             detailsButton = null;
         }
@@ -63,7 +65,7 @@ class DndListItemButtonBar extends React.Component {
                 <ButtonGroup>
                     {deleteButton}
                     {detailsButton}
-                    <DndButton onClick={this._onEdit} buttonType="edit" dataType={this.props.editAction} name={name}/>
+                    <DndButton onClick={this._onEdit} buttonType="edit" dataType={this.props.editAction} name={name} dataTask={dataTask} value={selectedIndex} selectedIndex={selectedIndex}/>
                 </ButtonGroup>
             </Popover>
         );
@@ -80,10 +82,12 @@ class DndListItemButtonBar extends React.Component {
 }
 
 DndListItemButtonBar.propTypes = {
+    dataTask: PropTypes.string,
     dataType: PropTypes.string,
     deleteAction: PropTypes.string,
     editAction: PropTypes.string,
     hideDeleteButton: PropTypes.bool,
+    selectedIndex: PropTypes.number,
     listItem: PropTypes.object.isRequired,
     name: PropTypes.string,
     onDelete: PropTypes.func,
