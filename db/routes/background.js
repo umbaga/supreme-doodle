@@ -496,6 +496,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions.need.proficiencies = false;
                     resObj.permissions.need.assignedEquipment = false;
                     resObj.permissions.need.feature = false;
+                    resObj.permissions.need.charts = false;
                     
                     if (resObj.background.description && resObj.background.description.length != 0) {
                         resObj.permissions.need.anyDescription = true;
@@ -524,6 +525,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     if (resObj.background.feature && resObj.background.feature.name && resObj.background.feature.name.length != 0
                        && resObj.background.feature.description && resObj.background.feature.description.length != 0) {
                         resObj.permissions.need.feature = true;
+                    }
+                    if (resObj.background.charts && resObj.background.charts.length != 0) {
+                        resObj.permissions.need.charts = true;
                     }
                     cb(null, resObj);
                 },
@@ -654,8 +658,18 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function manageProficiencies(resObj, callback) {
+                function manageAssignedEquipment(resObj, callback) {
                     console.log('x-insert-background-05');
+                    if (resObj.permissions.need.charts) {
+                        common.insert.charts(resObj.background.charts, resObj.background, function(results) {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageProficiencies(resObj, callback) {
+                    console.log('x-insert-background-06');
                     if (resObj.permissions.need.proficiencies) {
                         common.insert.proficiencies(resObj.background.proficiencies, resObj.background, function(results) {
                             return callback(null, resObj);
@@ -676,7 +690,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function manageAssignedEquipment(resObj, callback) {
-                    console.log('x-insert-background-06');
+                    console.log('x-insert-background-08');
                     if (resObj.permissions.need.assignedEquipment) {
                         common.insert.assignedEquipment(resObj.background.equipment.assigned, resObj.background, function(results) {
                             return callback(null, resObj);
@@ -708,11 +722,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += ', get_description(i.id, $3) AS "suggestedCharacteristics"';
             sql += ', json_build_object (';
             sql += '    \'startingGold\', bg."startingGold"';
-            sql += '    , \'assignedEquipment\', CASE WHEN get_assigned_equipment(i.id, $4) IS NULL THEN \'[]\' ELSE get_assigned_equipment(i.id, $4) END';
+            sql += '    , \'assigned\', CASE WHEN get_assigned_equipment(i.id, $4) IS NULL THEN \'[]\' ELSE get_assigned_equipment(i.id, $4) END';
             sql += ') AS "equipment"';
             sql += ', CASE WHEN get_feature(i.id) IS NULL THEN \'{}\' ELSE get_feature(i.id) END AS "feature"';
             sql += ', get_proficiencies(i.id) AS "proficiencies"';
-            sql += ', \'[]\' AS "charts"';
+            sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
             sql += ' FROM adm_core_item i';
             sql += ' INNER JOIN adm_def_background bg ON bg."backgroundId" = i.id'
             sql += ' WHERE i."typeId" = $1';

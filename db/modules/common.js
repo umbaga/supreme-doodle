@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 let express = require('express');
 
 let itemtypes = require('./itemtypeDefinition');
@@ -25,7 +27,8 @@ let sql = '';
 let results = [];
 let vals = [];
 let addComma = false;
-let parameterArray = [];
+let counter = 0;
+let query = null;
 
 let common = {
     datatypes: {
@@ -55,96 +58,17 @@ let common = {
             }
         }
     },
+    get: {
+        entryDatatypeFromColumn: function(entry, columns) {
+            for (let a = 0; a < columns.length; a++) {
+                if (entry.columnIndex == columns[a].columnIndex) {
+                    return columns[a].dataType.id;
+                }
+            }
+            return 0;
+        }
+    },
     parameterArray: {
-        incrementValues: function(arr) {
-            let retVal = [];
-            for (let e = 0; e < arr.length; e++) {
-                retVal.push(arr[e] + arr.length);
-            }
-            return retVal;
-        },
-        insertNewRecords: function(objectArray, tableName, columnNames, dataTypes) {
-            let retVal = [];
-            vals = [];
-            let selectUnionClauseString = '';
-            let columnNamesString = '';
-            let valsColumnNamesString = '';
-            let whereClauseString = '';
-            let addComma2 = false;
-            let valNum = 0;
-            addComma = false;
-            for (let q = 0; q < columnNames.length; q++) {
-                columnNamesString += addComma ? ', ' : '';
-                columnNamesString += '"' + columnNames[q] + '"';
-                valsColumnNamesString += addComma ? ', ' : '';
-                valsColumnNamesString += 'v."' + columnNames[q] + '"';
-                whereClauseString += addComma ? ' AND ' : ' WHERE ';
-                whereClauseString += 't."' + columnNames[q] + '" = v."' + columnNames[q] + '"';
-                addComma = true;
-            }
-            addComma = false;
-            for (let q = 0; q < objectArray.length; q++) {
-                selectUnionClauseString += addComma ? ' UNION ' : '';
-                selectUnionClauseString += 'SELECT ';
-                addComma2 = false;
-                for (let w = 0; w < columnNames.length; w++) {
-                    selectUnionClauseString += addComma2 ? ', ' : '';
-                    valNum = ((q * columnNames.length) + w) + 1;
-                    selectUnionClauseString += '$' + valNum.toString() + ' :: ' + dataTypes[w] + ' AS "' + columnNames[w] + '"';
-                    addComma2 = true;
-                }
-                addComma = true;
-            }
-            retVal = 'WITH vals AS (';
-            retVal += selectUnionClauseString;
-            retVal += ')';
-            retVal += ' INSERT INTO ' + tableName + ' (' + columnNamesString + ')';
-            retVal += ' SELECT ' + valsColumnNamesString;
-            retVal += ' FROM vals AS v';
-            retVal += ' WHERE NOT EXISTS (';
-            retVal += ' SELECT * FROM ' + tableName + ' AS t';
-            retVal += whereClauseString
-            retVal += ')';
-            retVal += ' RETURNING id, ' + columnNamesString;
-            return retVal;
-        },
-        resetValues: function(count, startingValue) {
-            let finalStartingValue = 0;
-            let retVal = [];
-            if (startingValue != null && startingValue != undefined) {
-                finalStartingValue = startingValue;
-            }
-            for (let e = finalStartingValue + 1; e <= count + finalStartingValue; e++) {
-                retVal.push(e);
-            }
-            return retVal;
-        },
-        sql: function(arr, startingValue) {
-            let finalStartingValue = 0;
-            if (startingValue != null && startingValue != undefined) {
-                finalStartingValue = startingValue;
-            }
-            let addComma = false;
-            let retVal = '(';
-            if (finalStartingValue != 0) {
-                for (let e = 1; e <= finalStartingValue; e++) {
-                    if (addComma) {
-                        retVal += ', ';
-                    }
-                    retVal += '$' + e.toString();
-                    addComma = true;
-                }
-            }
-            for (let e = 0; e < arr.length; e++) {
-                if (addComma) {
-                    retVal += ', ';
-                }
-                retVal += '$' + arr[e];
-                addComma = true;
-            }
-            retVal += ')';
-            return retVal;
-        },
         getParameterString(startingValue, parameterCount) {
             let retVal = '(';
             for (let q = 1; q <= parameterCount; q++) {
@@ -201,7 +125,7 @@ let common = {
                         sql += ' and t."multiplier" = v."multiplier"';
                         sql += ' and t."divisor" = v."divisor")';
                         sql += ' returning id AS "diceId"';
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -234,7 +158,7 @@ let common = {
                             vals.push(resObj.objectArray[e].multiplier);
                             vals.push(resObj.objectArray[e].divisor);
                         }
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -301,7 +225,7 @@ let common = {
                                 }
                             }
                             sql += ' RETURNING id, "itemName" AS "name"';
-                            let query = client.query(new pg.Query(sql, vals));
+                            query = client.query(new pg.Query(sql, vals));
                             query.on('row', function(row) {
                                 results.push(row);
                             });
@@ -342,7 +266,7 @@ let common = {
                                     counter++;
                                 }
                             }
-                            let query = client.query(new pg.Query(sql, vals));
+                            query = client.query(new pg.Query(sql, vals));
                             query.on('row', function(row) {
                                 results.push(row);
                             });
@@ -379,7 +303,7 @@ let common = {
                             counter++;
                         }
                         sql += ' RETURNING id, "targetId", "typeId"';
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -411,13 +335,631 @@ let common = {
                             addComma = true;
                             counter++;
                         }
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
                         query.on('end', function() {
                             return callback(null, resObj);
                         });
+                    }
+                ], function(error, result) {
+                    done();
+                    if (error) {
+                        console.error(error);
+                    }
+                    return cb(result);
+                });
+            });
+        },
+        charts: function (referenceObj, parentObj, cb) {
+            pool.connect(function(err, client, done) {
+                async.waterfall([
+                    function init(callback) {
+                        let resObj = {};
+                        resObj.referenceId = parentObj.id;
+                        resObj.resourceId = (parentObj.resource && parentObj.resource.id) ? parentObj.resource.id : 0;
+                        resObj.charts = referenceObj;
+                        resObj.permissions = {};
+                        resObj.permissions.need = {};
+                        resObj.permissions.need.dice = false;
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            if (resObj.charts[q].type.id == itemtypes.TYPE.CHART.DICE) {
+                                resObj.permissions.need.dice = true;
+                            }
+                        }
+                        return callback(null, resObj);
+                    },
+                    function insertCoreTable(resObj, callback) {
+                        console.log('x-insert-charts-01');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_chart';
+                        sql += ' ("typeId", "columnCount", "rowCount")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.charts[q].type.id);
+                            vals.push(resObj.charts[q].columnCount);
+                            vals.push(resObj.charts[q].rowCount);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "typeId"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                for (let w = 0; w < resObj.charts.length; w++) {
+                                    if (results[q].typeId == resObj.charts[w].type.id) {
+                                        if (!resObj.charts[w].id || resObj.charts[w].id <= 0) {
+                                            resObj.charts[w].id = results[q].id;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            return callback(null, resObj);
+                        });
+                    },
+                    function manageDice(resObj, callback) {
+                        console.log('x-insert-charts-02');
+                        results = [];
+                        if (resObj.permissions.need.dice) {
+                            let diceArr = [];
+                            for (let q = 0; q < resObj.charts.length; q++) {
+                                if (resObj.charts[q].type.id == itemtypes.TYPE.CHART.DICE) {
+                                    diceArr.push(resObj.charts[q].dice);
+                                }
+                            }
+                            common.manage.dice(diceArr, function(results) {
+                                for (let q = 0; q < resObj.charts.length; q++) {
+                                    if (resObj.charts[q].type.id == itemtypes.TYPE.CHART.DICE) {
+                                        resObj.charts[q].dice = common.datatypes.dice.getObject(results, resObj.charts[q].dice);
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertDescriptionTable(resObj, callback) {
+                        console.log('x-insert-charts-03');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_description';
+                        sql += ' ("description", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            if (resObj.charts[q].description && resObj.charts[q].description.length != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.charts[q].description);
+                                vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
+                                addComma = true;
+                                counter++;
+                            }
+                            if (resObj.charts[q].title && resObj.charts[q].title.length != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.charts[q].title);
+                                vals.push(itemtypes.TYPE.DESCRIPTION.CHART_TEXT);
+                                addComma = true;
+                                counter++;
+                            }
+                            for (let w = 0; w < resObj.charts[q].columns.length; w++) {
+                                if (resObj.charts[q].columns[w].text && resObj.charts[q].columns[w].text.length != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.charts[q].columns[w].text);
+                                    vals.push(itemtypes.TYPE.DESCRIPTION.CHART_TEXT);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            for (let w = 0; w < resObj.charts[q].entries.length; w++) {
+                                if (resObj.charts[q].entries[w].text && resObj.charts[q].entries[w].text.length != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.charts[q].entries[w].text);
+                                    vals.push(itemtypes.TYPE.DESCRIPTION.CHART_TEXT);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            for (let w = 0; w < resObj.charts[q].rows.length; w++) {
+                                if (resObj.charts[q].rows[w].text && resObj.charts[q].rows[w].text.length != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.charts[q].rows[w].text);
+                                    vals.push(itemtypes.TYPE.DESCRIPTION.CHART_TEXT);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                        }
+                        sql += ' RETURNING id, "description", "typeId"';
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.charts.length; w++) {
+                                        if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.GENERAL) {
+                                            if (results[q].description == resObj.charts[w].description) {
+                                                resObj.charts[w].descriptionId = results[q].id;
+                                            }
+                                        } else if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.CHART_TEXT) {
+                                            if (results[q].description == resObj.charts[w].title) {
+                                                resObj.charts[w].titleId = results[q].id;
+                                            }
+                                            for (let e = 0; e < resObj.charts[w].columns.length; e++) {
+                                                if (results[q].description == resObj.charts[w].columns[e].text) {
+                                                    resObj.charts[w].columns[e].textId = results[q].id;
+                                                }
+                                            }
+                                            for (let e = 0; e < resObj.charts[w].entries.length; e++) {
+                                                if (results[q].description == resObj.charts[w].entries[e].text) {
+                                                    resObj.charts[w].entries[e].textId = results[q].id;
+                                                }
+                                            }
+                                            for (let e = 0; e < resObj.charts[w].rows.length; e++) {
+                                                if (results[q].description == resObj.charts[w].rows[e].text) {
+                                                    resObj.charts[w].rows[e].textId = results[q].id;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertColumnTable(resObj, callback) {
+                        console.log('x-insert-charts-04');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_def_chart_column';
+                        sql += ' ("chartId", "columnIndex", "dataTypeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].columns.length; w++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].columns[w].columnIndex);
+                                vals.push(resObj.charts[q].columns[w].dataType.id);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        sql += ' RETURNING id, "chartId", "columnIndex"';
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.charts.length; w++) {
+                                        for (let e = 0; e < resObj.charts[w].columns.length; e++) {
+                                            if (results[q].chartId == resObj.charts[w].id && results[q].columnIndex == resObj.charts[w].columns[e].columnIndex) {
+                                                resObj.charts[w].columns[e].id = results[q].id;
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertRowTable(resObj, callback) {
+                        console.log('x-insert-charts-05');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_def_chart_row';
+                        sql += ' ("chartId", "rowIndex")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].rows.length; w++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].rows[w].rowIndex);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        sql += ' RETURNING id, "chartId", "rowIndex"';
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.charts.length; w++) {
+                                        for (let e = 0; e < resObj.charts[w].rows.length; e++) {
+                                            if (results[q].chartId == resObj.charts[w].id && results[q].rowIndex == resObj.charts[w].rows[e].rowIndex) {
+                                                resObj.charts[w].rows[e].id = results[q].id;
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertEntryTable(resObj, callback) {
+                        console.log('x-insert-charts-06');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_def_chart_entry';
+                        sql += ' ("chartId", "columnIndex", "rowIndex")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].entries.length; w++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].entries[w].columnIndex);
+                                vals.push(resObj.charts[q].entries[w].rowIndex);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        sql += ' RETURNING id, "chartId", "columnIndex", "rowIndex"';
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.charts.length; w++) {
+                                        for (let e = 0; e < resObj.charts[w].entries.length; e++) {
+                                            if (results[q].chartId == resObj.charts[w].id && results[q].columnIndex == resObj.charts[w].entries[e].columnIndex && results[q].rowIndex == resObj.charts[w].entries[e].rowIndex) {
+                                                resObj.charts[w].entries[e].id = results[q].id;
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkTable(resObj, callback) {
+                        console.log('x-insert-charts-07');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            if (resObj.charts[q].descriptionId && resObj.charts[q].descriptionId != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].descriptionId);
+                                vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                                addComma = true;
+                                counter++;
+                            }
+                            if (resObj.charts[q].titleId && resObj.charts[q].titleId != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].titleId);
+                                vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                                addComma = true;
+                                counter++;
+                            }
+                            if (resObj.charts[q].dice && resObj.charts[q].dice.id && resObj.charts[q].dice.id != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].dice.id);
+                                vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.DICE);
+                                addComma = true;
+                                counter++;
+                            }
+                            if (resObj.charts[q].picklist && resObj.charts[q].picklist.id && resObj.charts[q].picklist.id != 0) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.charts[q].id);
+                                vals.push(resObj.charts[q].picklist.id);
+                                vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.PICKLIST);
+                                addComma = true;
+                                counter++;
+                            }
+                            for (let w = 0; w < resObj.charts[q].columns.length; w++) {
+                                if (resObj.charts[q].columns[w].textId && resObj.charts[q].columns[w].textId != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].columns[w].id);
+                                    vals.push(resObj.charts[q].columns[w].textId);
+                                    vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (resObj.charts[q].columns[w].picklist && resObj.charts[q].columns[w].picklist.id && resObj.charts[q].columns[w].picklist.id != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].columns[w].id);
+                                    vals.push(resObj.charts[q].columns[w].picklist.id);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.PICKLIST);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            for (let w = 0; w < resObj.charts[q].rows.length; w++) {
+                                if (resObj.charts[q].rows[w].textId && resObj.charts[q].rows[w].textId != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].rows[w].id);
+                                    vals.push(resObj.charts[q].rows[w].textId);
+                                    vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (resObj.charts[q].rows[w].picklistItem && resObj.charts[q].rows[w].picklistItem.id && resObj.charts[q].rows[w].picklistItem.id != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].rows[w].id);
+                                    vals.push(resObj.charts[q].rows[w].picklistItem.id);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.PICKLIST_ITEM);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (resObj.charts[q].rows[w].diceRange && resObj.charts[q].rows[w].diceRange.minimum && resObj.charts[q].rows[w].diceRange.minimum != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].rows[w].id);
+                                    vals.push(0);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.VALUE.DICE_RANGE);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            for (let w = 0; w < resObj.charts[q].entries.length; w++) {
+                                if (resObj.charts[q].entries[w].textId && resObj.charts[q].entries[w].textId != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].entries[w].id);
+                                    vals.push(resObj.charts[q].entries[w].textId);
+                                    vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (resObj.charts[q].entries[w].dice && resObj.charts[q].entries[w].dice.id && resObj.charts[q].entries[w].dice.id != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].entries[w].id);
+                                    vals.push(resObj.charts[q].entries[w].dice.id);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.DICE);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (resObj.charts[q].entries[w].picklistItem && resObj.charts[q].entries[w].picklistItem.id && resObj.charts[q].entries[w].picklistItem.id != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].entries[w].id);
+                                    vals.push(resObj.charts[q].entries[w].picklistItem.id);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.PICKLIST_ITEM);
+                                    addComma = true;
+                                    counter++;
+                                }
+                                if (common.get.entryDatatypeFromColumn(resObj.charts[q].entries[w], resObj.charts[q].columns) == itemtypes.TYPE.DATA_TYPE.BOOL) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].entries[w].id);
+                                    vals.push(0);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.VALUE.BOOL);
+                                    addComma = true;
+                                    counter++;
+                                } else if (common.get.entryDatatypeFromColumn(resObj.charts[q].entries[w], resObj.charts[q].columns) == itemtypes.TYPE.DATA_TYPE.NUMBER) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].entries[w].id);
+                                    vals.push(resObj.charts[q].entries[w].numberValue);
+                                    vals.push(itemtypes.TYPE.LINK.CHART_RELATIONSHIP.VALUE.NUMBER);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.referenceId);
+                            vals.push(resObj.charts[q].id);
+                            vals.push(itemtypes.TYPE.LINK.CHART);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "referenceId", "targetId", "typeId"';
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                for (let q = 0; q < results.length; q++) {
+                                    for (let w = 0; w < resObj.charts.length; w++) {
+                                        if (results[q].targetId == resObj.charts[w].id) {
+                                            resObj.charts[w].linkId = results[q].id;
+                                        }
+                                        for (let e = 0; e < resObj.charts[w].entries.length; e++) {
+                                            if (results[q].referenceId == resObj.charts[w].entries[e].id) {
+                                                resObj.charts[w].entries[e].linkId = results[q].id;
+                                            }
+                                        }
+                                        for (let e = 0; e < resObj.charts[w].rows.length; e++) {
+                                            if (results[q].referenceId == resObj.charts[w].rows[e].id) {
+                                                resObj.charts[w].rows[e].linkId = results[q].id;
+                                            }
+                                        }
+                                    }
+                                }
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkValueBoolTable(resObj, callback) {
+                        console.log('x-insert-charts-08');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_value_bool';
+                        sql += ' ("linkId", "boolValue")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].entries.length; w++) {
+                                if (common.get.entryDatatypeFromColumn(resObj.charts[q].entries[w], resObj.charts[q].columns) == itemtypes.TYPE.DATA_TYPE.BOOL) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.charts[q].entries[w].linkId);
+                                    vals.push(resObj.charts[q].entries[w].boolValue);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                        }
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkValueNumberTable(resObj, callback) {
+                        console.log('x-insert-charts-09');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_value_number';
+                        sql += ' ("linkId", "numberValue")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].entries.length; w++) {
+                                if (common.get.entryDatatypeFromColumn(resObj.charts[q].entries[w], resObj.charts[q].columns) == itemtypes.TYPE.DATA_TYPE.NUMBER) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 2);
+                                    vals.push(resObj.charts[q].entries[w].linkId);
+                                    vals.push(resObj.charts[q].entries[w].numberValue);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                        }
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkValueNumberRangeTable(resObj, callback) {
+                        console.log('x-insert-charts-10');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_value_number_range';
+                        sql += ' ("linkId", "minimum", "maximum")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            for (let w = 0; w < resObj.charts[q].rows.length; w++) {
+                                if (resObj.charts[q].rows[w].diceRange && resObj.charts[q].rows[w].diceRange.minimum && resObj.charts[q].rows[w].diceRange.minimum != 0) {
+                                    sql += addComma ? ', ' : '';
+                                    sql += common.parameterArray.getParameterString(counter, 3);
+                                    vals.push(resObj.charts[q].rows[w].linkId);
+                                    vals.push(resObj.charts[q].rows[w].diceRange.minimum);
+                                    vals.push(resObj.charts[q].rows[w].diceRange.maximum);
+                                    addComma = true;
+                                    counter++;
+                                }
+                            }
+                        }
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
+                    },
+                    function insertLinkOrderTable(resObj, callback) {
+                        console.log('x-insert-charts-11');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_order';
+                        sql += ' ("linkId", "orderIndex")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.charts.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 2);
+                            vals.push(resObj.charts[q].linkId);
+                            vals.push(resObj.charts[q].orderIndex);
+                            console.log(resObj.charts[q].linkId + ' - ' + resObj.charts[q].orderIndex);
+                            addComma = true;
+                            counter++;
+                        }
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
+                            return callback(null, resObj);
+                        }
                     }
                 ], function(error, result) {
                     done();
@@ -455,7 +997,7 @@ let common = {
                         vals.push(resObj.feature.name);
                         vals.push(itemtypes.TYPE.ITEM.FEATURE);
                         vals.push(resObj.resourceId);
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -477,7 +1019,7 @@ let common = {
                         sql += ' RETURNING id';
                         vals.push(resObj.feature.description);
                         vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -503,7 +1045,7 @@ let common = {
                         vals.push(resObj.referenceId);
                         vals.push(resObj.feature.id);
                         vals.push(itemtypes.TYPE.LINK.FEATURE);
-                        let query = client.query(new pg.Query(sql, vals));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
@@ -559,7 +1101,7 @@ let common = {
                                 addComma = true;
                             }
                             sql += ' RETURNING id';
-                            let query = client.query(new pg.Query(sql, vals));
+                            query = client.query(new pg.Query(sql, vals));
                             query.on('row', function(row) {
                                 results.push(row);
                             });
@@ -626,7 +1168,7 @@ let common = {
                                 }
                             }
                             sql += ' RETURNING id, "targetId", "typeId"';
-                            let query = client.query(new pg.Query(sql, vals));
+                            query = client.query(new pg.Query(sql, vals));
                             query.on('row', function(row) {
                                 results.push(row);
                             });
@@ -688,7 +1230,7 @@ let common = {
                                     counter++;
                                 }
                             }
-                            let query = client.query(new pg.Query(sql, vals));
+                            query = client.query(new pg.Query(sql, vals));
                             query.on('row', function(row) {
                                 results.push(row);
                             });

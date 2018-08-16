@@ -9,12 +9,12 @@ export const isReadyToSave = {
             return false;
         }
         if (val.type.id == util.itemtypes.TYPE.CHART.DICE) {
-            if (!util.datatypes.compareDataType(val.dice, util.datatypes.SPECIAL.DICE)) {
+            if (!util.datatypes.compareDataType(val.dice.rendered, util.datatypes.SPECIAL.DICE)) {
                 return false;
             }
         } else if (val.type.id == util.itemtypes.TYPE.CHART.SELECT) {
             if (val.isNewType) {
-                if (!val.selectItemType || !val.selectItemType.name) {
+                if (!val.picklist || !val.picklist.name) {
                     return false;
                 }
                 for (let q = 0; q < val.rows.length; q++) {
@@ -23,11 +23,11 @@ export const isReadyToSave = {
                     }
                 }
             } else {
-                if (!val.selectItemType || val.selectItemType.id <= 0) {
+                if (!val.picklist || val.picklist.id <= 0) {
                     return false;
                 }
                 for (let q = 0; q < val.rows.length; q++) {
-                    if (!val.rows[q].selectedItem || val.rows[q].selectedItem.id <= 0) {
+                    if (!val.rows[q].picklistItem || val.rows[q].picklistItem.id <= 0) {
                         return false;
                     }
                 }
@@ -41,7 +41,7 @@ export const isReadyToSave = {
                     }
                     break;
                 case util.itemtypes.TYPE.DATA_TYPE.DICE:
-                    if (!util.datatypes.compareDataType(val.entries[q].diceValue, util.datatypes.SPECIAL.DICE)) {
+                    if (!util.datatypes.compareDataType(val.entries[q].diceValue.rendered, util.datatypes.SPECIAL.DICE)) {
                         return false;
                     }
                     break;
@@ -51,7 +51,7 @@ export const isReadyToSave = {
                     }
                     break;
                 case util.itemtypes.TYPE.DATA_TYPE.PICKLIST:
-                    if (!val.entries[q].selectedItem || val.entries[q].selectedItem.id == 0) {
+                    if (!val.entries[q].picklistItem || val.entries[q].picklistItem.id == 0) {
                         return false;
                     }
                     break;
@@ -76,7 +76,7 @@ export const isReadyToShow = {
         }
         if (val.type.id == util.itemtypes.TYPE.CHART.SELECT) {
             if (!val.isNewType) {
-                if (!val.selectItemType || val.selectItemType.id == 0) {
+                if (!val.picklist || val.picklist.id == 0) {
                     return false;
                 }
             }

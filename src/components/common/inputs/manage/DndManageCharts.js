@@ -106,29 +106,29 @@ class DndManageCharts extends React.Component {
         } else if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT) {
             let whichControl = (chart.isNewType) ? (
                 <DndInput
-                    name="selectItemType"
+                    name="picklist"
                     label="Type"
                     dataType={util.datatypes.STRING.SHORT}
                     onChange={this.props.onChangeChild}
                     dataTask="chart"
-                    value={chart.selectItemType.name}
+                    value={chart.picklist.name}
                     placeholder="New Type Name"
                     hideLabel
                     />
             ) : (
                 <DndInput
-                    name="selectItemType"
+                    name="picklist"
                     label="Type"
                     dataType={util.datatypes.PICKLIST}
                     onChange={this.props.onChangeChild}
                     dataTask="chart"
-                    value={chart.selectItemType}
+                    value={chart.picklist}
                     picklist={picklistTypes}
                     buttonType="fill"
                     buttonDatatype={util.datatypes.ACTION.CHART}
                     buttonOverwriteAction="EXPAND"
                     buttonOnClick={this.props.onChangeChild}
-                    buttonDisabled={chart.selectItemType.id == 0}
+                    buttonDisabled={chart.picklist.id == 0}
                     hideLabel
                     />
             );

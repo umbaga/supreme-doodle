@@ -24,7 +24,7 @@ export const resetObject = {
         let retVal = util.objectModel.CHART_COLUMN;
         retVal.columnIndex = newIndex;
         retVal.dataType = {id: util.itemtypes.TYPE.DATA_TYPE.STRING};
-        retVal.selectItemType = {id: 0};
+        retVal.picklist = {id: 0};
         return retVal;
     },
     chartEntry: function(newColumnIndex, newRowIndex) {
@@ -147,11 +147,6 @@ export const replace = {
 };
 
 export const charts = {
-    expand: function(chart) {
-        let retVal = chart;
-        
-        return retVal;
-    },
     refactorIndexes: {
         columns: function(columns) {
             let retVal = columns.sort(function(a, b) {
@@ -483,13 +478,13 @@ export const formState = {
                 break;
             case util.datatypes.ACTION.CHART.EXPAND:
                 if (retVal.type.id == util.itemtypes.TYPE.CHART.SELECT) {
-                    tmpVal = util.common.picklists.getPicklistItems(picklists, retVal.selectItemType.id);
+                    tmpVal = util.common.picklists.getPicklistItems(picklists, retVal.picklist.id);
                     for (let q = retVal.rows.length; q < tmpVal.length; q++) {
                         retVal.rows.push(Object.assign({}, util.common.resetObject.chartRow(q)));
                         retVal.rowCount++;
                     }
                     for (let q = 0; q < tmpVal.length; q++) {
-                        retVal.rows[q].selectedItem = tmpVal[q];
+                        retVal.rows[q].picklistItem = tmpVal[q];
                     }
                 } else if (retVal.type.id == util.itemtypes.TYPE.CHART.DICE){
                     counter = 0;

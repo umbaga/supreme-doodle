@@ -43,7 +43,7 @@ class DndChart extends React.Component {
                 <tr>
                     <th className="pull-right">Select picklist:</th>
                     {chart.columns.map(function(column, idx) {
-                        let picklistName = 'columns_idx_' + idx.toString() + '_idx_selectItemType';
+                        let picklistName = 'columns_idx_' + idx.toString() + '_idx_picklist';
                         let picklistInput = null;
                         if (chart.columns[idx].dataType.id == util.itemtypes.TYPE.DATA_TYPE.PICKLIST) {
                             picklistInput = (
@@ -52,7 +52,7 @@ class DndChart extends React.Component {
                                     onChange={this.props.onChangeChild}
                                     dataType={util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST}
                                     hideLabel
-                                    value={chart.columns[idx].selectItemType}
+                                    value={chart.columns[idx].picklist}
                                     name={picklistName}
                                     dataIndex={idx}
                                     picklist={picklistTypes}
@@ -81,10 +81,14 @@ class DndChart extends React.Component {
                             />
                     </th>
                     {chart.columns.map(function(column, idx) {
+                        let className = 'tableChartEditing';
+                        if (chart.columnCount == 0) {
+                            className += ' textLeftJustify';
+                        }
                         return (
                             <th
                                 key={idx}
-                                className="tableChartEditing"
+                                className={className}
                                 name={'columns_idx_' + idx.toString() + '_idx_text'}
                                 datatype={util.datatypes.SPECIAL.CHART.COLUMN.STRING}
                                 contentEditable
@@ -154,12 +158,16 @@ class DndChart extends React.Component {
     renderCellInput(item, currentIndex, dataType) {
         let retVal = null;
         let columnPicklist = null;
+        let className = 'tableChartEditing';
         switch (dataType.id) {
             case util.itemtypes.TYPE.DATA_TYPE.STRING:
+                if (this.props.value.columnCount == 0) {
+                    className += ' textLeftJustify';
+                }
                 retVal = (
                     <td
                         key={currentIndex}
-                        className="tableChartEditing"
+                        className={className}
                         name={'entries_idx_' + currentIndex.toString() + '_idx_text'}
                         datatype={util.datatypes.SPECIAL.CHART.ROW.STRING}
                         contentEditable
@@ -172,7 +180,7 @@ class DndChart extends React.Component {
                 break;
             case util.itemtypes.TYPE.DATA_TYPE.BOOL:
                 retVal = (
-                    <td key={currentIndex}>
+                    <td key={currentIndex} className={className}>
                         <DndInput
                             name={'entries_idx_' + currentIndex.toString() + '_idx_boolValue'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.BOOL}
@@ -186,7 +194,7 @@ class DndChart extends React.Component {
                 break;
             case util.itemtypes.TYPE.DATA_TYPE.NUMBER:
                 retVal = (
-                    <td key={currentIndex}>
+                    <td key={currentIndex} className={className}>
                         <DndInput
                             name={'entries_idx_' + currentIndex.toString() + '_idx_numberValue'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.NUMBER}
@@ -199,13 +207,13 @@ class DndChart extends React.Component {
                 );
                 break;
             case util.itemtypes.TYPE.DATA_TYPE.PICKLIST:
-                columnPicklist = util.common.picklists.getPicklistItems(this.props.picklists, this.props.value.columns[currentIndex].selectItemType.id);
+                columnPicklist = util.common.picklists.getPicklistItems(this.props.picklists, this.props.value.columns[this.props.value.entries[currentIndex].columnIndex].picklist.id);
                 retVal = (
-                    <td key={currentIndex}>
+                    <td key={currentIndex} className={className}>
                         <DndInput
-                            name={'entries_idx_' + currentIndex.toString() + '_idx_selectedItem'}
+                            name={'entries_idx_' + currentIndex.toString() + '_idx_picklistItem'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.PICKLIST}
-                            value={item.selectedItem}
+                            value={item.picklistItem}
                             onChange={this.props.onChangeChild}
                             hideLabel
                             dataTask="chart"
@@ -216,11 +224,11 @@ class DndChart extends React.Component {
                 break;
             case util.itemtypes.TYPE.DATA_TYPE.DICE:
                 retVal = (
-                    <td key={currentIndex}>
+                    <td key={currentIndex} className={className}>
                         <DndInput
-                            name={'entries_idx_' + currentIndex.toString() + '_idx_diceValue'}
+                            name={'entries_idx_' + currentIndex.toString() + '_idx_dice'}
                             dataType={util.datatypes.SPECIAL.CHART.ENTRY.DICE}
-                            value={item.diceValue}
+                            value={item.dice}
                             onChange={this.props.onChangeChild}
                             hideLabel
                             dataTask="chart"
@@ -250,13 +258,13 @@ class DndChart extends React.Component {
             </th>
         );
         if (chart.type.id == util.itemtypes.TYPE.CHART.SELECT && !chart.isNewType) {
-            chartRowPicklist = util.common.picklists.getPicklistItems(this.props.picklists, chart.selectItemType.id);
+            chartRowPicklist = util.common.picklists.getPicklistItems(this.props.picklists, chart.picklist.id);
             retVal = (
                 <th className="tableChartEditing">
                     <DndInput
-                        name={'rows_idx_' + idx.toString() + '_idx_selectedItem'}
+                        name={'rows_idx_' + idx.toString() + '_idx_picklistItem'}
                         dataType={util.datatypes.SPECIAL.CHART.ROW.PICKLIST}
-                        value={row.selectedItem}
+                        value={row.picklistItem}
                         onChange={this.props.onChangeChild}
                         hideLabel
                         dataTask="chart"

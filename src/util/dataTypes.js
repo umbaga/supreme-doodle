@@ -124,16 +124,22 @@ export const STRING = {
 
 export function compareDataType (val, dataType, disallowValues) {
     let retVal = true;
+    let testVal = val;
     let tmpDieType = 0;
     let tmpArr = [];
     let tmpArr2 = [];
-    let usesPositiveModifier = (val.indexOf('+') != -1);
-    let usesNegativeModifier = (val.indexOf('-') != -1);
-    let usesMultiplier = (val.indexOf('x') != -1) || (val.indexOf('*') != -1);
-    let usesDivisor = (val.indexOf('/') != -1);
+    let usesPositiveModifier = false;
+    let usesNegativeModifier = false;
+    let usesMultiplier = false;
+    let usesDivisor = false;
     switch (dataType) {
         case SPECIAL.DICE:
-            tmpArr = val.toLowerCase().split('d');
+            testVal = (typeof val === 'object') ? val.rendered : val;
+            usesPositiveModifier = (testVal.indexOf('+') != -1);
+            usesNegativeModifier = (testVal.indexOf('-') != -1);
+            usesMultiplier = (testVal.indexOf('x') != -1) || (testVal.indexOf('*') != -1);
+            usesDivisor = (testVal.indexOf('/') != -1);
+            tmpArr = testVal.toLowerCase().split('d');
             if (tmpArr.length == 2) {
                 if (usesPositiveModifier || usesNegativeModifier || usesMultiplier || usesDivisor) {
                     if (usesPositiveModifier) {
@@ -141,9 +147,9 @@ export function compareDataType (val, dataType, disallowValues) {
                     } else if (usesNegativeModifier) {
                         tmpArr2 = tmpArr[1].split('-');
                     } else if (usesMultiplier) {
-                        if (val.indexOf('x') != -1) {
+                        if (testVal.indexOf('x') != -1) {
                             tmpArr2 = tmpArr[1].split('x');
-                        } else if (val.indexOf('*') != -1) {
+                        } else if (testVal.indexOf('*') != -1) {
                             tmpArr2 = tmpArr[1].split('*');
                         }
                     } else if (usesDivisor) {

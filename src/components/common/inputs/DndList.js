@@ -54,20 +54,8 @@ class DndList extends React.Component {
         }
     }
     
-    renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle) {
-        if (this.props.isEditable) {
-            return (
-                <DndButton
-                    buttonType={buttonType}
-                    onClick={buttonOnClick}
-                    name={this.props.name}
-                    dataType={buttonDatatype.REMOVE}
-                    selectedIndex={idx}
-                    dataTask={dataTask}
-                    bsButtonStyle={bsButtonStyle}
-                    />
-            );
-        } else {
+    renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable) {
+        if (isEditable) {
             return (
                 <DndListItemButtonBar
                     deleteAction={buttonDatatype.REMOVE}
@@ -81,6 +69,18 @@ class DndList extends React.Component {
                     returnCompleteObject
                     />
             );
+        } else {
+            return (
+                <DndButton
+                    buttonType={buttonType}
+                    onClick={buttonOnClick}
+                    name={this.props.name}
+                    dataType={buttonDatatype.REMOVE}
+                    selectedIndex={idx}
+                    dataTask={dataTask}
+                    bsButtonStyle={bsButtonStyle}
+                    />
+            );
         }
     }
     
@@ -88,7 +88,6 @@ class DndList extends React.Component {
         let isCollapsible = (this.props.isCollapsible) ? this.props.isCollapsible : false;
         let isEditable = (this.props.isEditable) ? this.props.isEditable : false;
         let isOrdering = (this.props.isOrdering) ? this.props.isOrdering : false;
-        
         let buttonDatatype = (this.props.buttonDatatype) ? this.props.buttonDatatype : this.props.dataType;
         let buttonOnClick = (this.props.buttonOnClick) ? this.props.buttonOnClick : this.props.onChange;
         let bsButtonStyle = this.props.bsButtonStyle;
@@ -124,7 +123,7 @@ class DndList extends React.Component {
                                     <td>{this._renderName(item[this.props.childName], item)}</td>
                                     <td width="75px">
                                         <div className="pull-right">
-                                            {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle)}
+                                            {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable)}
                                         </div>
                                     </td>
                                 </tr>

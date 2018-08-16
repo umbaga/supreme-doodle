@@ -30,7 +30,8 @@ export const ASSIGNED_EQUIPMENT = {
     cost: 0,
     weight: 0
 };
-export const BACKGROUND = {
+
+export const _BACKGROUND = {
     id: 0,
     name: '',
     resource: _RESOURCE,
@@ -55,6 +56,8 @@ export const BACKGROUND = {
     },
     variants: []
 };
+export const BACKGROUND = examples.BACKGROUND;
+
 export const BACKGROUND_VARIANT = {
     id: 0,
     name: '',
@@ -97,9 +100,9 @@ export const CHART = {
     entries: [],
     isNewType: false,
     orderIndex: 0,
+    picklist: _ID_NAME_OBJECT,
     rowCount: 0,
     rows: [],
-    selectItemType: _ID_NAME_OBJECT,
     type: {id: 1064}
 };
 export const CHART_COLUMN = {
@@ -107,16 +110,16 @@ export const CHART_COLUMN = {
     text: '',
     columnIndex: 0,
     dataType: {id: itemtypes.TYPE.DATA_TYPE.STRING},
-    selectItemType: _ID_NAME_OBJECT
+    picklist: _ID_NAME_OBJECT
 };
 export const CHART_ENTRY = {
     id: 0,
-    boolValue: false,
+    boolValue: null,
     columnIndex: 0,
-    diceValue: _DICE,
+    dice: _DICE,
     numberValue: 0,
+    picklistItem: _ID_NAME_OBJECT,
     rowIndex: 0,
-    selectedItem: _ID_NAME_OBJECT,
     text: ''
 };
 export const CHART_ROW = {
@@ -126,8 +129,8 @@ export const CHART_ROW = {
         maximum: 0,
         minimum: 0
     },
-    rowIndex: 0,
-    selectedItem: _ID_NAME_OBJECT
+    picklistItem: _ID_NAME_OBJECT,
+    rowIndex: 0
 };
 export const EQUIPMENT = {
     id: 0,

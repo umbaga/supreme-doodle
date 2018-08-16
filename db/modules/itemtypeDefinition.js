@@ -4,6 +4,25 @@ module.exports = {TYPE: {
         SELECT: 1063,
         STANDARD: 1064
     },
+    CHART_RELATIONSHIP: {
+        DICE: 1069,
+        PICKLIST: 1070,
+        PICKLIST_ITEM: 1071
+    },
+    DATA_TYPE: {
+        BOOL: 321,
+        DICE: 1067,
+        NUMBER: 1065,
+        PICKLIST: 1066,
+        STRING: 322
+    },
+    DESCRIPTION: {
+        FLAVOR_TEXT: 99,
+        CHART_TEXT: 1072,
+        GENERAL: 11,
+        SPECIAL_WEAPON: 84,
+        SUGGESTED_CHARACTERISTICS: 903
+    },
     EQUIPMENT_CATEGORY: {
         AMMUNITION: 108,
         ARCANE_FOCUS: 109,
@@ -24,19 +43,6 @@ module.exports = {TYPE: {
         TRINKET: 887,
         WATER_VEHICLE: 122,
         WEAPON: 123
-    },
-    DATA_TYPE: {
-        BOOL: 321,
-        DICE: 1067,
-        NUMBER: 1065,
-        PICKLIST: 1066,
-        STRING: 322
-    },
-    DESCRIPTION: {
-        FLAVOR_TEXT: 99,
-        GENERAL: 11,
-        SPECIAL_WEAPON: 84,
-        SUGGESTED_CHARACTERISTICS: 903
     },
     ITEM: {
         _TEMPLATE: 0,
@@ -66,6 +72,10 @@ module.exports = {TYPE: {
         FEATURE: 908,
         LANGUAGE_RARITY: 144,
         LANGUAGE_SCRIPT: 136,
+        LEVEL: {
+            CHARACTER: -2,
+            SPELL: -1
+        },
         LIFESTYLE: 878,
         LINK_TYPE: 8,
         MECHANIC_TYPE: 9,
@@ -101,6 +111,16 @@ module.exports = {TYPE: {
         ABBREVIATION: 14,
         ASSIGNED_EQUIPMENT: 886,
         CHART: 18,
+        CHART_RELATIONSHIP: {
+            DICE: 1069,
+            PICKLIST: 1070,
+            PICKLIST_ITEM: 1071,
+            VALUE: {
+                BOOL: 1073,
+                DICE_RANGE: 1075,
+                NUMBER: 1074
+            }
+        },
         DESCRIPTION: 16,
         DIALECT: 325,
         FEATURE: 909,

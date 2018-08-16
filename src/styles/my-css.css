@@ -108,6 +108,10 @@ td.tableChartEditing, th.tableChartEditing {
     text-align: center;
 }
 
+th.textLeftJustify, td.textLeftJustify {
+    text-align: left;
+}
+
 td.tableChartEditingRow, th.tableChartEditingRow {
     border-left: 1px groove lightgray;
     border-bottom: 1px groove lightgray;
