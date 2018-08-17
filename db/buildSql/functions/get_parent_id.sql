@@ -21,4 +21,3 @@ $BODY$;
 
 ALTER FUNCTION public.get_parent_id(bigint, bigint)
     OWNER TO postgres;
-
