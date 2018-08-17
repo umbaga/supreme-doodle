@@ -57,6 +57,7 @@ export const TYPE = {
         AMMUNITION_TYPE: 436,
         ATTACK_TYPE: 228,
         BACKGROUND: 902,
+        BACKGROUND_VARIANT: 2855,
         CHART: 1061,
         CHECK_TYPE: 248,
         CONDITION: 43,

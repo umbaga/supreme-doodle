@@ -11,13 +11,35 @@ export const resetObject = {
     },
     background: function() {
         let retVal = Object.assign({}, util.objectModel.BACKGROUND);
-        
+        retVal.equipment = {
+            startingGold: 0,
+            assigned: []
+        };
+        retVal.charts = [];
+        retVal.proficiencies = {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        };
+        retVal.feature = {
+            id: 0,
+            name: '',
+            description: ''
+        };
         return retVal;
     },
     chart: function(currentChartCount) {
         let retVal = Object.assign({}, util.objectModel.CHART);
         retVal.id = -1 * currentChartCount;
         retVal.orderIndex = currentChartCount;
+        retVal.columnCount = 0;
+        retVal.rowCount = 0;
+        retVal.columns = [];
+        retVal.entries = [];
+        retVal.rows = [];
+        retVal.dice = util.objectModel.DICE;
         return retVal;
     },
     chartColumn: function(newIndex) {
@@ -141,8 +163,8 @@ export const resetObject = {
 
 export const replace = {
     description: function(val) {
-        return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ')
-            .replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
+        return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ').replace(' ing', 'ing')
+            .replace('com e ', 'come ').replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
     }
 };
 
@@ -439,6 +461,7 @@ export const formState = {
         let oldRowCount = 0;
         let oldColumnCount = 0;
         let counter = 0;
+        
         switch (dataType) {
             case util.datatypes.ACTION.CHART.ADD:
                 if (arrayObject.id <= 0) {

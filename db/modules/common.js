@@ -328,10 +328,11 @@ let common = {
                         sql += ' ("linkId", "count")';
                         sql += ' VALUES ';
                         for (let q = 0; q < resObj.assignedEquipment.length; q++) {
+                            console.log(resObj.assignedEquipment[q]);
                             sql += addComma ? ', ' : '';
                             sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.assignedEquipment[q].linkId);
-                            vals.push(resObj.assignedEquipment[q].assigned);
+                            vals.push((resObj.assignedEquipment[q].assigned && resObj.assignedEquipment[q].assigned != 0) ? resObj.assignedEquipment[q].assigned : 1);
                             addComma = true;
                             counter++;
                         }

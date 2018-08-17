@@ -110,7 +110,7 @@ class BackgroundEntry extends React.Component {
         newStateObj.background = background;
         newStateObj.editTrinket = newEditTrinket;
         newStateObj.editEquipment = newEditEquipment;
-        newStateObj.eeditProficiency = newEditProficiency;
+        newStateObj.editProficiency = newEditProficiency;
         newStateObj.editProficiencyCategory = newEditProficiencyCategory;
         newStateObj.editProficiencyList = newEditProficiencyList;
         newStateObj.editChart = newEditChart;

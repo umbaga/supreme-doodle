@@ -26,20 +26,25 @@ class BackgroundForm extends React.Component {
         const picklists = this.props.picklists;
         const equipments = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT).filter(function(eq) {
             return eq.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
+        }).concat(util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.EQUIPMENT_CATEGORY)).sort(function(a, b) {
+            if (a.name < b.name) {
+                return -1;
+            } else if (a.name > b.name) {
+                return 1;
+            } else {
+                return 0;
+            }
         });
-        
         let assignedEquipment = background.equipment.assigned.filter(function(equipment) {
             return equipment.category.id != util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
         }.bind(this));
-        
         let assignedTrinkets = background.equipment.assigned.filter(function(equipment) {
             return equipment.category.id == util.itemtypes.TYPE.EQUIPMENT_CATEGORY.TRINKET;
         }.bind(this));
-        
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={2} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="Description">
                             <DndUniversalInput
                                 ref="name"
@@ -58,14 +63,15 @@ class BackgroundForm extends React.Component {
                                     />
                             </div>
                         </Tab>
-                        <Tab eventKey={5} title="Feature">
+                        <Tab eventKey={2} title="Feature">
                             <DndUniversalInput
                                 ref="feature.name"
                                 referenceObject={background.feature}
                                 onChange={this.props.onChange}
+                                referenceObjectPrefix="feature"
                                 />
                         </Tab>
-                        <Tab eventKey={2} title="Proficiencies">
+                        <Tab eventKey={3} title="Proficiencies">
                             <DndManageProficiencies
                                 onChange={this.props.onChange}
                                 value={background.proficiencies}
@@ -76,7 +82,7 @@ class BackgroundForm extends React.Component {
                                 editProficiencyList={this.props.editProficiencyList}
                                 />
                         </Tab>
-                        <Tab eventKey={3} title="Equipment">
+                        <Tab eventKey={4} title="Equipment">
                             <div className="col-md-12">
                                 <DndInput
                                     name="equipment.startingGold"
@@ -124,7 +130,7 @@ class BackgroundForm extends React.Component {
                                     />
                             </div>
                         </Tab>
-                        <Tab eventKey={4} title="Charts">
+                        <Tab eventKey={5} title="Charts">
                             <DndManageCharts
                                 onChange={this.props.onChange}
                                 onChangeChild={this.props.onChangeChild}

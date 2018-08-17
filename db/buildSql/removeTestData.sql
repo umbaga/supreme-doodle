@@ -1,5 +1,5 @@
-DELETE FROM adm_core_item WHERE "itemName" LIKE '--test%';
-DELETE FROM adm_core_description WHERE description LIKE '--test%';
+DELETE FROM adm_core_item WHERE "itemName" LIKE '--%';
+DELETE FROM adm_core_description WHERE description LIKE '--%';
 DELETE FROM adm_def_background WHERE "backgroundId" NOT IN (SELECT id FROM adm_core_item);
 DELETE FROM adm_def_equipment WHERE "equipmentId" NOT IN (SELECT id FROM adm_core_item);
 DELETE FROM adm_def_equipment_ammunition WHERE "equipmentId" NOT IN (SELECT id FROM adm_core_item);
@@ -33,6 +33,6 @@ DELETE FROM adm_link_value_number_range WHERE "linkId" NOT IN (SELECT id FROM ad
 DELETE FROM adm_core_list WHERE id NOT IN (SELECT "referenceId" FROM adm_link) AND id NOT IN (SELECT "targetId" FROM adm_link);
 
 DELETE FROM adm_core_chart WHERE id NOT IN (SELECT "referenceId" FROM adm_link) AND id NOT IN (SELECT "targetId" FROM adm_link);
-DELETE FROM adm_def_chart_column WHERE chartId NOT IN (SELECT id FROM adm_core_chart);
-DELETE FROM adm_def_chart_entry WHERE chartId NOT IN (SELECT id FROM adm_core_chart);
-DELETE FROM adm_def_chart_row WHERE chartId NOT IN (SELECT id FROM adm_core_chart);
+DELETE FROM adm_def_chart_column WHERE "chartId" NOT IN (SELECT id FROM adm_core_chart);
+DELETE FROM adm_def_chart_entry WHERE "chartId" NOT IN (SELECT id FROM adm_core_chart);
+DELETE FROM adm_def_chart_row WHERE "chartId" NOT IN (SELECT id FROM adm_core_chart);

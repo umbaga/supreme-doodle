@@ -465,6 +465,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 }
                             }
                         }
+                        if (newRow.id == itemtypes.TYPE.ITEM.EQUIPMENT_CATEGORY) {
+                            for (let q = 0; q < newRow.items.length; q++) {
+                                newRow.items[q].category = {};
+                                newRow.items[q].category.id = newRow.items[q].id;
+                            }
+                        }
                         results.push(newRow);
                     });
                     query.on('end', function() {
@@ -580,6 +586,26 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results.push(row);
                     });
                     query.on('end', function() {
+                        for (let q = 0; q < results.length; q++) {
+                            if (results[q].category.id == itemtypes.TYPE.PROFICIENCY_CATEGORY.LANGUAGE) {
+                                if (results[q].language.dialects && results[q].language.dialects.length != 0) {
+                                    console.log('has dialects');
+                                    for (let w = 0; w < results[q].language.dialects.length; w++) {
+                                        let newProficiencyItem = {};
+                                        newProficiencyItem.language = {};
+                                        newProficiencyItem.language.rarity = results[q].language.rarity;
+                                        newProficiencyItem.language.script = results[q].language.script;
+                                        newProficiencyItem.category = results[q].category;
+                                        newProficiencyItem.resource = results[q].resource;
+                                        newProficiencyItem.abilityScore = results[q].abilityScore;
+                                        newProficiencyItem.id = results[q].language.dialects[w].id;
+                                        newProficiencyItem.name = results[q].language.dialects[w].name;
+                                        newProficiencyItem.parentId = results[q].id;
+                                        results.push(newProficiencyItem);
+                                    }
+                                }
+                            }
+                        }
                         let newPicklist = {};
                         newPicklist.id = itemtypes.TYPE.ITEM.PROFICIENCY;
                         newPicklist.name = 'Proficiency';

@@ -23,12 +23,14 @@ class DndUniversalInput extends React.Component {
         if (!this.props.picklists) {
             colCount = 12;
         }
-        
         let colStyles = 'col-sm-' + colCount.toString();
+        let nameName = (this.props.referenceObjectPrefix) ? this.props.referenceObjectPrefix + '.name' : 'name';
+        let resourceName = (this.props.referenceObjectPrefix) ? this.props.referenceObjectPrefix + '.resource' : 'resource';
+        let descriptionName = (this.props.referenceObjectPrefix) ? this.props.referenceObjectPrefix + '.description' : 'description';
         const resourceInput = this.props.picklists ? (
             <div className={colStyles}>
                 <DndInput
-                    name="resource"
+                    name={resourceName}
                     label={resourceLabel}
                     dataType={util.datatypes.PICKLIST}
                     value={this.props.referenceObject.resource}
@@ -40,7 +42,7 @@ class DndUniversalInput extends React.Component {
         const descriptionInput = this.props.hideDescription ? null : (
             <div className="col-md-12">
                 <DndInput
-                    name="description"
+                    name={descriptionName}
                     label={descriptionLabel}
                     dataType={util.datatypes.STRING.HTML.LONG}
                     value={this.props.referenceObject.description}
@@ -53,7 +55,7 @@ class DndUniversalInput extends React.Component {
             <fragment>
                 <div className={colStyles}>
                     <DndInput
-                        name="name"
+                        name={nameName}
                         ref="name"
                         label={nameLabel}
                         dataType={util.datatypes.STRING.SHORT}
@@ -74,7 +76,8 @@ DndUniversalInput.propTypes = {
     labelPrefix: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     picklists: PropTypes.array,
-    referenceObject: PropTypes.object.isRequired
+    referenceObject: PropTypes.object.isRequired,
+    referenceObjectPrefix: PropTypes.string
 };
 
 export default DndUniversalInput;
