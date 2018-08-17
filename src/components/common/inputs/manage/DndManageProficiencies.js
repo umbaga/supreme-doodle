@@ -33,6 +33,10 @@ class DndManageProficiencies extends React.Component {
             return proficiency.category.id == this.props.editProficiencyList.category.id;
         }.bind(this));
         const categories = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.PROFICIENCY_CATEGORY);
+        
+        let proficiencyAssignedName = (this.props.name) ? this.props.name + '.assigned' : 'proficiencies.assigned';
+        let proficiencyCategoryName = (this.props.name) ? this.props.name + '.select.category' : 'proficiencies.select.category';
+        let proficiencyListName = (this.props.name) ? this.props.name + '.select.list' : 'proficiencies.select.list';
         return (
             <fragment>
                 <div className="col-md-12">
@@ -49,7 +53,6 @@ class DndManageProficiencies extends React.Component {
                     <DndFieldset
                         legend="Assign These Proficiencies"
                         collapsible
-                        startCollapsed
                         >
                         <DndInput
                             name="category"
@@ -61,7 +64,7 @@ class DndManageProficiencies extends React.Component {
                             onChange={this._onChangeCategory}
                             />
                         <DndInput
-                            name="proficiencies.assigned"
+                            name={proficiencyAssignedName}
                             label="Proficiencies"
                             dataType={util.datatypes.ARRAY.TAGS.ADD.PICKLIST}
                             value={this.props.value.assigned}
@@ -72,7 +75,7 @@ class DndManageProficiencies extends React.Component {
                             buttonOnClick={this.props.onChange}
                             onChangeChild={this.props.onChangeChild}
                             buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
-                            changeFocusRefName="proficiencies.assigned"
+                            changeFocusRefName={proficiencyAssignedName}
                             dataTask="Proficiency"
                             />
                     </DndFieldset>
@@ -81,17 +84,16 @@ class DndManageProficiencies extends React.Component {
                     <DndFieldset
                         legend="Select # from Category"
                         collapsible
-                        startCollapsed
                         >
                         <DndInput
-                            name="proficiencies.select.category"
+                            name={proficiencyCategoryName}
                             label="Select from Category"
                             dataType={util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT}
                             value={this.props.value.select.category}
                             onChange={this.props.onChange}
                             buttonOnClick={this.props.onChange}
                             buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
-                            changeFocusRefName="proficiencies.select.category"
+                            changeFocusRefName={proficiencyCategoryName}
                             picklist={categories}
                             dataTask="ProficiencyCategory"
                             childName="name"
@@ -107,7 +109,6 @@ class DndManageProficiencies extends React.Component {
                     <DndFieldset
                         legend="Select # from List"
                         collapsible
-                        startCollapsed
                         >
                         <DndInput
                             name="category"
@@ -130,7 +131,7 @@ class DndManageProficiencies extends React.Component {
                             buttonOnClick={this.props.onChangeChild}
                             onChangeChild={this.props.onChangeChild}
                             buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
-                            changeFocusRefName="proficiencies.select.list"
+                            changeFocusRefName={proficiencyListName}
                             dataTask="Proficiency"
                             buttonDataTask="proficiencylist"
                             />
@@ -142,7 +143,7 @@ class DndManageProficiencies extends React.Component {
                             onChange={this.props.onChangeChild}
                             dataTask="proficiencylist"
                             buttonOnClick={this.props.onChange}
-                            buttonName="proficiencies.select.list"
+                            buttonName={proficiencyListName}
                             buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
                             buttonType="save"
                             />
@@ -152,7 +153,7 @@ class DndManageProficiencies extends React.Component {
                             onChange={this.props.onChange}
                             dataType={util.datatypes.ACTION.LIST.PICKLIST}
                             renderNameFunction={util.format.forDisplay.obj.proficiencyList}
-                            name="proficiencies.select.list"
+                            name={proficiencyListName}
                             />
                     </DndFieldset>
                 </div>
@@ -165,6 +166,7 @@ DndManageProficiencies.propTypes = {
     editCategory: PropTypes.object.isRequired,
     editProficiency: PropTypes.object.isRequired,
     editProficiencyList: PropTypes.object.isRequired,
+    name: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onChangeChild: PropTypes.func.isRequired,
     picklists: PropTypes.array.isRequired,

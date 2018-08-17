@@ -9,7 +9,7 @@ class DndNestedCheckbox extends React.Component {
     }
     
     render() {
-        const finalDataTask = (this.props.dataTask) ? this.props.dataTask : false;
+        const finalDataTask = (this.props.dataTask) ? this.props.dataTask : 'normal';
         let displayThisControl = null;
         if (this.props.children.constructor === Array) {
             if (this.props.children.length > 1) {
