@@ -17,13 +17,15 @@ class DndIncrementButtons extends React.Component {
         const downDisabled = this.props.item.orderIndex == this.props.items.length - 1;
         const upDisabled = this.props.item.orderIndex == 0;
         let name = (this.props.name && this.props.name.length != 0) ? this.props.name : this.props.dataType;
+        let dataTask = (this.props.dataTask && this.props.dataTask.length != 0) ? this.props.dataTask : 'normal';
+        let itemIndex = (this.props.itemIndex || this.props.itemIndex == 0) ? this.props.itemIndex : -1;
         return (
             <div className={wrapperClass}>
                 <ButtonGroup className="btn-group-vertical">
-                    <Button bsStyle="default" onClick={this._moveItem} className="button-increment" disabled={upDisabled} datatype={this.props.moveItemUpAction} name={name}>
+                    <Button bsStyle="default" onClick={this._moveItem} value={itemIndex} className="button-increment" disabled={upDisabled} datatype={this.props.moveItemUpAction} name={name} data-task={dataTask}>
                         <i className="fa fa-caret-up"></i>
                     </Button>
-                    <Button bsStyle="default" onClick={this._moveItem} className="button-increment" disabled={downDisabled} datatype={this.props.moveItemDownAction} name={name}>
+                    <Button bsStyle="default" onClick={this._moveItem} value={itemIndex} className="button-increment" disabled={downDisabled} datatype={this.props.moveItemDownAction} name={name} data-task={dataTask}>
                         <i className="fa fa-caret-down"></i>
                     </Button>
                 </ButtonGroup>
@@ -33,9 +35,11 @@ class DndIncrementButtons extends React.Component {
 }
 
 DndIncrementButtons.propTypes = {
+    dataTask: PropTypes.string,
     dataType: PropTypes.string,
     downIcon: PropTypes.string,
     item: PropTypes.object.isRequired,
+    itemIndex: PropTypes.number,
     items: PropTypes.array.isRequired,
     moveItemDownAction: PropTypes.string,
     moveItemUpAction: PropTypes.string,

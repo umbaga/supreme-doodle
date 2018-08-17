@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import util from '../../../util/util';
 import DndButton from '../buttons/DndButton';
 import DndListItemButtonBar from '../buttons/DndListItemButtonBar';
+import DndIncrementButtons from '../buttons/DndIncrementButtons';
 
 class DndList extends React.Component {
     constructor(props, context) {
@@ -11,6 +12,7 @@ class DndList extends React.Component {
         this._onChangeWithIndex = this._onChangeWithIndex.bind(this);
         this.renderAuxiliaryInputs = this.renderAuxiliaryInputs.bind(this);
         this.renderButtonInput = this.renderButtonInput.bind(this);
+        this.renderChangeOrderButtons = this.renderChangeOrderButtons.bind(this);
     }
     
     _renderName(str, val) {
@@ -84,6 +86,23 @@ class DndList extends React.Component {
         }
     }
     
+    renderChangeOrderButtons(isOrdering, idx, name, item, items, dataTask, dataType) {
+        return (isOrdering) ? (
+            <td className="pull-right" width="50">
+                <DndIncrementButtons
+                    dataTask={dataTask}
+                    item={item}
+                    itemIndex={idx}
+                    items={items}
+                    moveItemDownAction={dataType.ORDER.DOWN}
+                    moveItemUpAction={dataType.ORDER.UP}
+                    name={name}
+                    onMoveItem={this.props.onChange}
+                    />
+            </td>
+        ) : null;
+    }
+    
     render() {
         let isCollapsible = (this.props.isCollapsible) ? this.props.isCollapsible : false;
         let isEditable = (this.props.isEditable) ? this.props.isEditable : false;
@@ -120,7 +139,8 @@ class DndList extends React.Component {
                             return (
                                 <tr key={idx}>
                                     {this.renderAuxiliaryInputs(idx)}
-                                    <td>{this._renderName(item[this.props.childName], item)}</td>
+                                    <td width="100%">{this._renderName(item[this.props.childName], item)}</td>
+                                    {this.renderChangeOrderButtons(isOrdering, idx, this.props.name, item, this.props.value, dataTask, buttonDatatype)}
                                     <td width="75px">
                                         <div className="pull-right">
                                             {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable)}

@@ -309,7 +309,28 @@ export const formState = {
                                 } else {
                                     return obj[prop[0]][idx] = val;
                                 }
+                            case 'move-down':
+                                if (subfield) {
+                                    obj[prop[0]][parseInt(idx) + 1][subfield]--;
+                                    obj[prop[0]][parseInt(idx)][subfield]++;
+                                    return obj[prop[0]];
+                                } else {
+                                    obj[prop[0]][parseInt(idx) + 1]--;
+                                    obj[prop[0]][parseInt(idx)]++;
+                                    return obj[prop[0]];
+                                }
+                            case 'move-up':
+                                if (subfield) {
+                                    obj[prop[0]][parseInt(idx)][subfield]--;
+                                    obj[prop[0]][parseInt(idx) - 1][subfield]++;
+                                    return obj[prop[0]];
+                                } else {
+                                    obj[prop[0]][parseInt(idx)]--;
+                                    obj[prop[0]][parseInt(idx) - 1]++;
+                                    return obj[prop[0]];
+                                }
                             default:
+                                console.error(action + ' action is missing from set.objectValue');
                         }
                     }
                 } else if (prop.length == 0) {
@@ -490,6 +511,12 @@ export const formState = {
                 break;
             case util.datatypes.ACTION.CHART.CANCEL:
                 retVal = util.common.resetObject.chart(arrayObject.length);
+                break;
+            case util.datatypes.ACTION.CHART.ORDER.DOWN:
+                util.common.formState.functions.set.objectValue(retVal, field, '', 'move-down', selectedIndex, 'orderIndex');
+                break;
+            case util.datatypes.ACTION.CHART.ORDER.UP:
+                util.common.formState.functions.set.objectValue(retVal, field, '', 'move-up', selectedIndex, 'orderIndex');
                 break;
             case util.datatypes.ACTION.CHART.ROW.ADD:
                 newRowIndex = util.common.formState.functions.set.objectValue(retVal, field).length;

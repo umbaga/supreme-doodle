@@ -152,7 +152,9 @@ class DndManageCharts extends React.Component {
         
     render() {
         const chart = this.props.editChart;
-        const charts = this.props.value;
+        const charts = this.props.value.sort(function(a, b) {
+            return a.orderIndex - b.orderIndex;
+        });
         const picklists = this.props.picklists;
         const chartTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.CHART);
         const picklistTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.PICKLIST);
@@ -213,6 +215,7 @@ class DndManageCharts extends React.Component {
                         isCollapsible
                         childObjectKeys={['displayObject']}
                         childObjectValues={['value']}
+                        isOrdering
                         >
                         <DndDisplayChart/>
                     </DndList>
