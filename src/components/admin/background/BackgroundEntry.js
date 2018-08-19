@@ -95,6 +95,9 @@ class BackgroundEntry extends React.Component {
             case 'assignedequipment-trinket':
                 arrayItem = this.state.editTrinket;
                 break;
+            case 'lose-proficiency':
+                arrayItem = this.state.background.parent.proficiencies.assigned;
+                break;
             case 'normal':
                 break;
             default:
@@ -107,6 +110,9 @@ class BackgroundEntry extends React.Component {
         let newEditProficiencyCategory = Object.assign({}, util.common.resetObject.select.proficiency.category());
         let newEditProficiencyList = Object.assign({}, util.common.resetObject.select.proficiency.list());
         let newEditChart = Object.assign({}, util.common.resetObject.chart(background.charts.length));
+        if (background.parent && background.parent.id != 0) {
+            background.parent = util.common.picklists.getPicklistItem(this.props.picklists, background.parent.id);
+        }
         newStateObj.background = background;
         newStateObj.editTrinket = newEditTrinket;
         newStateObj.editEquipment = newEditEquipment;

@@ -87,7 +87,7 @@ tr.found{
 }
 .tableBodyScroll tbody {
     display:block;
-    max-height:565px;
+    max-height:560px;
     overflow-y:scroll;
 }
 .tableBodyScroll thead, tfoot, tbody, tr {

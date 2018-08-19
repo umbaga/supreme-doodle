@@ -35,24 +35,58 @@ export const BACKGROUND = {
     name: '',
     resource: _RESOURCE,
     description: '',
-    suggestedCharacteristics: '',
-    proficiencies: {
-        assigned: [],
-        select: {
-            category: [],
-            list: []
-        }
-    },
+    charts: [],
     equipment: {
         startingGold: 0,
-        assigned: []
+        assigned: [],
+        variant: {
+            gain: [],
+            lose: []
+        }
     },
-    charts: [],
     feature: {
         id: 0,
         name: '',
         description: ''
     },
+    isVariant: false,
+    parent: {
+        id: 0,
+        proficiencies: {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        },
+        equipment: {
+            assigned: []
+        }
+    },
+    proficiencies: {
+        assigned: [],
+        select: {
+            category: [],
+            list: []
+        },
+        variant: {
+            gain: {
+                assigned: [],
+                select: {
+                    category: [],
+                    list: []
+                }
+            },
+            lose: {
+                assigned: [],
+                select: {
+                    category: [],
+                    list: []
+                }
+            }
+        }
+    },
+    suggestedCharacteristics: '',
     variants: []
 };
 export const BACKGROUND_VARIANT = {

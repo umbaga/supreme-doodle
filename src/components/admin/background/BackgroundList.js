@@ -9,9 +9,49 @@ class BackgroundList extends React.Component {
     }
     
     render() {
+        let backgrounds = this.props.backgrounds.filter(function(background) {
+            return !background.isVariant;
+        }).sort(function(a, b) {
+            if (a.name > b.name) {
+                return 1;
+            } else if (a.name < b.name) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
+        let variants = this.props.backgrounds.filter(function(background) {
+            return background.isVariant;
+        }).sort(function(a, b) {
+            if (a.parent.name > b.parent.name) {
+                return 1;
+            } else if (a.parent.name < b.parent.name) {
+                return -1;
+            } else {
+                if (a.name > b.name) {
+                    return 1;
+                } else if (a.name < b.name) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        let finalBackgrounds = [];
+        for (let q = 0; q < backgrounds.length; q++) {
+            finalBackgrounds.push(backgrounds[q]);
+            let bgVariants = variants.filter(function(variant) {
+                return variant.parent.id == backgrounds[q].id;
+            });
+            if (bgVariants && bgVariants.length != 0) {
+                for (let w = 0; w < bgVariants.length; w++) {
+                    finalBackgrounds.push(bgVariants[w]);
+                }
+            }
+        }
         return (
             <tbody>
-                {this.props.backgrounds.map(function(background, idx) {
+                {finalBackgrounds.map(function(background, idx) {
                     return (
                         <BackgroundItem
                             key={idx}

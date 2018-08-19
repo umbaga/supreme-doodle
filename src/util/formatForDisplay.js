@@ -601,6 +601,9 @@ obj.proficiencyBlock = {
         return retVal;
     }
 };
+obj.proficiencyCategory = function(val) {
+    return 'Select ' + util.format.forDisplay.number.renderAsWord(val.count) + ' ' + util.format.forDisplay.string.renderSingularPlural(val.name, val.count);
+};
 obj.proficiencyList = function(val) {
     let retVal = 'Select ' + util.format.forDisplay.number.renderAsWord(val.count) + ' ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.count) + ' from the following: ';
     for (let q = 0; q < val.proficiencies.length; q++) {

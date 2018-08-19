@@ -1,9 +1,12 @@
--- FUNCTION: public.get_proficiencies_list(bigint)
 
--- DROP FUNCTION public.get_proficiencies_list(bigint);
+-- FUNCTION: public.get_proficiencies_list(bigint, bigint, bigint)
+
+-- DROP FUNCTION public.get_proficiencies_list(bigint, bigint, bigint);
 
 CREATE OR REPLACE FUNCTION public.get_proficiencies_list(
-	"itemId" bigint)
+	"itemId" bigint,
+	"linkTypeId" bigint,
+	"listLinkTypeId" bigint)
     RETURNS json
     LANGUAGE 'sql'
 
@@ -14,7 +17,7 @@ AS $BODY$
 SELECT json_agg(
 	json_build_object(
 		'count', lnkcnt."count",
-		'proficiencies', get_list_items(lnk."targetId", 906),
+		'proficiencies', get_list_items(lnk."targetId", $3),
 		'category', (
 			get_item((SELECT prof."categoryId"
 				FROM adm_link lnk2
@@ -30,9 +33,9 @@ SELECT json_agg(
 FROM adm_link lnk
 LEFT OUTER JOIN adm_link_count lnkcnt ON lnkcnt."linkId" = lnk.id
 WHERE lnk."referenceId" = $1
-AND lnk."typeId" = 904
+AND lnk."typeId" = $2
 
 $BODY$;
 
-ALTER FUNCTION public.get_proficiencies_list(bigint)
+ALTER FUNCTION public.get_proficiencies_list(bigint, bigint, bigint)
     OWNER TO postgres;

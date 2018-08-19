@@ -203,6 +203,10 @@ class DndInput extends React.Component {
                 break;
             case util.datatypes.BOOL:
             case util.datatypes.SPECIAL.CHART.ENTRY.BOOL:
+            case util.datatypes.ACTION.VARIANT.LOSE.EQUIPMENT:
+            case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY:
+            case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY_CATEGORY:
+            case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY_LIST:
                 primaryInput = (
                     <input
                         type="checkbox"

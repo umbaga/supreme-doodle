@@ -589,7 +589,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         for (let q = 0; q < results.length; q++) {
                             if (results[q].category.id == itemtypes.TYPE.PROFICIENCY_CATEGORY.LANGUAGE) {
                                 if (results[q].language.dialects && results[q].language.dialects.length != 0) {
-                                    console.log('has dialects');
                                     for (let w = 0; w < results[q].language.dialects.length; w++) {
                                         let newProficiencyItem = {};
                                         newProficiencyItem.language = {};
@@ -702,6 +701,55 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         newPicklist.isPicklist = true;
                         newPicklist.applySupplementalPicklist = false;
                         newPicklist.items = results;
+                        resObj.push(newPicklist);
+                        return callback(err, resObj);
+                    });
+                },
+                function backgrounds(resObj, callback) {
+                    results = [];
+                    sql = 'SELECT i."id", i."itemName" AS "name"';
+                    sql += ', get_item(i."resourceId") AS "resource"';
+                    sql += ', get_description(i.id, $2) AS "description"';
+                    sql += ', get_description(i.id, $3) AS "suggestedCharacteristics"';
+                    sql += ', json_build_object (';
+                    sql += '    \'startingGold\', bg."startingGold"';
+                    sql += '    , \'assigned\', CASE WHEN get_assigned_equipment(i.id, $4) IS NULL THEN \'[]\' ELSE get_assigned_equipment(i.id, $4) END';
+                    sql += ') AS "equipment"';
+                    sql += ', CASE WHEN get_feature(i.id) IS NULL THEN \'{}\' ELSE get_feature(i.id) END AS "feature"';
+                    sql += ', get_proficiencies(i.id) AS "proficiencies"';
+                    sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
+                    sql += ', CASE WHEN var."parentId" IS NULL THEN \'{}\' ELSE get_item(var."parentId") END AS "parent"';
+                    sql += ', CASE WHEN var."parentId" IS NULL THEN false ELSE true END AS "isVariant"';
+                    sql += ' FROM adm_core_item i';
+                    sql += ' LEFT OUTER JOIN adm_def_background bg ON bg."backgroundId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_background_variant var ON var."backgroundId" = i.id';
+                    sql += ' WHERE i."typeId" IN ($1, $5)';
+                    sql += ' ORDER BY i."itemName"';
+                    vals = [
+                        itemtypes.TYPE.ITEM.BACKGROUND,
+                        itemtypes.TYPE.DESCRIPTION.GENERAL,
+                        itemtypes.TYPE.DESCRIPTION.SUGGESTED_CHARACTERISTICS,
+                        itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT,
+                        itemtypes.TYPE.ITEM.BACKGROUND_VARIANT
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        let finalResults = results;
+                        for (let q = 0; q < finalResults.length; q++) {
+                            if (!finalResults[q].isVariant) {
+                                finalResults[q].parent = {};
+                                finalResults[q].parent.id = 0;
+                            }
+                        }
+                        let newPicklist = {};
+                        newPicklist.id = itemtypes.TYPE.ITEM.BACKGROUND;
+                        newPicklist.name = 'Background';
+                        newPicklist.isPicklist = true;
+                        newPicklist.applySupplementalPicklist = false;
+                        newPicklist.items = finalResults;
                         resObj.push(newPicklist);
                         return callback(err, resObj);
                     });

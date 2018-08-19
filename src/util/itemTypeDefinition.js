@@ -146,6 +146,28 @@ export const TYPE = {
             VARIANT: 15
         },
         TITLE: 17,
+        VARIANT: {
+            ASSIGNED_EQUIPMENT: {
+                GAIN: 2859,
+                LOSE: 2865
+            },
+            PROFICIENCY: {
+                ASSIGNED: {
+                    GAIN: 2858,
+                    LOSE: 2862
+                },
+                SELECT: {
+                    CATEGORY: {
+                        GAIN: 2863,
+                        LOSE: 2864
+                    },
+                    LIST: {
+                        GAIN: 2860,
+                        LOSE: 2861
+                    }
+                }
+            }
+        },
         WEAPON_PROPERTY: 444
     },
     MECHANIC: {

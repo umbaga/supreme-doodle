@@ -11,9 +11,9 @@ CREATE OR REPLACE FUNCTION public.get_feature(
     VOLATILE 
 AS $BODY$
 SELECT json_build_object(
-	'id', i.id,
-	'name', i."itemName",
-	'description', get_description(i.id, 11)
+	'id', CASE WHEN ftlnk."targetId" IS NULL THEN 0 ELSE i.id END,
+	'name', CASE WHEN ftlnk."targetId" IS NULL THEN '' ELSE i."itemName" END,
+	'description', CASE WHEN ftlnk."targetId" IS NULL THEN '' ELSE get_description(i.id, 11) END
 )
 FROM adm_core_item i
 INNER JOIN adm_link lnk ON lnk."referenceId" = i.id AND lnk."typeId" = 16

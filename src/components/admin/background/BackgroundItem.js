@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-//import util from '../../../util/util';
+import util from '../../../util/util';
 import DndListItemButtonBar from '../../common/buttons/DndListItemButtonBar';
 import * as backgroundActions from '../../../actions/admin/backgroundActions';
 
@@ -29,10 +29,16 @@ class BackgroundItem extends React.Component {
         }
     }
     render() {
+        let displayName = this.props.background.name;
+        if (this.props.background.isVariant) {
+            displayName = util.unicode.punctuation.longDash;
+            displayName += this.props.background.parent.name + ' Variant: ';
+            displayName += this.props.background.name;
+        }
         return (
             <tr key={this.props.background.id}>
                 <td width="50"></td>
-                <td>{this.props.background.name}</td>
+                <td>{displayName}</td>
                 <td>
                     <DndListItemButtonBar
                         listItem={this.props.background}

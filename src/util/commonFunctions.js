@@ -11,22 +11,42 @@ export const resetObject = {
     },
     background: function() {
         let retVal = Object.assign({}, util.objectModel.BACKGROUND);
+        retVal.charts = [];
         retVal.equipment = {
             startingGold: 0,
-            assigned: []
-        };
-        retVal.charts = [];
-        retVal.proficiencies = {
             assigned: [],
-            select: {
-                category: [],
-                list: []
+            variant: {
+                gain: [],
+                lose: []
             }
         };
         retVal.feature = {
             id: 0,
             name: '',
             description: ''
+        };
+        retVal.proficiencies = {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            },
+            variant: {
+                gain: {
+                    assigned: [],
+                    select: {
+                        category: [],
+                        list: []
+                    }
+                },
+                lose: {
+                    assigned: [],
+                    select: {
+                        category: [],
+                        list: []
+                    }
+                }
+            }
         };
         return retVal;
     },
@@ -577,6 +597,45 @@ export const formState = {
             case util.datatypes.ACTION.LIST.NEW.REMOVE:
             case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
                 util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
+                break;
+            case util.datatypes.ACTION.VARIANT.LOSE.EQUIPMENT:
+                if (event.target.checked) {
+                    tmpVal = 'add';
+                } else {
+                    tmpVal = 'remove';
+                }
+                for (let q = 0; q < retVal.parent.equipment.assigned.length; q++) {
+                    if (retVal.parent.equipment.assigned[q].id == subfield) {
+                        tmpObj = retVal.parent.equipment.assigned[q];
+                    }
+                }
+                util.common.formState.functions.set.objectValue(retVal, field, tmpObj, tmpVal, arrayItemIndex);
+                break;
+            case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY:
+                if (event.target.checked) {
+                    tmpVal = 'add';
+                } else {
+                    tmpVal = 'remove';
+                }
+                for (let q = 0; q < retVal.parent.proficiencies.assigned.length; q++) {
+                    if (retVal.parent.proficiencies.assigned[q].id == subfield) {
+                        tmpObj = retVal.parent.proficiencies.assigned[q];
+                    }
+                }
+                util.common.formState.functions.set.objectValue(retVal, field, tmpObj, tmpVal, arrayItemIndex);
+                break;
+            case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY_CATEGORY:
+                if (event.target.checked) {
+                    tmpVal = 'add';
+                } else {
+                    tmpVal = 'remove';
+                }
+                for (let q = 0; q < retVal.parent.proficiencies.select.category.length; q++) {
+                    if (retVal.parent.proficiencies.select.category[q].id == subfield) {
+                        tmpObj = retVal.parent.proficiencies.select.category[q];
+                    }
+                }
+                util.common.formState.functions.set.objectValue(retVal, field, tmpObj, tmpVal, arrayItemIndex);
                 break;
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
                 if (field.split('_').length == 1) {
