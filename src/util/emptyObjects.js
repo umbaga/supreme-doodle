@@ -250,6 +250,11 @@ export const SELECT = {
         }
     }
 };
+export const SPELL = {
+    id: 0,
+    name: '',
+    resource: _RESOURCE
+};
 export const TRINKET = {
     id: 0,
     name: '',

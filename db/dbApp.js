@@ -10,6 +10,7 @@ let runEquipment = require('./routes/equipment');
 let runItemtype = require('./routes/itemtype');
 let runPicklist = require('./routes/picklist');
 let runProficiency = require('./routes/proficiency');
+let runSpell = require('./routes/spell');
 
 let pg = require('pg');
 
@@ -35,6 +36,7 @@ runEquipment(app, pg, async, pool, itemtypes, modules);
 runItemtype(app, pg, async, pool, itemtypes, modules);
 runPicklist(app, pg, async, pool, itemtypes, modules);
 runProficiency(app, pg, async, pool, itemtypes, modules);
+runSpell(app, pg, async, pool, itemtypes, modules);
 
 app.listen(5000, function() {
     console.log('Started on Port 5000');

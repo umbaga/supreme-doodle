@@ -24,7 +24,7 @@ class _TemplateEntry extends React.Component {
         this.saveAndNew_Template = this.saveAndNew_Template.bind(this);
         this.saveAndBack_Template = this.saveAndBack_Template.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
-        this.updateItemFormState = this.updateItemFormState.bind(this);
+        this.updateChildFormState = this.updateChildFormState.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -120,7 +120,7 @@ class _TemplateEntry extends React.Component {
                     onSave={this.saveAndBack_Template}
                     onSaveNew={this.saveAndNew_Template}
                     onChange={this.updateFormState}
-                    onChangeItem={this.updateItemFormState}
+                    onChangeChild={this.updateChildFormState}
                     onCancel={this.cancel_Template}
                     onDelete={this.delete_Template}
                     isCreate={this.state.isCreate}
@@ -134,7 +134,8 @@ class _TemplateEntry extends React.Component {
 
 _TemplateEntry.propTypes = {
     _template: PropTypes.object,
-    picklists: PropTypes.object,
+    _templates: PropTypes.object,
+    picklists: PropTypes.array,
     actions: PropTypes.object,
     canEdit: PropTypes.bool,
     closeModal: PropTypes.func.isRequired,

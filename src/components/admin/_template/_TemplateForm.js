@@ -58,7 +58,7 @@ _TemplateForm.propTypes = {
     onSave: PropTypes.func.isRequired,
     onSaveNew: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    onChangeItem: PropTypes.func.isRequired,
+    onChangeChild: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     isCreate: PropTypes.bool.isRequired,

@@ -94,6 +94,7 @@ module.exports = {TYPE: {
         SAVE_EFFECT: 308,
         SCHOOL_OF_MAGIC: 85,
         SIZE: 100,
+        SPELL: 2890,
         SPELL_COMPONENT: 94,
         SPELLCASTING_FOCUS: 445,
         STAT: 242,

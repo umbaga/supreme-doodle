@@ -104,7 +104,6 @@ class DndList extends React.Component {
     }
     
     render() {
-        let isCollapsible = (this.props.isCollapsible) ? this.props.isCollapsible : false;
         let isEditable = (this.props.isEditable) ? this.props.isEditable : false;
         let isOrdering = (this.props.isOrdering) ? this.props.isOrdering : false;
         let buttonDatatype = (this.props.buttonDatatype) ? this.props.buttonDatatype : this.props.dataType;
@@ -188,7 +187,6 @@ DndList.propTypes = {
         PropTypes.string
     ]).isRequired,
     hideScrolling: PropTypes.bool,
-    isCollapsible: PropTypes.bool,
     isEditable: PropTypes.bool,
     isOrdering: PropTypes.bool,
     name: PropTypes.string,
