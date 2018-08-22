@@ -253,7 +253,85 @@ export const SELECT = {
 export const SPELL = {
     id: 0,
     name: '',
-    resource: _RESOURCE
+    description: '',
+    atHigherLevels: '',
+    castingTime: {
+        text: '',
+        unit: {id: itemtypes.TYPE.DEFAULT.UNIT.CASTING_TIME},
+        value: 1
+    },
+    charts: [],
+    components: [],
+    damage: {
+        dice: _DICE,
+        type: _ID_NAME_OBJECT,
+        typeList: {
+            isInclusive: false,
+            count: 1,
+            list: []
+        },
+        condition: _ID_NAME_OBJECT,
+        conditionList: {
+            isInclusive: false,
+            count: 1,
+            list: []
+        },
+        improvement: [],
+        areaOfEffect: {
+            shape: _ID_NAME_OBJECT,
+            value: 0
+        },
+        savingThrow: {
+            abilityScore: _ID_NAME_OBJECT,
+            effect: _ID_NAME_OBJECT,
+            isRepeating: false,
+            countToAvoid: 1
+        },
+        attack: {
+            type: _ID_NAME_OBJECT,
+            addedToAttack: false
+        }
+    },
+    duration: {
+        concentration: {
+            unit: _ID_NAME_OBJECT,
+            value: 0
+        },
+        unit: _ID_NAME_OBJECT,
+        value: 0
+    },
+    isRitual: false,
+    level: 0,
+    materialComponentText: '',
+    mechanics: [],
+    range: {
+        areaOfEffect: {
+            shape: _ID_NAME_OBJECT,
+            unit: {id: itemtypes.TYPE.DEFAULT.UNIT.LENGTH},
+            value: 0
+        },
+        unit: _ID_NAME_OBJECT,
+        value: 0
+    },
+    resource: _RESOURCE,
+    school: _ID_NAME_OBJECT,
+    supplementalDescriptions: []
+};
+export const DAMAGE_IMPROVEMENT = {
+    dice: _DICE,
+    atCharacterLevel: 0,
+    everySpellSlotLevel: 0
+};
+export const SPELL_COMPONENT = {
+    id: 0,
+    name: '',
+    text: ''
+};
+export const SUPPLEMENTAL_DESCRIPTION = {
+    id: 0,
+    title: '',
+    description: '',
+    orderIndex: 0
 };
 export const TRINKET = {
     id: 0,

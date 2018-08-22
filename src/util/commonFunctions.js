@@ -1,16 +1,24 @@
 import util from './util';
 import * as picklistInfo from './picklistInfo';
 import * as resetObjectFunctions from './resetObjects';
-import * as formStateFunctions from './formStatefunctions';
+import * as formStateFunctions from './formStateFunctions';
 
-export const picklists = picklistInfo;
-
-export const resetObject = resetObjectFunctions;
-
-export const replace = {
-    description: function(val) {
-        return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ').replace(' ing', 'ing')
-            .replace('com e ', 'come ').replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
+export const calculate = {
+    dice: {
+        minimum: function(val) {
+            let retVal = val.dieCount;
+            retVal += val.modifier;
+            retVal *= val.multiplier;
+            retVal /= val.divisor;
+            return retVal;
+        },
+        maximum: function(val) {
+            let retVal = val.dieCount * val.dieType;
+            retVal += val.modifier;
+            retVal *= val.multiplier;
+            retVal /= val.divisor;
+            return retVal;
+        }
     }
 };
 
@@ -82,23 +90,15 @@ export const charts = {
     }
 };
 
-export const calculate = {
-    dice: {
-        minimum: function(val) {
-            let retVal = val.dieCount;
-            retVal += val.modifier;
-            retVal *= val.multiplier;
-            retVal /= val.divisor;
-            return retVal;
-        },
-        maximum: function(val) {
-            let retVal = val.dieCount * val.dieType;
-            retVal += val.modifier;
-            retVal *= val.multiplier;
-            retVal /= val.divisor;
-            return retVal;
-        }
+export const formState = formStateFunctions;
+
+export const picklists = picklistInfo;
+
+export const replace = {
+    description: function(val) {
+        return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ').replace(' ing', 'ing')
+            .replace('com e ', 'come ').replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
     }
 };
 
-export const formState = formStateFunctions;
+export const resetObject = resetObjectFunctions;

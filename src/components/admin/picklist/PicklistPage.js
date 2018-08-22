@@ -7,6 +7,7 @@ import PicklistList from './PicklistList';
 import PicklistEntry from './PicklistEntry';
 import * as actions from '../../../actions/admin/picklistActions';
 import DndButton from '../../common/buttons/DndButton';
+import util from '../../../util/util';
 
 class PicklistListPage extends React.Component {
     constructor(props, context) {
@@ -64,7 +65,11 @@ class PicklistListPage extends React.Component {
     }
     
     render() {
-        const picklists = this.props.picklists;
+        const picklists = this.props.picklists.filter(function(pl) {
+            return pl.id == util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE || pl.id == util.itemtypes.TYPE.ITEM.LINK_TYPE;
+        }).concat(this.props.picklists.filter(function(pl) {
+            return pl.id != util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE && pl.id != util.itemtypes.TYPE.ITEM.LINK_TYPE;
+        }));
         return (
             <div className="col-md-12">
                 <div>

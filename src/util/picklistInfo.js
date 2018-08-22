@@ -18,13 +18,18 @@ export function getPicklistItems (picklistArray, picklistId) {
         retVal = retVal.concat(tmp[e].items);
     }
     retVal = retVal.sort(function(a, b) {
-        if (a.name < b.name) {
-            return -1;
-        } else if (a.name > b.name) {
-            return 1;
+        if (a.orderIndex !== null && a.orderIndex !== undefined) {
+            return a.orderIndex - b.orderIndex;
         } else {
-            return 0;
+            if (a.name < b.name) {
+                return -1;
+            } else if (a.name > b.name) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
+        
     });
     return retVal;
 }

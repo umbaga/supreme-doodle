@@ -26,8 +26,7 @@ class _TemplateForm extends React.Component {
             <div>
                 <form>
                     <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
-                        <Tab eventKey={1} title="Description">
-                            <div>&nbsp;</div>
+                        <Tab eventKey={1} title="General">
                             <DndUniversalInput
                                 ref="name"
                                 referenceObject={_template}

@@ -295,12 +295,12 @@ class BackgroundForm extends React.Component {
 }
 
 BackgroundForm.propTypes = {
+    editChart: PropTypes.object.isRequired,
     editEquipment: PropTypes.object.isRequired,
     editTrinket: PropTypes.object.isRequired,
     editProficiency: PropTypes.object.isRequired,
     editProficiencyCategory: PropTypes.object.isRequired,
     editProficiencyList: PropTypes.object.isRequired,
-    editChart: PropTypes.object.isRequired,
     onChangeChild: PropTypes.func.isRequired,
     background: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,

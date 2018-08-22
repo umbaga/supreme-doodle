@@ -6,6 +6,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let resObj = null;
     let parameterArray = null;
     let addComma = false;
+    let counter = 0;
     app.put('/api/adm/picklist/item/:id', function(req, res) {
         results = [];
         vals = [];
@@ -357,17 +358,17 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         results = [];
                         vals = [];
                         addComma = false;
+                        counter = 0;
                         sql = 'INSERT INTO adm_core_item';
                         sql += ' ("itemName", "typeId")';
                         sql += ' VALUES ';
-                        parameterArray = common.parameterArray.resetValues(2);
                         for (let e = 0; e < resObj.picklist.items.length; e++) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.picklist.items[e].name);
                             vals.push(resObj.picklist.id);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         sql += ' returning id, "itemName"';
                         query = client.query(new pg.Query(sql, vals));
@@ -512,53 +513,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         finalResults.push(picklistPicklist);
                         return callback(err, finalResults);
                     });
-                },
-                function addHardcodedPicklists(resObj, callback) {
-                    let spellLevelPicklist = {};
-                    spellLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.SPELL;
-                    spellLevelPicklist.name = 'Spell Level';
-                    spellLevelPicklist.items = [
-                        {id: -1, name: 'All'},
-                        {id: 0, name: 'Cantrip'},
-                        {id: 1, name: '1st'},
-                        {id: 2, name: '2nd'},
-                        {id: 3, name: '3rd'},
-                        {id: 4, name: '4th'},
-                        {id: 5, name: '5th'},
-                        {id: 6, name: '6th'},
-                        {id: 7, name: '7th'},
-                        {id: 8, name: '8th'},
-                        {id: 9, name: '9th'}
-                    ];
-                    resObj.push(spellLevelPicklist);
-                    let characterLevelPicklist = {};
-                    characterLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.CHARACTER;
-                    characterLevelPicklist.name = 'Character Level';
-                    characterLevelPicklist.items = [
-                        {id: 1, name: '1st'},
-                        {id: 2, name: '2nd'},
-                        {id: 3, name: '3rd'},
-                        {id: 4, name: '4th'},
-                        {id: 5, name: '5th'},
-                        {id: 6, name: '6th'},
-                        {id: 7, name: '7th'},
-                        {id: 8, name: '8th'},
-                        {id: 9, name: '9th'},
-                        {id: 10, name: '10th'},
-                        {id: 11, name: '11th'},
-                        {id: 12, name: '12th'},
-                        {id: 13, name: '13th'},
-                        {id: 14, name: '14th'},
-                        {id: 15, name: '15th'},
-                        {id: 16, name: '16th'},
-                        {id: 17, name: '17th'},
-                        {id: 18, name: '18th'},
-                        {id: 19, name: '19th'},
-                        {id: 20, name: '20th'}
-                    ];
-                    resObj.push(characterLevelPicklist);
-                    
-                    return callback(err, resObj);
                 },
                 function proficiencies(resObj, callback) {
                     results = [];
@@ -753,6 +707,59 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         resObj.push(newPicklist);
                         return callback(err, resObj);
                     });
+                },
+                function addHardcodedPicklists(resObj, callback) {
+                    let spellLevelPicklist = {};
+                    spellLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.SPELL;
+                    spellLevelPicklist.name = 'Spell Level';
+                    spellLevelPicklist.items = [
+                        {id: -1, name: 'All'},
+                        {id: 0, name: 'Cantrip'},
+                        {id: 1, name: '1st'},
+                        {id: 2, name: '2nd'},
+                        {id: 3, name: '3rd'},
+                        {id: 4, name: '4th'},
+                        {id: 5, name: '5th'},
+                        {id: 6, name: '6th'},
+                        {id: 7, name: '7th'},
+                        {id: 8, name: '8th'},
+                        {id: 9, name: '9th'}
+                    ];
+                    spellLevelPicklist.items = spellLevelPicklist.items.sort(function(a, b) {
+                        return a.id - b.id;
+                    });
+                    resObj.push(spellLevelPicklist);
+                    let characterLevelPicklist = {};
+                    characterLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.CHARACTER;
+                    characterLevelPicklist.name = 'Character Level';
+                    characterLevelPicklist.items = [
+                        {id: 1, name: '1st'},
+                        {id: 2, name: '2nd'},
+                        {id: 3, name: '3rd'},
+                        {id: 4, name: '4th'},
+                        {id: 5, name: '5th'},
+                        {id: 6, name: '6th'},
+                        {id: 7, name: '7th'},
+                        {id: 8, name: '8th'},
+                        {id: 9, name: '9th'},
+                        {id: 10, name: '10th'},
+                        {id: 11, name: '11th'},
+                        {id: 12, name: '12th'},
+                        {id: 13, name: '13th'},
+                        {id: 14, name: '14th'},
+                        {id: 15, name: '15th'},
+                        {id: 16, name: '16th'},
+                        {id: 17, name: '17th'},
+                        {id: 18, name: '18th'},
+                        {id: 19, name: '19th'},
+                        {id: 20, name: '20th'}
+                    ];
+                    characterLevelPicklist.items = characterLevelPicklist.items.sort(function(a, b) {
+                        return a.id - b.id;
+                    });
+                    resObj.push(characterLevelPicklist);
+                    
+                    return callback(err, resObj);
                 }
             ], function(error, results) {
                 done();

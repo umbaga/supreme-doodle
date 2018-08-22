@@ -23,6 +23,7 @@ class DndUniversalInput extends React.Component {
         if (!this.props.picklists) {
             colCount = 12;
         }
+        colCount = (this.props.nameResourceSameRow) ? 6 : colCount;
         let colStyles = 'col-sm-' + colCount.toString();
         let nameName = (this.props.referenceObjectPrefix) ? this.props.referenceObjectPrefix + '.name' : 'name';
         let resourceName = (this.props.referenceObjectPrefix) ? this.props.referenceObjectPrefix + '.resource' : 'resource';
@@ -53,6 +54,7 @@ class DndUniversalInput extends React.Component {
         );
         return (
             <fragment>
+                {resourceInput}
                 <div className={colStyles}>
                     <DndInput
                         name={nameName}
@@ -63,7 +65,6 @@ class DndUniversalInput extends React.Component {
                         onChange={this.props.onChange}
                         />
                 </div>
-                {resourceInput}
                 {descriptionInput}
             </fragment>
         );
@@ -74,6 +75,7 @@ DndUniversalInput.propTypes = {
     collapseDescription: PropTypes.bool,
     hideDescription: PropTypes.bool,
     labelPrefix: PropTypes.string,
+    nameResourceSameRow: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     picklists: PropTypes.array,
     referenceObject: PropTypes.object.isRequired,

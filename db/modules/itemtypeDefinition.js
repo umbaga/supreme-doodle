@@ -16,12 +16,21 @@ module.exports = {TYPE: {
         PICKLIST: 1066,
         STRING: 322
     },
+    DEFAULT: {
+        UNIT: {
+            CASTING_TIME: 214,
+            LENGTH: 275
+        }
+    },
     DESCRIPTION: {
-        FLAVOR_TEXT: 99,
+        AT_HIGHER_LEVELS: 2891,
         CHART_TEXT: 1072,
         GENERAL: 11,
+        REACTION_CASTING_TIME_TEXT: 2892,
         SPECIAL_WEAPON: 84,
-        SUGGESTED_CHARACTERISTICS: 903
+        SPELL_COMPONENT_TEXT: 99,
+        SUGGESTED_CHARACTERISTICS: 903,
+        SUPPLEMENTAL: 2902
     },
     EQUIPMENT_CATEGORY: {
         AMMUNITION: 108,
@@ -55,6 +64,7 @@ module.exports = {TYPE: {
         ALIGNMENT_ETHICAL: 163,
         ALIGNMENT_MORAL: 167,
         AMMUNITION_TYPE: 436,
+        AREA_OF_EFFECT_SHAPE: 2895,
         ATTACK_TYPE: 228,
         BACKGROUND: 902,
         BACKGROUND_VARIANT: 2855,
@@ -88,7 +98,7 @@ module.exports = {TYPE: {
         PICKLIST: 0,
         PROFICIENCY: 323,
         PROFICIENCY_CATEGORY: 125,
-        RANGE: 28,
+        RANGE: 278,
         RECHARGE_TYPE: 291,
         RESOURCE: 1,
         SAVE_EFFECT: 308,
@@ -177,6 +187,23 @@ module.exports = {TYPE: {
             STAT: 13
         }
     },
+    PROFICIENCY: {
+        ARMOR: {
+            HEAVY: 432,
+            LIGHT: 430,
+            MEDIUM: 431,
+            SHIELD: 433
+        },
+        VEHICLE: {
+            LAND: 442,
+            WATER: 443
+        },
+        WEAPON: {
+            IMPROVISED: 381,
+            MARTIAL: 380,
+            SIMPLE: 379
+        }
+    },
     PROFICIENCY_CATEGORY: {
         ARMOR: 126,
         ARTISANS_TOOL: 127,
@@ -204,6 +231,18 @@ module.exports = {TYPE: {
         SMALL: 105,
         TINY: 106
     },
+    SPELL_CASTING_TIME: {
+        REACTION: 216
+    },
+    SPELL_COMPONENT: {
+        MATERIAL: 95
+    },
+    SPELL_DURATION: {
+        CONCENTRATION: 284
+    },
+    SPELL_RANGE: {
+        SELF: 279
+    },
     SPELLCASTING_FOCUS: {
         ARCANE_FOCUS: 446,
         DRUIDIC_FOCUS: 447,
@@ -213,23 +252,6 @@ module.exports = {TYPE: {
     WEAPON_CLASS: {
         MELEE: 27,
         RANGED: 28
-    },
-    PROFICIENCY: {
-        ARMOR: {
-            HEAVY: 432,
-            LIGHT: 430,
-            MEDIUM: 431,
-            SHIELD: 433
-        },
-        VEHICLE: {
-            LAND: 442,
-            WATER: 443
-        },
-        WEAPON: {
-            IMPROVISED: 381,
-            MARTIAL: 380,
-            SIMPLE: 379
-        }
     },
     WEAPON_PROPERTY: {
         AMMUNITION: 74,

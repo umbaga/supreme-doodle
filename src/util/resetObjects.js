@@ -178,6 +178,15 @@ export const select = {
             return retVal;
         }
     }
+};
+
+export function supplementalDescription(newIndex) {
+    let retVal = Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION);
+    retVal.id = newIndex * -1;
+    retVal.orderIndex = newIndex;
+    retVal.title = '';
+    retVal.description = '';
+    return retVal;
 }
 
 export function trinket(newId) {

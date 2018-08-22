@@ -6,7 +6,6 @@ import DndList from '../DndList';
 import DndChart from '../DndChart';
 import DndFieldset from '../../form/DndFieldset';
 import util from '../../../../util/util';
-import DndDisplayChart from '../../display/DndDisplayChart';
 
 class DndManageCharts extends React.Component {
     constructor(props, context) {
@@ -216,9 +215,7 @@ class DndManageCharts extends React.Component {
                         childObjectKeys={['displayObject']}
                         childObjectValues={['value']}
                         isOrdering
-                        >
-                        <DndDisplayChart/>
-                    </DndList>
+                        />
                 </DndFieldset>
             </fragment>
         );

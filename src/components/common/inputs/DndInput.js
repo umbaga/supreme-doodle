@@ -99,16 +99,18 @@ class DndInput extends React.Component {
                         }
                     }
                 }
-                if (this.props.dataType.split('PICKLIST').length > 1) {
-                    finalPicklist = finalPicklist.filter(function(item) {
-                        let showThis = true;
-                        for (let q = 0; q < this.props.value.length; q++) {
-                            if (this.props.value[q].id == item.id) {
-                                showThis = false;
+                if (this.props.dataType != util.datatypes.COMBO.NUMBER.INT.TWO_PICKLISTS) {
+                    if (this.props.dataType.split('PICKLIST').length > 1) {
+                        finalPicklist = finalPicklist.filter(function(item) {
+                            let showThis = true;
+                            for (let q = 0; q < this.props.value.length; q++) {
+                                if (this.props.value[q].id == item.id) {
+                                    showThis = false;
+                                }
                             }
-                        }
-                        return showThis;
-                    }.bind(this));
+                            return showThis;
+                        }.bind(this));
+                    }
                 }
                 if (this.props.childAuxiliaryDatatypes && this.props.childAuxiliaryDatatypes.length != 0) {
                     auxiliaryInputs = (
@@ -207,6 +209,7 @@ class DndInput extends React.Component {
             case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY:
             case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY_CATEGORY:
             case util.datatypes.ACTION.VARIANT.LOSE.PROFICIENCY_LIST:
+            case util.datatypes.ACTION.SPELL_COMPONENT:
                 primaryInput = (
                     <input
                         type="checkbox"
@@ -260,6 +263,102 @@ class DndInput extends React.Component {
                     </div>
                 );
                 break;
+            case util.datatypes.COMBO.NUMBER.INT.PICKLIST:
+                placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
+                primaryInput = (
+                    <div className="input-group input-inline">
+                        <input
+                            type="number"
+                            name={this.props.name}
+                            ref={this.props.name}
+                            value={this.props.value}
+                            datatype={util.datatypes.NUMBER.INT}
+                            onChange={this.props.onChange}
+                            className="form-control"
+                            readOnly={isReadOnly}
+                            data-task={dataTask}
+                            />
+                        <select
+                            value={this.props.childValue.id}
+                            name={this.props.childName}
+                            ref={this.props.childName}
+                            className="form-control"
+                            onChange={this.props.onChange}
+                            datatype={util.datatypes.PICKLIST}
+                            data-task={dataTask}
+                            >
+                            {this.renderSelectOneOption(placeholderText)}
+                            {finalPicklist.map(function(picklistItem, idx) {
+                                return (
+                                    <option
+                                        key={idx}
+                                        value={picklistItem.id}>
+                                        {picklistItem.name}
+                                    </option>
+                                );
+                            }.bind(this))}
+                        </select>
+                    </div>
+                );
+                break;
+            case util.datatypes.COMBO.NUMBER.INT.TWO_PICKLISTS:
+                placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
+                primaryInput = (
+                    <div className="input-group input-inline">
+                        <input
+                            type="number"
+                            name={this.props.name}
+                            ref={this.props.name}
+                            value={this.props.value}
+                            datatype={util.datatypes.NUMBER.INT}
+                            onChange={this.props.onChange}
+                            className="form-control"
+                            readOnly={isReadOnly}
+                            data-task={dataTask}
+                            />
+                        <select
+                            value={this.props.childAuxiliaryValues[0].id}
+                            name={this.props.childAuxiliaryNames[0]}
+                            ref={this.props.childName}
+                            className="form-control"
+                            onChange={this.props.onChange}
+                            datatype={util.datatypes.PICKLIST}
+                            data-task={dataTask}
+                            >
+                            {this.renderSelectOneOption(placeholderText)}
+                            {finalPicklist[0].map(function(picklistItem, idx) {
+                                return (
+                                    <option
+                                        key={idx}
+                                        value={picklistItem.id}>
+                                        {picklistItem.name}
+                                    </option>
+                                );
+                            }.bind(this))}
+                        </select>
+                        <select
+                            value={this.props.childValue.id}
+                            name={this.props.childName}
+                            ref={this.props.childName}
+                            className="form-control"
+                            onChange={this.props.onChange}
+                            datatype={util.datatypes.PICKLIST}
+                            data-task={dataTask}
+                            >
+                            {this.renderSelectOneOption(placeholderText)}
+                            {finalPicklist[1].map(function(picklistItem, idx) {
+                                return (
+                                    <option
+                                        key={idx}
+                                        value={picklistItem.id}>
+                                        {picklistItem.name}
+                                    </option>
+                                );
+                            }.bind(this))}
+                        </select>
+                    </div>
+                );
+                break;
             case util.datatypes.NUMBER.DEC:
             case util.datatypes.NUMBER.INT:
             case util.datatypes.SPECIAL.CHART.ENTRY.NUMBER:
@@ -277,6 +376,24 @@ class DndInput extends React.Component {
                         className="form-control"
                         step={numberStepVal}
                         min={numberMinVal}
+                        readOnly={isReadOnly}
+                        data-task={dataTask}
+                        />
+                );
+                break;
+            case util.datatypes.NUMBER.SPELL_LEVEL:
+                primaryInput = (
+                    <input
+                        type="number"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        min={0}
+                        max={9}
                         readOnly={isReadOnly}
                         data-task={dataTask}
                         />

@@ -64,6 +64,15 @@ export const isReadyToSave = {
             }
         }
         return true;
+    },
+    supplementalDescription: function(val) {
+        if (!val.title || val.title.length == 0) {
+            return false;
+        }
+        if (!val.description || val.title.description == 0) {
+            return false;
+        }
+        return true;
     }
 };
 export const isReadyToShow = {
