@@ -4,6 +4,7 @@ import DndInput from '../../common/inputs/DndInput';
 import DndCheckboxList from '../../common/inputs/DndCheckboxList';
 import DndUniversalInput from '../../common/inputs/DndUniversalInput';
 import DndManageCharts from '../../common/inputs/manage/DndManageCharts';
+import DndManageMechanics from '../../common/inputs/manage/DndManageMechanics';
 import DndManageSupplementalDescriptions from '../../common/inputs/manage/DndManageSupplementalDescriptions';
 import util from '../../../util/util';
 import { Tabs, Tab } from 'react-bootstrap';
@@ -124,7 +125,7 @@ class SpellForm extends React.Component {
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={5} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="General">
                             <DndUniversalInput
                                 ref="name"
@@ -247,7 +248,13 @@ class SpellForm extends React.Component {
                             DAMAGE/EFFECT
                         </Tab>
                         <Tab eventKey={3} title="Mechanics">
-                            MECHANICS
+                            <DndManageMechanics
+                                onChange={this.props.onChange}
+                                onChangeChild={this.props.onChangeChild}
+                                picklists={this.props.picklists}
+                                value={spell.mechanics}
+                                editMechanic={this.props.editMechanic}
+                                />
                         </Tab>
                         <Tab eventKey={4} title="Charts">
                             <DndManageCharts
@@ -275,6 +282,7 @@ class SpellForm extends React.Component {
 
 SpellForm.propTypes = {
     editChart: PropTypes.object.isRequired,
+    editMechanic: PropTypes.object.isRequired,
     editSupplementalDescription: PropTypes.object.isRequired,
     spell: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,

@@ -65,6 +65,48 @@ export const isReadyToSave = {
         }
         return true;
     },
+    mechanic: function(val) {
+        if (!val) {
+            return false;
+        } else {
+            if (!val.type || val.type.id <= 0) {
+                return false;
+            }
+            if (val.type.id == util.itemtypes.TYPE.MECHANIC.SPECIAL_TEXT) {
+                if (!val.specialText || val.specialText.length == 0) {
+                    return false;
+                }
+            } else {
+                if (!val.target || val.target.id <= 0) {
+                    return false;
+                }
+            }
+            if (val.type.id == util.itemtypes.TYPE.MECHANIC.BONUS.ROLL || val.type.id == util.itemtypes.TYPE.MECHANIC.BONUS.STAT) {
+                if (!val.bonus) {
+                    return false;
+                } else {
+                    if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.ABILITY_SCORE) {
+                        if (!val.bonus.abilityScore || val.bonus.abilityScore.id != 0) {
+                            return false;
+                        }
+                    } else if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.DICE) {
+                        if (!util.datatypes.compareDataType(val.bonus.dice, util.datatypes.SPECIAL.DICE)) {
+                            return false;
+                        }
+                    } else if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.MODIFIER) {
+                        if (val.bonus.value == 0) {
+                            return false;
+                        }
+                    } else if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.DIVISOR || val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.MULTIPLIER) {
+                        if (val.bonus.value <= 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    },
     supplementalDescription: function(val) {
         if (!val.title || val.title.length == 0) {
             return false;

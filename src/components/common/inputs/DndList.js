@@ -118,7 +118,7 @@ class DndList extends React.Component {
         let scrollingStyle = {};
         if (!this.props.hideScrolling) {
             let rowHeight = 50;
-            let rowCount = 6;
+            let rowCount = 7;
             if (this.props.rowHeight) {
                 rowHeight = this.props.rowHeight;
             }

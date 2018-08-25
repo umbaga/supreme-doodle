@@ -66,9 +66,9 @@ class PicklistListPage extends React.Component {
     
     render() {
         const picklists = this.props.picklists.filter(function(pl) {
-            return pl.id == util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE || pl.id == util.itemtypes.TYPE.ITEM.LINK_TYPE;
+            return pl.id == util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE || pl.id == util.itemtypes.TYPE.ITEM.LINK_TYPE || pl.id == util.itemtypes.TYPE.ITEM.MECHANIC_TYPE;
         }).concat(this.props.picklists.filter(function(pl) {
-            return pl.id != util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE && pl.id != util.itemtypes.TYPE.ITEM.LINK_TYPE;
+            return pl.id != util.itemtypes.TYPE.ITEM.DESCRIPTION_TYPE && pl.id != util.itemtypes.TYPE.ITEM.LINK_TYPE && pl.id != util.itemtypes.TYPE.ITEM.MECHANIC_TYPE;
         }));
         return (
             <div className="col-md-12">

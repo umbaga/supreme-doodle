@@ -163,6 +163,11 @@ export const CHART_ROW = {
     picklistItem: _ID_NAME_OBJECT,
     rowIndex: 0
 };
+export const DAMAGE_IMPROVEMENT = {
+    dice: _DICE,
+    atCharacterLevel: 0,
+    everySpellSlotLevel: 0
+};
 export const DICE = _DICE;
 export const EQUIPMENT = {
     id: 0,
@@ -216,6 +221,24 @@ export const ITEMTYPE = {
     name: '',
     isPicklist: false,
     applySupplementalPicklist: false
+};
+export const MECHANIC = {
+    id: 0,
+    bonus: {
+        abilityScore: _ID_NAME_OBJECT,
+        advancement: {
+            type: {id: itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE},
+            levelCount: 1,
+            atLevels: [1, 2, 3]
+        },
+        dice: _DICE,
+        type: _ID_NAME_OBJECT,
+        value: 0
+    },
+    conditionalText: '',
+    specialText: '',
+    target: _ID_NAME_OBJECT,
+    type: _ID_NAME_OBJECT
 };
 export const PICKLIST = {
     id: 0,
@@ -316,11 +339,6 @@ export const SPELL = {
     resource: _RESOURCE,
     school: _ID_NAME_OBJECT,
     supplementalDescriptions: []
-};
-export const DAMAGE_IMPROVEMENT = {
-    dice: _DICE,
-    atCharacterLevel: 0,
-    everySpellSlotLevel: 0
 };
 export const SPELL_COMPONENT = {
     id: 0,

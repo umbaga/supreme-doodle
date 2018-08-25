@@ -70,6 +70,22 @@ class DndInput extends React.Component {
         }
         let buttonAction = (this.props.buttonOverwriteAction) ? this.props.buttonOverwriteAction : 'ADD';
         switch (this.props.dataType) {
+            case util.datatypes.ARRAY.COMMA_DELIMITED.INT:
+                primaryInput = (
+                    <input
+                        type="text"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        readOnly={isReadOnly}
+                        placeholder={placeholderText}
+                        data-task={dataTask}
+                        />
+                );
+                break;
             case util.datatypes.ARRAY.LIST.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
@@ -399,6 +415,23 @@ class DndInput extends React.Component {
                         />
                 );
                 break;
+            case util.datatypes.NUMBER.DEC_ALLOW_NEGATIVE:
+            case util.datatypes.NUMBER.INT_ALLOW_NEGATIVE:
+                primaryInput = (
+                    <input
+                        type="number"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        readOnly={isReadOnly}
+                        data-task={dataTask}
+                        />
+                );
+                break;
             case util.datatypes.PICKLIST:
             case util.datatypes.SPECIAL.CHART.COLUMN.DATA_TYPE:
             case util.datatypes.SPECIAL.CHART.COLUMN.PICKLIST:
@@ -493,26 +526,26 @@ class DndInput extends React.Component {
         if (hasButton) {
             finalInput = (
                 <fragment>
-                <div className="input-group">
-                    <div className="dnd-max-width input-inline ">
-                        {auxiliaryInputs}
-                        {finalInput}
+                    <div className="input-group">
+                        <div className="dnd-max-width input-inline ">
+                            {auxiliaryInputs}
+                            {finalInput}
+                        </div>
+                        <span className="input-group-btn">
+                            <DndButton
+                                buttonType={finalButtonType}
+                                onClick={this.props.buttonOnClick}
+                                bsButtonStyle={this.props.bsButtonStyle}
+                                name={buttonName}
+                                dataType={this.props.buttonDatatype[buttonAction]}
+                                disabled={buttonDisabled}
+                                changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
+                                refs={this.refs}
+                                dataTask={buttonDataTask}
+                                />
+                        </span>
                     </div>
-                    <span className="input-group-btn">
-                        <DndButton
-                            buttonType={finalButtonType}
-                            onClick={this.props.buttonOnClick}
-                            bsButtonStyle={this.props.bsButtonStyle}
-                            name={buttonName}
-                            dataType={this.props.buttonDatatype[buttonAction]}
-                            disabled={buttonDisabled}
-                            changeFocusRefName={changeFocusOnButtonClick ? refName : ''}
-                            refs={this.refs}
-                            dataTask={buttonDataTask}
-                            />
-                    </span>
-                </div>
-                    </fragment>
+                </fragment>
             );
         }
         

@@ -1,4 +1,18 @@
 module.exports = {TYPE: {
+    ADVANCEMENT_TYPE: {
+        AT_LEVEL: 2910,
+        BASE: 2927,
+        EVERY_X_LEVELS: 2911
+    },
+    BONUS_TYPE: {
+        ABILITY_SCORE: 2913,
+        DICE: 2914,
+        DIVISOR: 2915,
+        MODIFIER: 2916,
+        MULTIPLIER: 2917,
+        PROFICIENCY_BONUS: 2918,
+        SPELLCASTING_ABILITY: 2919
+    },
     CHART: {
         DICE: 1062,
         SELECT: 1063,
@@ -17,6 +31,7 @@ module.exports = {TYPE: {
         STRING: 322
     },
     DEFAULT: {
+        ADVANCEMENT_TYPE: 2927,
         UNIT: {
             CASTING_TIME: 214,
             LENGTH: 275
@@ -26,6 +41,7 @@ module.exports = {TYPE: {
         AT_HIGHER_LEVELS: 2891,
         CHART_TEXT: 1072,
         GENERAL: 11,
+        MECHANIC_CONDITIONAL: 2908,
         REACTION_CASTING_TIME_TEXT: 2892,
         SPECIAL_WEAPON: 84,
         SPELL_COMPONENT_TEXT: 99,
@@ -60,6 +76,7 @@ module.exports = {TYPE: {
         ACTION: 217,
         ACTION_TYPE: 213,
         ADVANCED_SENSE: 202,
+        ADVANCEMENT_TYPE: 2909,
         ALIGNMENT: 171,
         ALIGNMENT_ETHICAL: 163,
         ALIGNMENT_MORAL: 167,
@@ -68,7 +85,9 @@ module.exports = {TYPE: {
         ATTACK_TYPE: 228,
         BACKGROUND: 902,
         BACKGROUND_VARIANT: 2855,
+        BONUS_TYPE: 2912,
         CHART: 1061,
+        CHECK: 2920,
         CHECK_TYPE: 248,
         CONDITION: 43,
         COVER: 238,
@@ -184,8 +203,14 @@ module.exports = {TYPE: {
     MECHANIC: {
         ADVANTAGE: 12,
         BONUS: {
+            ROLL: 2903,
             STAT: 13
-        }
+        },
+        DISADVANTAGE: 2907,
+        IMMUNITY: 2906,
+        RESISTANCE: 2904,
+        SPECIAL_TEXT: 2928,
+        VULNERABILITY: 2905
     },
     PROFICIENCY: {
         ARMOR: {

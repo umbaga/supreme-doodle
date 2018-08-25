@@ -313,6 +313,7 @@ export function standard(event, obj, picklists, arrayObject) {
             retVal.entries = util.common.charts.refactorIndexes.entries(retVal.entries, retVal.rows, retVal.columns);
             break;
         case util.datatypes.ACTION.CHART.REMOVE:
+        case util.datatypes.ACTION.MECHANIC.REMOVE:
         case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.REMOVE:
             util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
             break;
@@ -327,6 +328,9 @@ export function standard(event, obj, picklists, arrayObject) {
         case util.datatypes.ACTION.LIST.NEW.REMOVE:
         case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
             util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
+            break;
+        case util.datatypes.ACTION.MECHANIC.ADD:
+            util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
             break;
         case util.datatypes.ACTION.SPELL_COMPONENT:
             tmpObj = util.common.picklists.getPicklistItem(picklists, subfield);
@@ -395,6 +399,17 @@ export function standard(event, obj, picklists, arrayObject) {
             }
             util.common.formState.functions.set.objectValue(retVal, field, tmpObj, tmpVal, arrayItemIndex);
             break;
+        case util.datatypes.ARRAY.COMMA_DELIMITED.INT:
+            tmpObj = event.target.value.split(',');
+            for (let q = 0; q < tmpObj.length; q++) {
+                if (tmpObj[q].trim().length != 0) {
+                    tmpObj[q] = parseInt(tmpObj[q].trim());
+                } else {
+                    tmpObj[q] = tmpObj[q];
+                }
+            }
+            util.common.formState.functions.set.objectValue(retVal, field, tmpObj);
+            break;
         case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
             if (field.split('_').length == 1) {
                 if (inputType == 'text') {
@@ -427,8 +442,7 @@ export function standard(event, obj, picklists, arrayObject) {
                     newSelectedValue.id = 0;
                     newSelectedValue.name = event.target.value;
                 } else {
-                    newSelectedValue.id = parseInt(event.target.options[event.target.selectedIndex].value);
-                    newSelectedValue.name = event.target.options[event.target.selectedIndex].text;
+                    newSelectedValue = util.common.picklists.getPicklistItem(picklists, event.target.options[event.target.selectedIndex].value);
                 }
                 util.common.formState.functions.set.objectValue(retVal, field, newSelectedValue);
             }
@@ -543,6 +557,8 @@ export function standard(event, obj, picklists, arrayObject) {
         case util.datatypes.NUMBER.CHARACTER_LEVEL:
         case util.datatypes.NUMBER.INT:
         case util.datatypes.NUMBER.DEC:
+        case util.datatypes.NUMBER.INT_ALLOW_NEGATIVE:
+        case util.datatypes.NUMBER.DEC_ALLOW_NEGATIVE:
         case util.datatypes.NUMBER.SPELL_LEVEL:
             if (arrayItemIndex == -1) {
                 util.common.formState.functions.set.objectValue(retVal, field, event.target.value);

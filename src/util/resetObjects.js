@@ -149,6 +149,27 @@ export function itemtype() {
     return retVal;
 }
 
+export function mechanic(newId) {
+    let retVal = Object.assign({}, util.objectModel.MECHANIC);
+    if (newId !== undefined) {
+        retVal.id = newId * -1;
+    }
+    retVal.bonus = {};
+    retVal.bonus.abilityScore = {id: 0};
+    retVal.bonus.advancement = {};
+    retVal.bonus.advancement.type = {id: 0};
+    retVal.bonus.advancement.atLevels = [];
+    retVal.bonus.advancement.levelCount = 1;
+    retVal.bonus.dice = util.objectModel.DICE;
+    retVal.bonus.type = {id: 0};
+    retVal.bonus.value = 1;
+    retVal.conditionalText = '';
+    retVal.specialText = '';
+    retVal.target = {id: 0};
+    retVal.type = {id: 0};
+    return retVal;
+}
+
 export function picklist() {
     let retVal = Object.assign({}, util.objectModel.PICKLIST);
     retVal.items = [];

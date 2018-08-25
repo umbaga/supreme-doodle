@@ -1,6 +1,6 @@
 import util from './util';
 
-export function getPicklistItems (picklistArray, picklistId) {
+export function getPicklistItems (picklistArray, picklistId, categoryIds) {
     let retVal = [];
     let tmp = picklistArray.filter(function(picklist) {
         if (picklistId.constructor === Array) {
@@ -15,7 +15,46 @@ export function getPicklistItems (picklistArray, picklistId) {
         }
     });
     for (let e = 0; e < tmp.length; e++) {
-        retVal = retVal.concat(tmp[e].items);
+        let tmpItems = tmp[e].items;
+        let typeId = tmp[e].id;
+        for (let w = 0; w < tmpItems.length; w++) {
+            tmpItems[w].type = {};
+            tmpItems[w].type.id = typeId;
+        }
+        if (categoryIds !== null && categoryIds !== undefined) {
+            if (picklistId.constructor === Array) {
+                if (categoryIds.constructor === Array) {
+                    if (categoryIds[e] !== null && categoryIds[e] !== undefined) {
+                        tmpItems = tmpItems.filter(function(item) {
+                            if (categoryIds[e].constructor === Array) {
+                                for (let q = 0; q < categoryIds[e].length; q++) {
+                                    if (categoryIds[e][q] == item.category.id) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            } else {
+                                return item.category.id == categoryIds[e];
+                            }
+                        });
+                    }
+                }
+            } else {
+                tmpItems = tmpItems.filter(function(item) {
+                    if (categoryIds.constructor === Array) {
+                        for (let q = 0; q < categoryIds.length; q++) {
+                            if (categoryIds[q] == item.category.id) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    } else {
+                        return item.category.id == categoryIds;
+                    }
+                });
+            }
+        }
+        retVal = retVal.concat(tmpItems);
     }
     retVal = retVal.sort(function(a, b) {
         if (a.orderIndex !== null && a.orderIndex !== undefined) {
@@ -32,6 +71,17 @@ export function getPicklistItems (picklistArray, picklistId) {
         
     });
     return retVal;
+}
+
+export function getPicklistIdFromItem (picklists, item) {
+    for (let q = 0; q < picklists.length; q++) {
+        for (let w = 0; w < picklists[q].items.length; w++) {
+            if (picklists[q].items[w].id == item.id) {
+                return picklists[q].id;
+            }
+        }
+    }
+    return -1;
 }
 
 export function filterPicklistByAssigned (picklist, assigned) {

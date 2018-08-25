@@ -306,28 +306,6 @@ obj.armorClass = function(val) {
     }
     return retVal;
 };
-obj.breathWeapon = function(val) {
-    let retVal = '';
-    retVal += util.format.forDisplay.string.dieRoll(val.damage.dice);
-    retVal += ' ' + val.damage.type.name + ' damage';
-    return retVal;
-};
-obj.breathWeaponImprovement = {};
-obj.breathWeaponImprovement.Charges = function(val) {
-    let retVal = '';
-    retVal = '+' + val.count.toString() + ' uses at ' + util.format.forDisplay.number.ordinal(val.characterLevel) + ' level.';
-    return retVal;
-};
-obj.breathWeaponImprovement.Damage = function(val) {
-    let retVal = '';
-    retVal = '+' + val.dice.rendered + ' damage at ' + util.format.forDisplay.number.ordinal(val.characterLevel) + ' level.';
-    return retVal;
-};
-obj.breathWeaponDescription = function(val) {
-    let retVal = val;
-    
-    return retVal;
-};
 obj.damage = function(val) {
     let retVal = '';
     //<td>{util.format.forDisplay.string.dieRoll(this.props.weapon.damage.dice) + ' ' + (this.props.weapon.damage.dice.dieCount == 0 ? '' : this.props.weapon.damage.type.name)}</td>
@@ -361,122 +339,135 @@ obj.equipmentName = function(val) {
     }
     return retVal;
 };
-obj.itemGroup = function(val) {
+obj.mechanic = function(val) {
     let retVal = '';
-    switch (val.mechanic.id) {
-        case util.itemtypes.SELECTION_MECHANIC.ASSIGNMENT:
-            for (let x = 0; x < val.proficiencies.length; x++) {
-                retVal += val.proficiencies[x].name;
-                if (x < val.proficiencies.length - 1) {
-                    retVal += ', ';
+    switch (val.type.id) {
+        case 0:
+            retVal = '';
+            break;
+        case util.itemtypes.TYPE.MECHANIC.ADVANTAGE:
+        case util.itemtypes.TYPE.MECHANIC.DISADVANTAGE:
+            if (val.type.id == util.itemtypes.TYPE.MECHANIC.ADVANTAGE) {
+                retVal += 'Advantage to ';
+            } else {
+                retVal += 'Disadvantage to ';
+            }
+            retVal += util.format.forDisplay.obj.mechanicTarget(val);
+            break;
+        case util.itemtypes.TYPE.MECHANIC.IMMUNITY:
+        case util.itemtypes.TYPE.MECHANIC.RESISTANCE:
+        case util.itemtypes.TYPE.MECHANIC.VULNERABILITY:
+            if (val.type.id == util.itemtypes.TYPE.MECHANIC.IMMUNITY) {
+                retVal += 'Immunity to ';
+            } else if (val.type.id == util.itemtypes.TYPE.MECHANIC.RESISTANCE) {
+                retVal += 'Resistance to ';
+            } else {
+                retVal += 'Vulnerability to ';
+            }
+            retVal += 'Immunity to ';
+            if (val.target.type.id == util.itemtypes.TYPE.ITEM.DAMAGE_TYPE) {
+                retVal += val.target.name + ' damage.';
+            } else if (val.target.type.id == util.itemtypes.TYPE.ITEM.DAMAGE_SOURCE) {
+                retVal += 'damage from ' + val.target.name + '.';
+            } else if (val.target.type.id == util.itemtypes.TYPE.ITEM.CONDITION) {
+                retVal += 'becoming ' + val.target.name + '.';
+            } else {
+                retVal += val.target.name;
+            }
+            break;
+        case util.itemtypes.TYPE.MECHANIC.BONUS.ROLL:
+        case util.itemtypes.TYPE.MECHANIC.BONUS.STAT:
+            retVal = util.format.forDisplay.obj.mechanicBonus(val);
+            break;
+        case util.itemtypes.TYPE.MECHANIC.SPECIAL_TEXT:
+            retVal = val.specialText;
+            break;
+        default:
+            retVal = 'need to add to switch in format.forDisplay.obj.mechanic';
+    }
+    if (val.conditionalText && val.conditionalText.length != 0) {
+        retVal += ' (' + val.conditionalText + ')';
+    }
+    return retVal;
+};
+obj.mechanicBonus = function(val) {
+    let retVal = '';
+    switch (val.bonus.type.id) {
+        case util.itemtypes.TYPE.BONUS_TYPE.ABILITY_SCORE:
+            retVal = 'Apply ' + val.bonus.abilityScore.name + ' modifier to ' + util.format.forDisplay.obj.mechanicTarget(val);
+            //retVal = 'Apply ' + val.bonus.abilityScore.name + ' modifier to ' + val.target.name + '.';
+            break;
+        case util.itemtypes.TYPE.BONUS_TYPE.DICE:
+            retVal = 'Add ' + val.bonus.dice.rendered + ' to ' + util.format.forDisplay.obj.mechanicTarget(val);
+            break;
+        case util.itemtypes.TYPE.BONUS_TYPE.DIVISOR:
+            retVal = 'Divide ' + util.format.forDisplay.obj.mechanicTarget(val) + ' by ' + val.bonus.value;
+            break;
+        case util.itemtypes.TYPE.BONUS_TYPE.MODIFIER:
+            retVal = ((val.bonus.value >= 0) ? '+' : '') + val.bonus.value;
+            retVal += ' to ' + util.format.forDisplay.obj.mechanicTarget(val);
+            if (val.bonus.advancement.type.id == util.itemtypes.TYPE.ADVANCEMENT_TYPE.AT_LEVEL) {
+                if (val.bonus.advancement.atLevels.length == 1) {
+                    retVal += ' at level ' + val.bonus.advancement.atLevels;
+                } else {
+                    retVal += ' at levels ' + val.bonus.advancement.atLevels;
+                }
+            } else if (val.bonus.advancement.type.id == util.itemtypes.TYPE.ADVANCEMENT_TYPE.EVERY_X_LEVELS) {
+                if (val.bonus.advancement.levelCount == 1) {
+                    retVal += ' every level';
+                } else {
+                    retVal += ' every ' + retVal.bonus.advancement.levelCount + ' levels';
                 }
             }
             break;
-        case util.itemtypes.SELECTION_MECHANIC.SELECT_FROM.CATEGORY:
-            retVal = util.format.forDisplay.number.renderAsWord(val.selectCount) + ' ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.selectCount);
-            break;
-        case util.itemtypes.SELECTION_MECHANIC.SELECT_FROM.LIST:
-            retVal = 'Select ' + util.format.forDisplay.number.renderAsWord(val.selectCount) + ' from the following: ' + util.format.forDisplay.string.renderSingularPlural(val.category.name, val.selectCount) + ': ';
-            for (let x = 0; x < val.proficiencies.length; x++) {
-                retVal += val.proficiencies[x].name;
-                if (x < val.proficiencies.length - 1) {
-                    retVal += ', ';
-                }
+        case util.itemtypes.TYPE.BONUS_TYPE.MULTIPLIER:
+            if (val.bonus.value == 2) {
+                retVal = 'Double';
+            } else if (val.bonus.value == 3) {
+                retVal = 'Triple';
+            } else if (val.bonus.value == 4) {
+                retVal = 'Quadruple';
+            } else {
+                retVal = 'Multiply by ' + val.bonus.value;
             }
             break;
-        case util.itemtypes.SELECTION_MECHANIC.CONDITIONAL:
-            retVal = 'You gain proficiency with ' + val.proficiencies[0].name + ' checks ' + val.conditionalText;
+        case util.itemtypes.TYPE.BONUS_TYPE.PROFICIENCY_BONUS:
+            retVal = 'Apply Proficiency Bonus';
+            if (val.bonus.value > 1) {
+                retVal += ' x' + val.bonus.value;
+            }
             break;
         default:
     }
     return retVal;
 };
-obj.mechanic = function(val) {
+obj.mechanicTarget = function(val) {
     let retVal = '';
-    if (val.title && val.title.length != 0) {
-        retVal += val.title + '. ';
-    }
-    switch (val.type.id) {
-        case util.itemtypes.MECHANIC_TYPE.ADVANTAGE:
-            retVal += 'Advantage to ' + val.target.name;
+    switch (val.target.type.id) {
+        case util.itemtypes.TYPE.ITEM.DAMAGE_TYPE:
+            retVal = 'Saving Throws against ' + val.target.name + ' damage';
             break;
-        case util.itemtypes.MECHANIC_TYPE.ADVANTAGE_SAVING_THROW:
-            retVal += 'Advantage to Saving Throws vs ' + val.target.name;
+        case util.itemtypes.TYPE.ITEM.DAMAGE_SOURCE:
+            retVal = 'Saving throws against damage from ' + val.target.name;
             break;
-        case util.itemtypes.MECHANIC_TYPE.BONUS:
-            if (val.value >= 0) {
-                retVal += '+' + val.value.toString() + ' to ' + val.target.name;
-            } else {
-                retVal += val.value.toString() + ' to ' + val.target.name;
+        case util.itemtypes.TYPE.ITEM.OTHER_EFFECT:
+            retVal = 'Saving throws to avoid ' + val.target.name;
+            break;
+        case util.itemtypes.TYPE.ITEM.CHECK:
+            retVal = val.target.name + 's';
+            break;
+        case util.itemtypes.TYPE.ITEM.CONDITION:
+            retVal = 'Saving throws to avoid becoming ' + val.target.name;
+            break;
+        case util.itemtypes.TYPE.ITEM.PROFICIENCY:
+            if (val.target.category.id == util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SAVING_THROW) {
+                retVal = val.target.name + 's';
+            } else if (val.target.category.id == util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SKILL) {
+                retVal = val.target.abilityScore.name + ' (' + val.target.name + ') Checks';
             }
-            break;
-        case util.itemtypes.MECHANIC_TYPE.BONUS_PER_LEVEL:
-            if (val.value >= 0) {
-                retVal += '+' + val.value.toString() + ' per character level to ' + val.target.name;
-            } else {
-                retVal += val.value.toString() + ' per character level to ' + val.target.name;
-            }
-            break;
-        case util.itemtypes.MECHANIC_TYPE.DISADVANTAGE:
-            retVal += 'Disadvantage to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.DISADVANTAGE_SAVING_THROW:
-            retVal += 'Disadvantage to Saving Throws vs ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.RESISTANCE:
-            retVal += 'Resistance to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.VULNERABILITY:
-            retVal += 'Vulnerability to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.IMMUNITY:
-            retVal += 'Immune to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.DIE_ROLL_BONUS_TO_STAT:
-            retVal += '+' + util.format.forDisplay.string.dieRoll(val.dice) + ' to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.MULTIPLY_STAT:
-            retVal += 'x' + val.value.toString() + ' to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.DIVIDE_STAT:
-            retVal += 'divide ' + val.target.name + ' by ' + val.value.toString();
-            break;
-        case util.itemtypes.MECHANIC_TYPE.APPLY_ABILITY_SCORE_TO_STAT:
-            retVal += '+' + val.valueObject.name + ' modifier to ' + val.target.name;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.SPECIAL_TEXT:
-            retVal += val.specialText;
-            break;
-        case util.itemtypes.MECHANIC_TYPE.DOUBLE_PROFICIENCY_BONUS:
-            retVal += 'Double proficiency bonus with ' + val.target.name + ' checks';
-            if (val.specialText && val.specialText.length != 0) {
-                retVal += ' ' + val.specialText;
-            }
-            retVal += '.';
-            break;
-        case util.itemtypes.MECHANIC_TYPE.SELECT_ITEM:
-            retVal += 'Select ' + val.value.toString() + ' ' + val.target.name + '.';
-            break;
-        case util.itemtypes.MECHANIC_TYPE.SET_STAT_VALUE:
-            retVal += 'Set ' + val.target.name + ' to ' + val.value.toString() + '.';
-            break;
-        case util.itemtypes.MECHANIC_TYPE.OPPONENT_ADVANTAGE:
-            retVal += 'Opponents have advantage to ' + val.target.name + ' against you.';
-            break;
-        case util.itemtypes.MECHANIC_TYPE.OPPONENT_DISADVANTAGE:
-            retVal += 'Opponents have disadvantage to ' + val.target.name + ' against you.';
-            break;
-        case util.itemtypes.MECHANIC_TYPE.SPECIAL_MECHANIC:
-            retVal += val.target.name;
             break;
         default:
-            retVal += 'need to add to switch in format.forDisplay.obj.mechanic';
-            break;
-    }
-    if (val.type.id != util.itemtypes.MECHANIC_TYPE.SPECIAL_TEXT && val.type.id != util.itemtypes.MECHANIC_TYPE.DOUBLE_PROFICIENCY_BONUS) {
-        if (val.specialText && val.specialText.length != 0) {
-            retVal += ' (' + val.specialText + ')';
-        }
+            retVal += val.target.name;
     }
     return retVal;
 };
@@ -500,36 +491,6 @@ obj.monsterTypeSizeBlock = function(val) {
             retVal += val.tags[t].name;
         }
         retVal += ')';
-    }
-    return retVal;
-};
-obj.naturalWeapon = function(val) {
-    let retVal = '';
-    retVal += '(' + val.attack.count.toString() + ')';
-    retVal += ' ' + val.type.name + ': ';
-    retVal += util.format.forDisplay.string.dieRoll(val.damage.dice);
-    retVal += ' ' + val.damage.type.name + ' damage.';
-    return retVal;
-};
-obj.prerequisite = function(val) {
-    let retVal = '';
-    let arrayValue = util.format.forDisplay.array.commaDelimietdListWithConjunction(val.targets, val.isInclusive);
-    switch (val.type.id) {
-        case util.itemtypes.PREREQUISITE_TYPE.CAST_MINIMUM_SPELL_LEVEL:
-            if (val.value == 0) {
-                retVal = 'Must be able to cast cantrips';
-            } else {
-                retVal = 'Must be able to cast spells of at least ' + util.format.forDisplay.number.ordinal(val.value) + ' level';
-            }
-            break;
-        case util.itemtypes.PREREQUISITE_TYPE.MINIMUM_ABILITY_SCORE:
-            retVal = arrayValue + ' ' + val.value.toString() + ' or higher';
-            break;
-        case util.itemtypes.PREREQUISITE_TYPE.PROFICIENCY:
-            retVal = 'Proficiency with ' + arrayValue;
-            break;
-        default:
-            retVal = 'Missing format forDisplay for Prerequisites';
     }
     return retVal;
 };

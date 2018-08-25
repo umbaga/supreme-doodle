@@ -12,6 +12,7 @@ class SpellEntry extends React.Component {
         super(props, context);
         this.state = {
             editChart: Object.assign({}, util.objectModel.CHART),
+            editMechanic: Object.assign({}, util.objectModel.MECHANIC),
             editSupplementalDescription: Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION),
             spell: this.props.spell,
             isCreate: this.props.isCreate,
@@ -72,9 +73,13 @@ class SpellEntry extends React.Component {
     updateFormState(event) {
         let arrayItem = null;
         let newStateObj = {};
+        let saveItem = null;
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
             case 'chart':
                 arrayItem = this.state.editChart;
+                break;
+            case 'mechanic':
+                arrayItem = this.state.editMechanic;
                 break;
             case 'supplementaldescription':
                 arrayItem = this.state.editSupplementalDescription;
@@ -84,12 +89,12 @@ class SpellEntry extends React.Component {
             default:
                 console.error('updateFormState no data-task');
         }
-        let spell = util.common.formState.standard(event, this.state.spell, this.props.picklists, arrayItem);
-        let newEditChart = Object.assign({}, util.common.resetObject.chart(spell.charts.length));
-        let newEditSupplementalDescription = Object.assign({}, util.common.resetObject.supplementalDescription(spell.supplementalDescriptions.length));
-        newStateObj.spell = spell;
-        newStateObj.editChart = newEditChart;
-        newStateObj.editSupplementalDescription = newEditSupplementalDescription;
+        saveItem = util.common.formState.standard(event, this.state.spell, this.props.picklists, arrayItem);
+        newStateObj.editChart = Object.assign({}, util.common.resetObject.chart(saveItem.charts.length));
+        newStateObj.editMechanic = Object.assign({}, util.common.resetObject.mechanic(saveItem.mechanics.length));
+        newStateObj.editSupplementalDescription = Object.assign({}, util.common.resetObject.supplementalDescription(saveItem.supplementalDescriptions.length));
+        newStateObj.spell = saveItem;
+        console.log(saveItem);
         return this.setState(newStateObj);
     }
     
@@ -101,6 +106,10 @@ class SpellEntry extends React.Component {
                 newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists, this.state.spell.charts);
                 newStateObj.editChart = newItem;
                 break;
+            case 'mechanic':
+                newItem = util.common.formState.standard(event, this.state.editMechanic, this.props.picklists, this.state.spell.mechanics);
+                newStateObj.editMechanic = newItem;
+                break;
             case 'supplementaldescription':
                 newItem = util.common.formState.standard(event, this.state.editSupplementalDescription, this.props.picklists, this.state.spell.supplementalDescriptions);
                 newStateObj.editSupplementalDescription = newItem;
@@ -108,6 +117,7 @@ class SpellEntry extends React.Component {
             default:
                 console.error('updateChildFormState no data-task');
         }
+        console.log(newItem);
         return this.setState(newStateObj);
     }
     render() {
@@ -136,6 +146,7 @@ class SpellEntry extends React.Component {
                     isCreate={this.state.isCreate}
                     saving={this.state.saving}
                     editChart={this.state.editChart}
+                    editMechanic={this.state.editMechanic}
                     editSupplementalDescription={this.state.editSupplementalDescription}
                     />
             </DndModal>
