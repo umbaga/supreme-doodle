@@ -163,6 +163,10 @@ export const CHART_ROW = {
     picklistItem: _ID_NAME_OBJECT,
     rowIndex: 0
 };
+export const DAMAGE = {
+    dice: _DICE,
+    type: _ID_NAME_OBJECT
+};
 export const DAMAGE_IMPROVEMENT = {
     dice: _DICE,
     atCharacterLevel: 0,
@@ -229,7 +233,7 @@ export const MECHANIC = {
         advancement: {
             type: {id: itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE},
             levelCount: 1,
-            atLevels: [1, 2, 3]
+            atLevels: []
         },
         dice: _DICE,
         type: _ID_NAME_OBJECT,
@@ -273,7 +277,7 @@ export const SELECT = {
         }
     }
 };
-export const SPELL = {
+export const _SPELL = {
     id: 0,
     name: '',
     description: '',
@@ -286,12 +290,21 @@ export const SPELL = {
     charts: [],
     components: [],
     damage: {
-        dice: _DICE,
-        type: _ID_NAME_OBJECT,
-        typeList: {
-            isInclusive: false,
-            count: 1,
-            list: []
+        advancement: {
+            atLevels: [],
+            dice: _DICE,
+            levelCount: 1,
+            projectileCount: 1,
+            type: {id: itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE}
+        },
+        areaOfEffect: {
+            shape: _ID_NAME_OBJECT,
+            unit: {id: itemtypes.TYPE.DEFAULT.UNIT.LENGTH},
+            value: 0
+        },
+        attack: {
+            type: _ID_NAME_OBJECT,
+            addedToAttack: false
         },
         condition: _ID_NAME_OBJECT,
         conditionList: {
@@ -299,20 +312,20 @@ export const SPELL = {
             count: 1,
             list: []
         },
-        improvement: [],
-        areaOfEffect: {
-            shape: _ID_NAME_OBJECT,
-            value: 0
-        },
+        dice: _DICE,
+        projectileCount: 0,
         savingThrow: {
             abilityScore: _ID_NAME_OBJECT,
             effect: _ID_NAME_OBJECT,
             isRepeating: false,
             countToAvoid: 1
         },
-        attack: {
-            type: _ID_NAME_OBJECT,
-            addedToAttack: false
+        supplemental: [],
+        type: _ID_NAME_OBJECT,
+        typeList: {
+            isInclusive: false,
+            count: 1,
+            list: []
         }
     },
     duration: {
@@ -338,6 +351,205 @@ export const SPELL = {
     },
     resource: _RESOURCE,
     school: _ID_NAME_OBJECT,
+    supplementalDescriptions: []
+};
+const _EMPTY_BONUS = {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [], levelCount: 1, type: {id: 2927}}, dice: {id: 0, dieCount: 0, dieType: 0, modifier: 0, multiplier: 1, divisor: 1, rendered: ''}, type: {id: 0, name: '', type: {id: -1}}, value: 0};
+export const SPELL = {
+    id: 0,
+    name: '--test spell 4',
+    description: '--test spell description',
+    atHigherLevels: '--test spell at higher levels',
+    castingTime: {
+        text: '',
+        unit: {name: 'Action', id: 214},
+        value: 1
+    },
+    charts: [],
+    components: [
+        {name: 'Somatic', id: 96, requireFlavorText: false}
+    ],
+    damage: {
+        advancement: {
+            atLevels: [],
+            dice: {modifier: 0, multiplier: 1, divisor: 1, dieCount: 1, dieType: 4, rendered: '1d4'},
+            levelCount: 1,
+            projectileCount: 1,
+            type: {id: 2911, name: 'Every X Levels'}
+        },
+        areaOfEffect: {
+            shape: {name: 'Sphere', id: 2901},
+            unit: {id: itemtypes.TYPE.DEFAULT.UNIT.LENGTH},
+            value: 10
+        },
+        attack: {
+            type: {name: 'Ranged', id: 233},
+            addedToAttack: false
+        },
+        condition: {name: 'Select From List', id: 2929},
+        conditionList: {
+            isInclusive: false,
+            count: 1,
+            list: [
+                {name: 'Blinded', id: 44},
+                {name: 'Deafened', id: 46}
+            ]
+        },
+        dice: {modifier: 0, multiplier: 1, divisor: 1, dieCount: 1, dieType: 4, rendered: '1d4'},
+        projectileCount: 2,
+        savingThrow: {
+            abilityScore: {name: 'Charisma', id: 60},
+            effect: {name: 'Avoid Condition and Half Damage', id: 2931},
+            isRepeating: false,
+            countToAvoid: 1
+        },
+        supplemental: [
+            {
+                dice: {modifier: 0, multiplier: 1, divisor: 1, dieCount: 2, dieType: 6, rendered: '2d6'},
+                type: {name: 'Force', id: 39}
+            },
+            {
+                dice: {modifier: 0, multiplier: 1, divisor: 1, dieCount: 1, dieType: 8, rendered: '1d8'},
+                type: {name: 'Lightning', id: 33}
+            }
+        ],
+        type: {name: 'Select From List', id: 2929},
+        typeList: {
+            isInclusive: false,
+            count: 1,
+            list: [
+                {name: 'Acid', id: 35},
+                {name: 'Cold', id: 37},
+                {name: 'Lightning', id: 33},
+                {name: 'Fire', id: 36}
+            ]
+        }
+    },
+    duration: {
+        concentration: {
+            unit: {id: 0},
+            value: 1
+        },
+        unit: {name: 'Day', id: 266},
+        value: 1
+    },
+    isRitual: true,
+    level: 2,
+    materialComponentText: '',
+    mechanics: [
+        {
+            bonus: _EMPTY_BONUS,
+            conditionalText: '',
+            id: -1,
+            specialText: '',
+            target: {id: '383', name: 'Acrobatics', abilityScore: {id: 62, name: 'Dexterity'}, category: {id: 132, name: 'Skill'}, type: {id: 323}},
+            type: {name: 'Advantage', id: 12, type: {id: '9'}}
+        },
+        {
+            bonus: _EMPTY_BONUS,
+            conditionalText: '',
+            id: -2,
+            specialText: '',
+            target: {name: 'Acid', id: 35, type: {id: '29'}},
+            type: {id: 2906, name: 'Immunity', type: {id: '9'}}
+        },
+        {
+            bonus: _EMPTY_BONUS,
+            conditionalText: '',
+            id: -3,
+            specialText: '--Special Text',
+            target: {id: 0, name: '', type: {id: -1}},
+            type: {name: 'Special Text', id: 2928, type: {id: '9'}}
+        },
+        {
+            bonus: {
+                abilityScore: {
+                    id: 0,
+                    name: '',
+                    type: {id: -1}
+                },
+                advancement: {
+                    atLevels: [],
+                    levelCount: 1,
+                    type: {id: 2927}
+                },
+                dice: _DICE,
+                type: {name: 'Apply Modifier (+/-)', id: 2916, type: {id: '2912'}},
+                value: '1'
+            },
+            conditionalText: '',
+            id: -4,
+            specialText: '',
+            target: {id: '383', name: 'Acrobatics', category: {id: 132, name: 'Skill'}, abilityScore: {id: 62, name: 'Dexterity'}, type: {id: 323}},
+            type: {name: 'Bonus to Roll', id: 2903, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [], levelCount: 1, type: {id: 2927}}, dice: _DICE, type: {name: 'Apply Proficiency Bonus (with multiplier)', id: 2918, type: {id: '2912'}}, value: 1},
+            conditionalText: '',
+            id: -5,
+            specialText: '',
+            target: {name: 'Wisdom Check', id: 2926, type: {id: '2920'}},
+            type: {name: 'Bonus to Roll', id: 2903, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [], levelCount: 1, type: {id: 2927}}, dice: {dieCount: 2, dieType: 10, divisor: 1, modifier: 0, multiplier: 1, rendered: '2d10'}, type: {name: 'Apply Proficiency Bonus (with multiplier)', id: 2918, type: {id: '2912'}}, value: 2},
+            conditionalText: '',
+            id: -6,
+            specialText: '',
+            target: {name: 'Maximum Hit Points', id: 245, type: {id: '242'}},
+            type: {name: 'Bonus to Stat', id: 13, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {name: 'Charisma', id: 60}, advancement: {atLevels: [], levelCount: 1, type: {id: 2927}}, dice: _DICE, type: {name: 'Apply Ability Score Modifier (with multiplier)', id: 2913, type: {id: '2912'}}, value: 1},
+            conditionalText: '',
+            id: -7,
+            specialText: '',
+            target: {name: 'Initiative', id: 250, type: {id: '248'}},
+            type: {name: 'Bonus to Roll', id: 2903, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [5, 10], levelCount: 1, type: {name: 'At Level', id: 2910, type: {id: '2909'}}}, dice: _DICE, type: {name: 'Apply Modifier (+/-)', id: 2916, type: {id: '2912'}}, value: 1},
+            conditionalText: '',
+            id: -8,
+            specialText: '',
+            target: {id: '404', name: 'Wisdom Save', category: {id: 131, name: 'Saving Throw'}, abilityScore: {id: 65, name: 'Wisdom'}, type: {id: 323}},
+            type: {name: 'Bonus to Roll', id: 2903, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [], levelCount: '2', type: {name: 'Every X Levels', id: 2911, type: {id: '2909'}}}, dice: _DICE, type: {name: 'Apply Modifier (+/-)', id: 2916, type: {id: '2912'}}, value: '10'},
+            conditionalText: '',
+            id: -9,
+            specialText: '',
+            target: {name: 'Maximum Hit Points', id: 245, type: {id: '242'}},
+            type: {name: 'Bonus to Stat', id: 13, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [4, 8, 12, 16, 20], levelCount: 1, type: {name: 'At Level', id: 2910, type: {id: '2909'}}}, dice: _DICE, type: {name: 'Apply Modifier (+/-)', id: 2916, type: {id: '2912'}}, value: 1},
+            conditionalText: '',
+            id: -8,
+            specialText: '',
+            target: {id: '60', name: 'Charisma', type: {id: '59'}},
+            type: {name: 'Bonus to Stat', id: 13, type: {id: '9'}}
+        },
+        {
+            bonus: {abilityScore: {id: 0, name: '', type: {id: -1}}, advancement: {atLevels: [], levelCount: 1, type: {id: 2927}}, dice: {modifier: 0, multiplier: 1, divisor: 1, dieCount: 1, dieType: 4, rendered: '1d4'}, type: {name: 'Apply Die Roll result as bonus', id: 2914, type: {id: '2912'}}, value: 0},
+            conditionalText: '',
+            id: -10,
+            specialText: '',
+            target: {id: '385', name: 'Stealth', category: {id: 132, name: 'Skill'}, abilityScore: {id: 62, name: 'Dexterity'}, type: {id: 323}},
+            type: {name: 'Bonus to Roll', id: 2903, type: {id: '9'}}
+        }
+    ],
+    range: {
+        areaOfEffect: {
+            shape: {id: 0},
+            unit: {id: itemtypes.TYPE.DEFAULT.UNIT.LENGTH},
+            value: 0
+        },
+        unit: {name: 'Foot', id: 275},
+        value: 120
+    },
+    resource: _RESOURCE,
+    school: {name: 'Abjuration', id: 86},
     supplementalDescriptions: []
 };
 export const SPELL_COMPONENT = {

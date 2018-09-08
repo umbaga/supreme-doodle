@@ -16,12 +16,16 @@ class DndManageSupplementalDescriptions extends React.Component {
             return a.orderIndex - b.orderIndex;
         });
         const supplementalDescription = this.props.editSupplementalDescription;
+        let startEntryCollapsed = false;
+        //let startEntryCollapsed = {supplementalDescriptions.length != 0};
+        let startListCollapsed = false;
+        //let startListCollapsed = {supplementalDescriptions.length == 0};
         return (
             <fragment>
                 <DndFieldset
                     legend="New Description"
                     collapsible
-                    startCollapsed={supplementalDescriptions.length != 0}
+                    startCollapsed={startEntryCollapsed}
                     >
                     <DndInput
                         name="title"
@@ -53,7 +57,7 @@ class DndManageSupplementalDescriptions extends React.Component {
                 <DndFieldset
                     legend="Exisitng Descriptions"
                     collapsible
-                    startCollapsed={supplementalDescriptions.length == 0}
+                    startCollapsed={startListCollapsed}
                     >
                     <DndList
                         name="supplementalDescriptions"

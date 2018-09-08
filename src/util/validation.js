@@ -86,7 +86,7 @@ export const isReadyToSave = {
                     return false;
                 } else {
                     if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.ABILITY_SCORE) {
-                        if (!val.bonus.abilityScore || val.bonus.abilityScore.id != 0) {
+                        if (!val.bonus.abilityScore || val.bonus.abilityScore.id == 0) {
                             return false;
                         }
                     } else if (val.bonus.type.id == util.itemtypes.TYPE.BONUS_TYPE.DICE) {

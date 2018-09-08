@@ -106,7 +106,7 @@ CREATE TABLE public.adm_core_mechanic
 (
     id bigint NOT NULL DEFAULT nextval('adm_seq_core'::regclass),
     "typeId" bigint NOT NULL,
-    index smallint NOT NULL,
+    "targetId" bigint NOT NULL,
     CONSTRAINT adm_core_mechanic_pkey PRIMARY KEY (id)
 )
 WITH (

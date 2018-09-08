@@ -42,11 +42,13 @@ module.exports = {TYPE: {
         CHART_TEXT: 1072,
         GENERAL: 11,
         MECHANIC_CONDITIONAL: 2908,
+        MECHANIC_SPECIAL: 2933,
         REACTION_CASTING_TIME_TEXT: 2892,
         SPECIAL_WEAPON: 84,
         SPELL_COMPONENT_TEXT: 99,
         SUGGESTED_CHARACTERISTICS: 903,
-        SUPPLEMENTAL: 2902
+        SUPPLEMENTAL: 2902,
+        SUPPLEMENTAL_TITLE: 2940
     },
     EQUIPMENT_CATEGORY: {
         AMMUNITION: 108,
@@ -156,6 +158,11 @@ module.exports = {TYPE: {
         DIALECT: 325,
         FEATURE: 909,
         LIST: {
+            ADVANCEMENT_LEVEL: 2938,
+            CONDITION: 2937,
+            DAMAGE_TYPE: 2936,
+            GENERAL: 2934,
+            ITEM_ASSIGNMENT: 2935,
             PROFICIENCY: 906
         },
         MAP: {
@@ -175,6 +182,7 @@ module.exports = {TYPE: {
             SUBRACE: 20,
             VARIANT: 15
         },
+        SPELL_COMPONENT: 2939,
         TITLE: 17,
         VARIANT: {
             ASSIGNED_EQUIPMENT: {
@@ -273,6 +281,11 @@ module.exports = {TYPE: {
         DRUIDIC_FOCUS: 447,
         HOLY_SYMBOL: 448,
         MUSICAL_INSTRUMENT: 449
+    },
+    SUPPLEMENTAL_PICKLIST: {
+        NONE: 586,
+        SEE_DESCRIPTION: 2930,
+        SELECT_FROM_LIST: 2929
     },
     WEAPON_CLASS: {
         MELEE: 27,

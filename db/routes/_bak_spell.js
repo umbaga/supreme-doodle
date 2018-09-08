@@ -396,8 +396,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions.need.materialComponent = false;
                     resObj.permissions.need.reactionText = false;
                     
-                    resObj.permissions.need.spellComponents = false;
-                    
                     resObj.permissions.need.charts = false;
                     resObj.permissions.need.mechanics = false;
                     resObj.permissions.need.damage = false;
@@ -407,7 +405,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions.need.advancementLevelList = false;
                     resObj.permissions.need.damageTypeList = false;
                     resObj.permissions.need.conditionList = false;
-                    let checkForAdvancement = false;
+                    
                     if (resObj.spell.description && resObj.spell.description.length != 0) {
                         resObj.permissions.need.description = true;
                     }
@@ -423,9 +421,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     if (resObj.spell.materialComponentText && resObj.spell.materialComponentText.length != 0) {
                         resObj.permissions.need.materialComponent = true;
                     }
-                    if (resObj.spell.components && resObj.spell.components.length != 0) {
-                        resObj.permissions.need.spellComponents = true;
-                    }
                     if (resObj.spell.charts && resObj.spell.charts.length != 0) {
                         resObj.permissions.need.charts = true;
                     }
@@ -435,7 +430,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     if (resObj.spell.damage) {
                         if (resObj.spell.damage.type && resObj.spell.damage.type.id != 0) {
                             resObj.permissions.need.damage = true;
-                            checkForAdvancement = true;
                         }
                         if (resObj.spell.damage.condition && resObj.spell.damage.condition.id != 0) {
                             resObj.permissions.need.damage = true;
@@ -447,26 +441,20 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             resObj.permissions.need.supplementalDamage = true;
                         }
                         if (resObj.spell.damage.advancement && resObj.spell.damage.advancement.type && resObj.spell.damage.advancement.type.id != 0) {
-                            if (checkForAdvancement) {
-                                resObj.permissions.need.damageAdvancement = true;
-                                if (resObj.spell.damage.advancement.type.id == itemtypes.TYPE.ADVANCEMENT_TYPE.AT_LEVEL) {
-                                    resObj.permissions.need.list = true;
-                                    resObj.permissions.need.advancementLevelList = true;
-                                }
+                            resObj.permissions.need.damageAdvancement = true;
+                            if (resObj.spell.damage.advancement.type.id == itemtypes.TYPE.ADVANCEMENT_TYPE.AT_LEVEL) {
+                                resObj.permissions.need.list = true;
+                                resObj.permissions.need.advancementLevelList = true;
                             }
                         }
                         if (resObj.spell.damage.type.id == itemtypes.TYPE.SUPPLEMENTAL_PICKLIST.SELECT_FROM_LIST) {
                             resObj.permissions.need.list = true;
-                            resObj.permissions.need.damageTypeList = true;
+                            resObj.permissions.need.damageTypeList = false;
                         }
                         if (resObj.spell.damage.condition.id == itemtypes.TYPE.SUPPLEMENTAL_PICKLIST.SELECT_FROM_LIST) {
                             resObj.permissions.need.list = true;
-                            resObj.permissions.need.conditionList = true;
+                            resObj.permissions.need.conditionList = false;
                         }
-                    }
-                    
-                    if (resObj.spell.description && resObj.spell.description.length != 0) {
-                        resObj.permissions.need.description = true;
                     }
                     cb(null, resObj);
                 },
@@ -505,7 +493,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             }
                         }
                         common.manage.dice(diceArr, function(results) {
-                            resObj.spell.damage.dice = common.datatypes.dice.getObject(results, resObj.spell.damage.dice);
+                            resObj.spell.damage.dice = common.datatypes.dice.getObject(results, resObj.equipment.weapon.damage.dice);
                             if (resObj.permissions.need.damageAdvancement) {
                                 resObj.spell.damage.advancement.dice = common.datatypes.dice.getObject(results, resObj.spell.damage.advancement.dice);
                             }
@@ -524,8 +512,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     console.log('insert-spell-03');
                     results = [];
                     vals = [];
-                    sql = 'INSERT INTO adm_def_spell';
-                    sql += '("spellId", "spellLevel", "schoolId", "isRitual", "castingTimeUnitId"';
+                    sql = 'INSERT INTO adm_core_spell';
+                    sql += '("spellId", "spellLevel", "schoolId", "isRitual", "castingTiimeUnitId"';
                     sql += ', "castingTimeValue", "durationUnitId", "durationValue", "rangeUnitId", "rangeValue"';
                     sql += ', "concentrationUnitId", "concentrationValue", "rangeAreaOfEffectShapeId", "rangeAreaOfEffectUnitId", "rangeAreaOfEffectValue")';
                     sql += 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)';
@@ -559,7 +547,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     results = [];
                     vals = [];
                     if (resObj.permissions.need.damage) {
-                        sql = 'INSERT INTO adm_def_spell_damage';
+                        sql = 'INSERT INTO adm_core_spell_damage';
                         sql += '("spellId", "diceId", "damageTypeId", "conditionId", "saveAbilityScoreId"';
                         sql += ', "saveEffectId", "attackTypeId", "areaOfEffectShapeId", "areaOfEffectUnitId", "areaOfEffectValue"';
                         sql += ', "projectileCount")';
@@ -575,7 +563,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             resObj.spell.damage.areaOfEffect.shape.id,
                             resObj.spell.damage.areaOfEffect.unit.id,
                             resObj.spell.damage.areaOfEffect.value,
-                            resObj.spell.damage.projectileCount
+                            resObj.spell.damage.projectiles.count
                         ];
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
@@ -588,16 +576,12 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function lists(resObj, callback) {
+                function spellList(resObj, callback) {
                     console.log('insert-spell-05');
                     results = [];
                     vals = [];
                     addComma = false;
-                    counter = 0;
-                    let advancementIndex = -1;
-                    let damageTypeIndex = -1;
-                    let conditionIndex = -1;
-                    if (resObj.permissions.need.advancementLevelList || resObj.permissions.need.damageTypeList || resObj.permissions.need.conditionList) {
+                    if (resObj.permissions.need.list) {
                         sql = 'INSERT INTO adm_core_list';
                         sql += ' ("id")';
                         sql += ' VALUES ';
@@ -605,37 +589,35 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             sql += addComma ? ', ' : '';
                             sql += '(nextval(\'adm_seq_core\'))';
                             addComma = true;
-                            advancementIndex = counter;
-                            counter++;
                         }
                         if (resObj.permissions.need.damageTypeList) {
                             sql += addComma ? ', ' : '';
                             sql += '(nextval(\'adm_seq_core\'))';
                             addComma = true;
-                            damageTypeIndex = counter;
-                            counter++;
                         }
                         if (resObj.permissions.need.conditionList) {
                             sql += addComma ? ', ' : '';
                             sql += '(nextval(\'adm_seq_core\'))';
                             addComma = true;
-                            conditionIndex = counter;
-                            counter++;
                         }
                         sql += ' RETURNING id';
-                        query = client.query(new pg.Query(sql));
+                        query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
                         query.on('end', function() {
+                            counter = 0;
                             if (resObj.permissions.need.advancementLevelList) {
-                                resObj.spell.damage.advancement.atLevelsListId = results[advancementIndex].id;
+                                resObj.spell.damage.advancement.atLevelsListId = results[counter].id;
+                                counter++;
                             }
                             if (resObj.permissions.need.damageTypeList) {
-                                resObj.spell.damage.damageTypeListId = results[damageTypeIndex].id;
+                                resObj.spell.damage.typeListId = results[counter].id;
+                                counter++;
                             }
                             if (resObj.permissions.need.conditionList) {
-                                resObj.spell.damage.conditionListId = results[conditionIndex].id;
+                                resObj.spell.damage.conditionListId = results[counter].id;
+                                counter++;
                             }
                             return callback(null, resObj);
                         });
@@ -643,22 +625,165 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
+                function listDefinition(resObj, callback) {
+                    console.log('insert-spell-05');
+                    results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
+                    if (resObj.permissions.need.list) {
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        if (resObj.permissions.need.advancementLevelList) {
+                            for (let q = 0; q < resObj.spell.damage.advancement.atLevels.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.spell.damage.advancement.atLevelsListId);
+                                vals.push(resObj.spell.damage.advancement.atLevels[q]);
+                                vals.push(itemtypes.TYPE.LIST.ITEM_ASSIGNMENT);
+                                addComma = true;
+                                counter++;
+                            }
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.spell.id);
+                            vals.push(resObj.spell.damage.advancement.atLevelsListId);
+                            vals.push(itemtypes.TYPE.LIST.ADVANCEMENT_LEVEL);
+                            addComma = true;
+                            counter++;
+                        }
+                        if (resObj.permissions.need.damageTypeList) {
+                            for (let q = 0; q < resObj.spell.damage.typeList.list.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.spell.damage.typeListId);
+                                vals.push(resObj.spell.damage.typeList.list[q].id);
+                                vals.push(itemtypes.TYPE.LIST.ITEM_ASSIGNMENT);
+                                addComma = true;
+                                counter++;
+                            }
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.spell.id);
+                            vals.push(resObj.spell.damage.typeListId);
+                            vals.push(itemtypes.TYPE.LIST.DAMAGE_TYPE);
+                            addComma = true;
+                            counter++;
+                        }
+                        if (resObj.permissions.need.conditionList) {
+                            for (let q = 0; q < resObj.spell.damage.conditionList.list.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.spell.damage.conditionListId);
+                                vals.push(resObj.spell.damage.conditionList.list[q].id);
+                                vals.push(itemtypes.TYPE.LIST.ITEM_ASSIGNMENT);
+                                addComma = true;
+                                counter++;
+                            }
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.spell.id);
+                            vals.push(resObj.spell.damage.conditionList);
+                            vals.push(itemtypes.TYPE.LIST.CONDITION);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "referenceId", "targetId", "typeId"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function listSelectCount(resObj, callback) {
+                    console.log('insert-spell-05');
+                    results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
+                    if (resObj.permissions.need.list) {
+                        sql = 'INSERT INTO adm_def_list_select_count';
+                        sql += ' ("listId", "selectCount")';
+                        sql += ' VALUES ';
+                        if (resObj.permissions.need.damageTypeList) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 2);
+                            vals.push(resObj.spell.damage.typeListId);
+                            vals.push(resObj.spell.damage.typeList.count);
+                            addComma = true;
+                            counter++;
+                        }
+                        if (resObj.permissions.need.conditionList) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 2);
+                            vals.push(resObj.spell.damage.conditionListId);
+                            vals.push(resObj.spell.damage.conditionList.count);
+                            addComma = true;
+                            counter++;
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
                 function spellDamageAdvancement(resObj, callback) {
-                    console.log('insert-spell-06');
+                    console.log('insert-spell-05');
                     results = [];
                     vals = [];
                     if (resObj.permissions.need.damageAdvancement) {
                         sql = 'INSERT INTO adm_def_spell_damage_advancement';
-                        sql += '("spellId", "addDiceId", "addProjectileCount", "advancementTypeId", "levelListId", "levelCount")';
-                        sql += ' VALUES ($1, $2, $3, $4, $5, $6)';
+                        sql += ' ("spellId", "addDiceId", "addProjectileCount", "advancementTypeId", "advancementValue", "levelListId")';
+                        sql += ' VALUES ($1, $2, $3, $4, $5)';
                         vals = [
                             resObj.spell.id,
                             resObj.spell.damage.advancement.dice.id,
                             resObj.spell.damage.advancement.projectileCount,
                             resObj.spell.damage.advancement.type.id,
-                            (resObj.spell.damage.advancement.atLevelsListId) ? resObj.spell.damage.advancement.atLevelsListId : 0,
-                            (resObj.spell.damage.advancement.levelCount) ? resObj.spell.damage.advancement.levelCount : 0
+                            resObj.spell.damage.advancement.value,
+                            resObj.spell.damage.advancement.levelListId
                         ];
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function spellDamageSupplemental(resObj, callback) {
+                    console.log('insert-spell-06');
+                    results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
+                    if (resObj.permissions.need.supplementalDamage) {
+                        sql = 'INSERT INTO adm_def_spell_damage_supplemental';
+                        sql += ' ("spellId", "diceId", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.spell.damage.supplemental.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.spell.id);
+                            vals.push(resObj.spell.damage.supplemental[q].dice.id);
+                            vals.push(resObj.spell.damage.supplemental[q].type.id);
+                            addComma = true;
+                            counter++;
+                        }
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
@@ -672,48 +797,57 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 },
                 function descriptionTable(resObj, callback) {
                     console.log('insert-spell-07');
-                    if (resObj.permissions.need.description || resObj.permissions.need.atHigherLevels
-                        || resObj.permissions.need.materialComponent || resObj.permissions.need.reactionText) {
-                        results = [];
-                        vals = [];
-                        addComma = false;
-                        counter = 0;
-                        sql = 'INSERT INTO adm_core_description';
-                        sql += ' ("description", "typeId")';
-                        sql += ' VALUES ';
-                        if (resObj.permissions.need.description) {
+                    results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
+                    sql = 'INSERT INTO adm_core_description';
+                    sql += ' ("description", "typeId")';
+                    sql += ' VALUES ';
+                    if (resObj.permissions.need.description) {
+                        sql += addComma ? ', ' : '';
+                        sql += common.parameterArray.getParameterString(counter, 2);
+                        vals.push(resObj.spell.description);
+                        vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
+                        addComma = true;
+                        counter++;
+                    }
+                    if (resObj.permissions.need.atHigherLevels) {
+                        sql += addComma ? ', ' : '';
+                        sql += common.parameterArray.getParameterString(counter, 2);
+                        vals.push(resObj.spell.atHigherLevels);
+                        vals.push(itemtypes.TYPE.DESCRIPTION.AT_HIGHER_LEVELS);
+                        addComma = true;
+                        counter++;
+                    }
+                    if (resObj.permissions.need.reactionText) {
+                        sql += addComma ? ', ' : '';
+                        sql += common.parameterArray.getParameterString(counter, 2);
+                        vals.push(resObj.spell.castingTime.text);
+                        vals.push(itemtypes.TYPE.DESCRIPTION.REACTION_CASTING_TIME_TEXT);
+                        addComma = true;
+                        counter++;
+                    }
+                    if (resObj.permissions.need.materialComponent) {
+                        sql += addComma ? ', ' : '';
+                        sql += common.parameterArray.getParameterString(counter, 2);
+                        vals.push(resObj.spell.materialComponentText);
+                        vals.push(itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT);
+                        addComma = true;
+                        counter++;
+                    }
+                    if (resObj.permissions.need.supplementalDescriptions) {
+                        for (let q = 0; q < resObj.spell.supplementalDescriptions.length; q++) {
                             sql += addComma ? ', ' : '';
                             sql += common.parameterArray.getParameterString(counter, 2);
-                            vals.push(resObj.spell.description);
-                            vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
+                            vals.push(resObj.spell.supplementalDescriptions[q]);
+                            vals.push(itemtypes.TYPE.DESCRIPTION.SUPPLEMENTAL);
                             addComma = true;
                             counter++;
                         }
-                        if (resObj.permissions.need.atHigherLevels) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 2);
-                            vals.push(resObj.spell.atHigherLevels);
-                            vals.push(itemtypes.TYPE.DESCRIPTION.AT_HIGHER_LEVELS);
-                            addComma = true;
-                            counter++;
-                        }
-                        if (resObj.permissions.need.materialComponent) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 2);
-                            vals.push(resObj.spell.materialComponentText);
-                            vals.push(itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT);
-                            addComma = true;
-                            counter++;
-                        }
-                        if (resObj.permissions.need.reactionText) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 2);
-                            vals.push(resObj.spell.castingTime.text);
-                            vals.push(itemtypes.TYPE.DESCRIPTION.REACTION_CASTING_TIME_TEXT);
-                            addComma = true;
-                            counter++;
-                        }
-                        sql += ' RETURNING id, "typeId"';
+                    }
+                    sql += ' RETURNING id, "typeId"';
+                    if (addComma) {
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
@@ -726,11 +860,20 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.AT_HIGHER_LEVELS) {
                                     resObj.spell.atHigherLevelsId = results[q].id;
                                 }
-                                if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT) {
-                                    resObj.spell.materialComponentTextId = results[q].id;
-                                }
                                 if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.REACTION_CASTING_TIME_TEXT) {
-                                    resObj.spell.reactionCastingTimeTextId = results[q].id;
+                                    resObj.spell.castingTime.textId = results[q].id;
+                                }
+                                if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT) {
+                                    resObj.spell.materialComponent = results[q].id;
+                                }
+                                if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.SUPPLEMENTAL) {
+                                    for (let w = 0; w < resObj.spell.supplementalDescriptions.length; w++) {
+                                        resObj.spell.supplementalDescriptionIds = [];
+                                        if (!resObj.spell.supplementalDescriptionIds[w]) {
+                                            resObj.spell.supplementalDescriptionIds.push(results[q].id);
+                                            break;
+                                        }
+                                    }
                                 }
                             }
                             return callback(null, resObj);
@@ -741,10 +884,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 },
                 function linkTable(resObj, callback) {
                     console.log('insert-spell-08');
-                    if (resObj.permissions.need.description || resObj.permissions.need.atHigherLevels
-                        || resObj.permissions.need.materialComponent || resObj.permissions.need.reactionText
-                        || resObj.permissions.need.advancementLevelList || resObj.permissions.need.damageTypeList
-                        || resObj.permissions.need.conditionList) {
+                    if (resObj.permissions.need.description) {
                         results = [];
                         vals = [];
                         addComma = false;
@@ -761,98 +901,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             addComma = true;
                             counter++;
                         }
-                        if (resObj.permissions.need.atHigherLevels) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.atHigherLevelsId);
-                            vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
-                            addComma = true;
-                            counter++;
-                        }
-                        if (resObj.permissions.need.materialComponent) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.materialComponentTextId);
-                            vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
-                            addComma = true;
-                            counter++;
-                        }
-                        if (resObj.permissions.need.reactionText) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.reactionCastingTimeTextId);
-                            vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
-                            addComma = true;
-                            counter++;
-                        }
-                        if (resObj.permissions.need.advancementLevelList) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.damage.advancement.atLevelsListId);
-                            vals.push(itemtypes.TYPE.LINK.LIST.ADVANCEMENT_LEVEL);
-                            addComma = true;
-                            counter++;
-                            for (let q = 0; q < resObj.spell.damage.advancement.atLevels.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 3);
-                                vals.push(resObj.spell.damage.advancement.atLevelsListId);
-                                vals.push(resObj.spell.damage.advancement.atLevels[q]);
-                                vals.push(itemtypes.TYPE.LINK.LIST.ITEM_ASSIGNMENT);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
-                        if (resObj.permissions.need.damageTypeList) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.damage.damageTypeListId);
-                            vals.push(itemtypes.TYPE.LINK.LIST.DAMAGE_TYPE);
-                            addComma = true;
-                            counter++;
-                            for (let q = 0; q < resObj.spell.damage.typeList.list.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 3);
-                                vals.push(resObj.spell.damage.damageTypeListId);
-                                vals.push(resObj.spell.damage.typeList.list[q].id);
-                                vals.push(itemtypes.TYPE.LINK.LIST.ITEM_ASSIGNMENT);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
-                        if (resObj.permissions.need.conditionList) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.spell.id);
-                            vals.push(resObj.spell.damage.conditionListId);
-                            vals.push(itemtypes.TYPE.LINK.LIST.CONDITION);
-                            addComma = true;
-                            counter++;
-                            for (let q = 0; q < resObj.spell.damage.conditionList.list.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 3);
-                                vals.push(resObj.spell.damage.conditionListId);
-                                vals.push(resObj.spell.damage.conditionList.list[q].id);
-                                vals.push(itemtypes.TYPE.LINK.LIST.ITEM_ASSIGNMENT);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
-                        if (resObj.permissions.need.spellComponents) {
-                            for (let q = 0; q < resObj.spell.components.length; q++) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 3);
-                                vals.push(resObj.spell.id);
-                                vals.push(resObj.spell.components[q].id);
-                                vals.push(itemtypes.TYPE.LINK.SPELL_COMPONENT);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
                         sql += ' RETURNING id, "targetId", "typeId"';
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
@@ -865,52 +913,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function listCountTable(resObj, callback) {
+                function manageSupplementalDescriptions(resObj, callback) {
                     console.log('insert-spell-09');
-                    if (resObj.permissions.need.damageTypeList || resObj.permissions.need.conditionList) {
-                        results = [];
-                        vals = [];
-                        addComma = false;
-                        counter = 0;
-                        sql = 'INSERT INTO adm_def_list_select_count';
-                        sql += ' ("listId", "selectCount")';
-                        sql += ' VALUES ';
-                        if (resObj.permissions.need.damageTypeList) {
-                            if (!resObj.spell.damage.typeList.isInclusive) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 2);
-                                vals.push(resObj.spell.damage.damageTypeListId);
-                                vals.push(resObj.spell.damage.typeList.count);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
-                        if (resObj.permissions.need.conditionList) {
-                            if (!resObj.spell.damage.conditionList.isInclusive) {
-                                sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.getParameterString(counter, 2);
-                                vals.push(resObj.spell.damage.conditionListId);
-                                vals.push(resObj.spell.damage.conditionList.count);
-                                addComma = true;
-                                counter++;
-                            }
-                        }
-                        query = client.query(new pg.Query(sql, vals));
-                        query.on('row', function(row) {
-                            results.push(row);
-                        });
-                        query.on('end', function() {
-                            return callback(null, resObj);
-                        });
-                    } else {
-                       return callback(null, resObj); 
-                    }
-                },
-                function manageCharts(resObj, callback) {
-                    console.log('insert-spell-10');
-                    if (resObj.permissions.need.charts) {
-                        common.insert.charts(resObj.spell.charts, resObj.spell, function(results) {
-                            resObj.spell.charts = results.charts;
+                    if (resObj.permissions.need.supplementalDescriptions) {
+                        common.insert.supplementalDescriptions(resObj.spell.supplementalDescriptions, resObj.spell, function(results) {
+                            resObj.spell.supplementalDescriptions = results.supplementalDescriptions;
                             return callback(null, resObj);
                         });
                     } else {
@@ -918,7 +925,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function manageMechanics(resObj, callback) {
-                    console.log('insert-spell-11');
+                    console.log('insert-spell-10');
                     if (resObj.permissions.need.mechanics) {
                         common.insert.mechanics(resObj.spell.mechanics, resObj.spell, function(results) {
                             resObj.spell.mechanics = results.mechanics;
@@ -928,11 +935,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function manageSupplementalDescriptions(resObj, callback) {
-                    console.log('insert-spell-12');
-                    if (resObj.permissions.need.supplementalDescriptions) {
-                        common.insert.supplementalDescriptions(resObj.spell.supplementalDescriptions, resObj.spell, function(results) {
-                            resObj.spell.supplementalDescriptions = results.supplementalDescriptions;
+                function manageCharts(resObj, callback) {
+                    console.log('insert-spell-11');
+                    if (resObj.permissions.need.charts) {
+                        common.insert.charts(resObj.spell.charts, resObj.spell, function(results) {
+                            resObj.spell.charts = results.charts;
                             return callback(null, resObj);
                         });
                     } else {
@@ -958,84 +965,14 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             sql = 'SELECT i."id", i."itemName" AS "name"';
             sql += ', get_item(i."resourceId") AS "resource"';
-            sql += ', spell."isRitual"';
-            sql += ', spell."spellLevel" AS "level"';
-            sql += ', get_item(spell."schoolId") AS "school"';
             sql += ', get_description(i.id, $2) AS "description"';
-            sql += ', get_description(i.id, $3) AS "atHigherLevels"';
-            sql += ', get_description(i.id, $4) AS "materialComponentText"';
-            sql += ', json_build_object(';
-            sql += '    \'text\', get_description(i.id, $5)';
-            sql += '    , \'unit\', get_item(spell."castingTimeUnitId")';
-            sql += '    , \'value\', spell."castingTimeValue"';
-            sql += ') AS "castingTime"';
-            sql += ', json_build_object(';
-            sql += '    \'concentration\', json_build_object(';
-            sql += '        \'unit\', get_item(spell."concentrationUnitId")';
-            sql += '        , \'value\', spell."concentrationValue"';
-            sql += '    )';
-            sql += '    , \'unit\', get_item(spell."durationUnitId")';
-            sql += '    , \'value\', spell."durationValue"';
-            sql += ') AS "duration"';
-            sql += ', json_build_object(';
-            sql += '    \'areaOfEffect\', json_build_object(';
-            sql += '        \'shape\', get_item(spell."rangeAreaOfEffectShapeId")';
-            sql += '        , \'unit\', get_item(spell."rangeAreaOfEffectUnitId")';
-            sql += '        , \'value\', spell."rangeAreaOfEffectValue"';
-            sql += '    )';
-            sql += '   , \'unit\', get_item(spell."rangeUnitId")';
-            sql += '    , \'value\', spell."rangeValue"';
-            sql += ') AS "range"';
-            sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
-            sql += ', CASE WHEN get_list_items(i.id, $6) IS NULL THEN \'[]\' ELSE get_list_items(i.id, $6) END AS "components"';
-            sql += ', CASE WHEN get_mechanics(i.id) IS NULL THEN \'[]\' ELSE get_mechanics(i.id) END AS "mechanics"';
-            sql += ', CASE WHEN get_supplemental_descriptions(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_descriptions(i.id) END AS "supplementalDescriptions"';
-            sql += ', json_build_object(';
-            sql += '    \'dice\', get_dice(dmg."diceId")';
-            sql += '    , \'type\', get_item(dmg."damageTypeId")';
-            sql += '    , \'condition\', get_item(dmg."conditionId")';
-            sql += '    , \'projectileCount\', dmg."projectileCount"';
-            sql += '    , \'areaOfEffect\', json_build_object(';
-            sql += '        \'shape\', get_item(dmg."areaOfEffectShapeId")';
-            sql += '        , \'unit\', get_item(dmg."areaOfEffectUnitId")';
-            sql += '        , \'value\', dmg."areaOfEffectValue"';
-            sql += '    )';
-            sql += '    , \'attack\', json_build_object(';
-            sql += '        \'type\', get_item(dmg."attackTypeId")';
-            //sql += '        , \'addedToAttack\', false';
-            sql += '    )';
-            sql += '    , \'savingThrow\', json_build_object(';
-            sql += '        \'abilityScore\', get_item(dmg."saveAbilityScoreId")';
-            sql += '        , \'effect\', get_item(dmg."saveEffectId")';
-            //sql += '        , \'isReapeating\', false';
-            //sql += '        , \'countToAvoid\', 1';
-            sql += '    )';
-            sql += '    , \'advancement\', json_build_object(';
-            sql += '        \'atLevels\', CASE WHEN get_at_levels_list(i.id) IS NULL THEN \'[]\' ELSE get_at_levels_list(i.id) END';
-            sql += '        , \'dice\', get_dice(dmgadv."addDiceId")';
-            sql += '        , \'levelCount\', dmgadv."levelCount"';
-            sql += '        , \'projectileCount\', dmgadv."addProjectileCount"';
-            sql += '        , \'type\', get_item(dmgadv."advancementTypeId")';
-            sql += '    )';
-            sql += '    , \'conditionList\',  CASE WHEN get_list_object(i.id, $7) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $7) END';
-            sql += '    , \'typeList\', CASE WHEN get_list_object(i.id, $8) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $8) END';
-            sql += '    , \'supplemental\', CASE WHEN get_supplemental_damage(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_damage(i.id) END';
-            sql += ') AS "damage"';
             sql += ' FROM adm_core_item i';
-            sql += ' INNER JOIN adm_def_spell spell ON spell."spellId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_spell_damage dmg ON dmg."spellId" = i.id';
-            sql += ' LEFT OUTER JOIN adm_def_spell_damage_advancement dmgadv ON dmgadv."spellId" = i.id';
+            //sql += ' INNER JOIN adm_def_spell bg ON bg."spellId" = i.id'
             sql += ' WHERE i."typeId" = $1';
             sql += ' ORDER BY i."itemName"';
             vals = [
                 itemtypes.TYPE.ITEM.SPELL,
-                itemtypes.TYPE.DESCRIPTION.GENERAL,
-                itemtypes.TYPE.DESCRIPTION.AT_HIGHER_LEVELS,
-                itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT,
-                itemtypes.TYPE.DESCRIPTION.REACTION_CASTING_TIME_TEXT,
-                itemtypes.TYPE.LINK.SPELL_COMPONENT,
-                itemtypes.TYPE.LINK.LIST.CONDITION,
-                itemtypes.TYPE.LINK.LIST.DAMAGE_TYPE
+                itemtypes.TYPE.DESCRIPTION.GENERAL
             ];
             query = client.query(new pg.Query(sql, vals));
             query.on('row', function(row) {

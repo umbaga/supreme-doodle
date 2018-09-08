@@ -6,8 +6,9 @@ import {bindActionCreators} from 'redux';
 import SpellList from './SpellList';
 import SpellEntry from './SpellEntry';
 import * as actions from '../../../actions/admin/spellActions';
-//import util from '../../../util/util';
+import util from '../../../util/util';
 import DndButton from '../../common/buttons/DndButton';
+import DndInput from '../../common/inputs/DndInput';
 
 class SpellPage extends React.Component {
     constructor(props, context) {
@@ -17,8 +18,8 @@ class SpellPage extends React.Component {
             isCreate: false,
             selectedId: 0,
             showModal: false,
-            selectedLevel: -1,
-            selectedSchoolId: 0
+            selectedSpellLevel: {id: -1},
+            selectedSchool: {id: 0}
         };
         this.changeSelectedId = this.changeSelectedId.bind(this);
         this.close = this.close.bind(this);
@@ -26,6 +27,8 @@ class SpellPage extends React.Component {
         this.onCreate = this.onCreate.bind(this);
         this.onEdit = this.onEdit.bind(this);
         this.onViewDetails = this.onViewDetails.bind(this);
+        this.changeSelectedSchool = this.changeSelectedSchool.bind(this);
+        this.changeSelectedSpellLevel = this.changeSelectedSpellLevel.bind(this);
     }
 
     componentWillMount() {
@@ -40,6 +43,14 @@ class SpellPage extends React.Component {
 
     changeSelectedId(newId) {
         this.setState({selectedId: parseInt(newId)});
+    }
+    
+    changeSelectedSchool(newVal) {
+        this.setState({selectedSchool: parseInt(newVal.target.value)});
+    }
+    
+    changeSelectedSpellLevel(newVal) {
+        this.setState({selectedSpellLevel: parseInt(newVal.target.value)});
     }
     
     close() {
@@ -65,8 +76,22 @@ class SpellPage extends React.Component {
     }
     
     render() {
-        const spells = this.props.spells;
+        const spells = this.props.spells.filter(function(spell) {
+            /*if (this.state.selectedSpellLevel.id != -1 && this.state.selectedSchool.id != 0) {
+                return (spell.level == this.state.selectedSpellLevel.id && spell.school.id == this.state.selectedSchool.id);
+            } else if (this.state.selectedSpellLevel.id == -1 && this.state.selectedSchool.id != 0) {
+                return (spell.school.id == this.state.selectedSchool.id);
+            } else if (this.state.selectedSpellLevel.id != -1 && this.state.selectedSchool.id == 0) {
+                return (spell.level == this.state.selectedSpellLevel.id);
+            } else {
+                return true;
+            }*/
+            return true;
+        });
         const picklists = this.props.picklists;
+        const spellLevels = util.hardCoded.picklist.spellLevels;
+        const spellSchools = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.SCHOOL_OF_MAGIC);
+        console.log(spells);
         return (
             <div className="col-md-12">
                 <div>
@@ -83,6 +108,26 @@ class SpellPage extends React.Component {
                             <tr>
                                 <th width="50"></th>
                                 <th>Name</th>
+                                <th>
+                                    <DndInput
+                                        name="spellLevel"
+                                        dataType={util.datatypes.PICKLIST}
+                                        value={this.state.selectedSpellLevel}
+                                        onChange={this.changeSelectedSpellLevel}
+                                        picklist={spellLevels}
+                                        hideLabel
+                                        />
+                                </th>
+                                <th>
+                                    <DndInput
+                                        name="spellSchool"
+                                        dataType={util.datatypes.PICKLIST}
+                                        value={this.state.selectedSchool}
+                                        onChange={this.changeSelectedSchool}
+                                        picklist={spellSchools}
+                                        hideLabel
+                                        />
+                                </th>
                                 <th style={{paddingRight: '25px'}}>
                                     <div className="pull-right">
                                         <DndButton onClick={this.onCreate} buttonType="create" />
@@ -97,7 +142,7 @@ class SpellPage extends React.Component {
                             changeSelectedId={this.changeSelectedId}
                             onEdit={this.onEdit}
                             onViewDetails={this.onViewDetails}
-                            selectedLevel={this.state.selectedLevel}
+                            selectedSpellLevel={this.state.selectedSpellLevel}
                             selectedSchoolId={this.state.selectedSchoolId}
                             />
                     </table>

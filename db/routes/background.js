@@ -658,7 +658,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' VALUES ';
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                                    sql += common.parameterArray.getParameterString(counter, 3);
+                            sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj.background.id);
                             vals.push(resObj.background.descriptionId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);

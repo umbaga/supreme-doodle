@@ -1,4 +1,3 @@
-
 -- FUNCTION: public.get_proficiencies_list(bigint, bigint, bigint)
 
 -- DROP FUNCTION public.get_proficiencies_list(bigint, bigint, bigint);

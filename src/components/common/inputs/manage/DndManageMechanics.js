@@ -129,7 +129,7 @@ class DndManageMechanics extends React.Component {
                     dataTask="mechanic"
                     />
             );
-            valueInput = null;
+            //valueInput = null;
         }
         if (mechanic.type.id == util.itemtypes.TYPE.MECHANIC.BONUS.ROLL
            || mechanic.type.id == util.itemtypes.TYPE.MECHANIC.BONUS.STAT) {

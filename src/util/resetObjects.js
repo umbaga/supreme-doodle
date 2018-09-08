@@ -82,6 +82,13 @@ export function chartRow(newIndex) {
     return retVal;
 }
 
+export function damage() {
+    let retVal = util.objectModel.DAMAGE;
+    retVal.dice = util.objectModel.DICE;
+    retVal.type = {id: 0};
+    return retVal;
+}
+
 export function equipment(equipmentCategory, oldEquipment) {
     let retVal = Object.assign({}, util.objectModel.EQUIPMENT);
     retVal.ammunition = {id: 0};
@@ -200,6 +207,73 @@ export const select = {
         }
     }
 };
+
+export function spell() {
+    let retVal = Object.assign({}, util.objectModel.SPELL);
+    retVal.id = 0;
+    retVal.name = '';
+    retVal.description = '';
+    retVal.atHigherLevels = '';
+    retVal.castingTime = {};
+    retVal.castingTime.text = '';
+    retVal.castingTime.unit = {id: util.itemtypes.TYPE.DEFAULT.UNIT.CASTING_TIME};
+    retVal.castingTime.value = 1;
+    retVal.charts = [];
+    retVal.components = [];
+    retVal.damage = {};
+    retVal.damage.advancement = {};
+    retVal.damage.advancement.atLevels = [];
+    retVal.damage.advancement.dice = util.objectModel.DICE;
+    retVal.damage.advancement.levelCount = 1;
+    retVal.damage.advancement.projectileCount = 0;
+    retVal.damage.advancement.type = {id: util.itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE};
+    retVal.damage.areaOfEffect = {};
+    retVal.damage.areaOfEffect.shape = util.objectModel.ITEM;
+    retVal.damage.areaOfEffect.unit = {id: util.itemtypes.TYPE.DEFAULT.UNIT.LENGTH};
+    retVal.damage.areaOfEffect.value = 0;
+    retVal.damage.attack = {};
+    retVal.damage.attack.type = util.objectModel.ITEM;
+    retVal.damage.attack.addedToAttack = false;
+    retVal.damage.condition = util.objectModel.ITEM;
+    retVal.damage.conditionList = {};
+    retVal.damage.conditionList.isInclusive = false;
+    retVal.damage.conditionList.count = 1;
+    retVal.damage.conditionList.list = [];
+    retVal.damage.dice = util.objectModel.DICE;
+    retVal.damage.projectileCount = 0;
+    retVal.damage.savingThrow = {};
+    retVal.damage.savingThrow.abilityScore = util.objectModel.ITEM;
+    retVal.damage.savingThrow.effect = util.objectModel.ITEM;
+    retVal.damage.savingThrow.isRepeating = false;
+    retVal.damage.savingThrow.countToAvoid = 1;
+    retVal.damage.supplemental = [];
+    retVal.damage.type = util.objectModel.ITEM;
+    retVal.damage.typeList = {};
+    retVal.damage.typeList.isInclusive = false;
+    retVal.damage.typeList.count = 1;
+    retVal.damage.typeList.list = [];
+    retVal.duration = {};
+    retVal.duration.concentration = {};
+    retVal.duration.concentration.unit = util.objectModel.ITEM;
+    retVal.duration.concentration.value = 0;
+    retVal.duration.unit = util.objectModel.ITEM;
+    retVal.duration.value = 0;
+    retVal.isRitual = false;
+    retVal.level = 0;
+    retVal.materialComponentText = '';
+    retVal.mechanics = [];
+    retVal.range = {};
+    retVal.range.areaOfEffect = {};
+    retVal.range.areaOfEffect.shape = util.objectModel.ITEM;
+    retVal.range.areaOfEffect.unit = {id: util.itemtypes.TYPE.DEFAULT.UNIT.LENGTH};
+    retVal.range.areaOfEffect.value = 0;
+    retVal.range.unit = util.objectModel.ITEM;
+    retVal.range.value = 0;
+    retVal.resource = {id: util.itemtypes.TYPE.RESOURCE.PHB};
+    retVal.school = util.objectModel.ITEM;
+    retVal.supplementalDescriptions = [];
+    return retVal;
+}
 
 export function supplementalDescription(newIndex) {
     let retVal = Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION);

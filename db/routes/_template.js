@@ -21,7 +21,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     cb(null, resObj);
                 },
@@ -116,7 +115,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     resObj.permissions = {};
                     resObj.permissions.need = {};
@@ -388,7 +386,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             async.waterfall([
                 function init(cb) {
-                    stepInt = 0;
                     resObj = req.body;
                     resObj.permissions = {};
                     resObj.permissions.need = {};
@@ -425,7 +422,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     console.log('insert-_template-02');
                     results = [];
                     vals = [];
-                    sql = 'INSERT INTO adm_core__template';
+                    sql = 'INSERT INTO adm_def__template';
                     sql += '("_templateId")';
                     sql += 'VALUES ($1)';
                     vals = [
@@ -451,7 +448,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' VALUES ';
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 2) + 1).toString() + ', $' + ((counter * 2) + 2).toString() + ')';
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj._template.description);
                             vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
                             addComma = true;
@@ -489,7 +486,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql += ' VALUES ';
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += '($' + ((counter * 3) + 1).toString() + ', $' + ((counter * 3) + 2).toString() + ', $' + ((counter * 3) + 3).toString() + ')';
+                            sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj._template.id);
                             vals.push(resObj._template.descriptionId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);

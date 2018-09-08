@@ -364,7 +364,6 @@ obj.mechanic = function(val) {
             } else {
                 retVal += 'Vulnerability to ';
             }
-            retVal += 'Immunity to ';
             if (val.target.type.id == util.itemtypes.TYPE.ITEM.DAMAGE_TYPE) {
                 retVal += val.target.name + ' damage.';
             } else if (val.target.type.id == util.itemtypes.TYPE.ITEM.DAMAGE_SOURCE) {
@@ -416,7 +415,7 @@ obj.mechanicBonus = function(val) {
                 if (val.bonus.advancement.levelCount == 1) {
                     retVal += ' every level';
                 } else {
-                    retVal += ' every ' + retVal.bonus.advancement.levelCount + ' levels';
+                    retVal += ' every ' + val.bonus.advancement.levelCount + ' levels';
                 }
             }
             break;
@@ -443,7 +442,7 @@ obj.mechanicBonus = function(val) {
 };
 obj.mechanicTarget = function(val) {
     let retVal = '';
-    switch (val.target.type.id) {
+    switch (parseInt(val.target.type.id)) {
         case util.itemtypes.TYPE.ITEM.DAMAGE_TYPE:
             retVal = 'Saving Throws against ' + val.target.name + ' damage';
             break;

@@ -314,6 +314,7 @@ export function standard(event, obj, picklists, arrayObject) {
             break;
         case util.datatypes.ACTION.CHART.REMOVE:
         case util.datatypes.ACTION.MECHANIC.REMOVE:
+        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.REMOVE:
         case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.REMOVE:
             util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
             break;
@@ -330,6 +331,7 @@ export function standard(event, obj, picklists, arrayObject) {
             util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
             break;
         case util.datatypes.ACTION.MECHANIC.ADD:
+        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.ADD:
             util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
             break;
         case util.datatypes.ACTION.SPELL_COMPONENT:

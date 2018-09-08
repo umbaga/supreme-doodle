@@ -68,6 +68,7 @@ class DndInput extends React.Component {
         } else if (this.props.childName && this.props.childName.length != 0) {
             refName = this.props.childName;
         }
+        let comboDiceName = (this.props.name != 'dice') ? this.props.name + '.dice' : 'dice';
         let buttonAction = (this.props.buttonOverwriteAction) ? this.props.buttonOverwriteAction : 'ADD';
         switch (this.props.dataType) {
             case util.datatypes.ARRAY.COMMA_DELIMITED.INT:
@@ -243,10 +244,10 @@ class DndInput extends React.Component {
             case util.datatypes.COMBO.DICE.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
-                    <div className="input-group input-inline">
+                    <div className="input-group dnd-max-width input-inline">
                         <input
                             type="text"
-                            name={this.props.name + '.dice'}
+                            name={comboDiceName}
                             ref={this.props.name}
                             value={this.props.value.dice.rendered}
                             datatype={util.datatypes.SPECIAL.DICE}
@@ -255,6 +256,7 @@ class DndInput extends React.Component {
                             readOnly={isReadOnly}
                             placeholder="Dice"
                             data-task={dataTask}
+                            style={{width: '75px'}}
                             />
                         <select
                             value={this.props.childValue.id}
@@ -282,7 +284,7 @@ class DndInput extends React.Component {
             case util.datatypes.COMBO.NUMBER.INT.PICKLIST:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
-                    <div className="input-group input-inline">
+                    <div className="input-group dnd-max-width input-inline">
                         <input
                             type="number"
                             name={this.props.name}
@@ -293,6 +295,7 @@ class DndInput extends React.Component {
                             className="form-control"
                             readOnly={isReadOnly}
                             data-task={dataTask}
+                            style={{width: '75px'}}
                             />
                         <select
                             value={this.props.childValue.id}
@@ -320,7 +323,7 @@ class DndInput extends React.Component {
             case util.datatypes.COMBO.NUMBER.INT.TWO_PICKLISTS:
                 placeholderText = (this.props.placeholder && this.props.placeholder.length != 0) ? this.props.placeholder : 'SELECT ONE';
                 primaryInput = (
-                    <div className="input-group input-inline">
+                    <div className="input-group dnd-max-width input-inline">
                         <input
                             type="number"
                             name={this.props.name}
@@ -331,6 +334,7 @@ class DndInput extends React.Component {
                             className="form-control"
                             readOnly={isReadOnly}
                             data-task={dataTask}
+                            style={{width: '75px'}}
                             />
                         <select
                             value={this.props.childAuxiliaryValues[0].id}
@@ -340,6 +344,7 @@ class DndInput extends React.Component {
                             onChange={this.props.onChange}
                             datatype={util.datatypes.PICKLIST}
                             data-task={dataTask}
+                            style={{width: '75px'}}
                             >
                             {this.renderSelectOneOption(placeholderText)}
                             {finalPicklist[0].map(function(picklistItem, idx) {
@@ -607,6 +612,11 @@ DndInput.propTypes = {
     hideLabel: PropTypes.bool,
     hideSelectOneOption: PropTypes.bool,
     inputCols: PropTypes.number,
+    inputWidth: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.number,
+        PropTypes.string
+    ]),
     isReadOnly: PropTypes.bool,
     label: PropTypes.string,
     labelCols: PropTypes.number,

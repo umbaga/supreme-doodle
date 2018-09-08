@@ -5,7 +5,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
     let query = null;
     let tmp = null;
     let resObj = null;
-    let parameterArray = null;
     let addComma = false;
     let counter = 0;
     app.delete('/api/adm/equipment/:id', function(req, res) {
@@ -1709,28 +1708,28 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 function insertDescriptions(resObj, callback) {
                     console.log('equipment-17');
                     results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
                     if (resObj.permissions.need.description || resObj.permissions.need.specialDescription) {
                         sql = 'INSERT INTO adm_core_description';
                         sql += ' ("description", "typeId")';
                         sql += ' VALUES ';
-                        vals = [];
-                        addComma = false;
-                        parameterArray = common.parameterArray.resetValues(2);
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.equipment.description);
                             vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         if (resObj.permissions.need.specialDescription) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.equipment.weapon.special);
                             vals.push(itemtypes.TYPE.DESCRIPTION.SPECIAL_WEAPON);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         sql += ' Returning id, description, "typeId"';
                         query = client.query(new pg.Query(sql, vals));
@@ -1755,53 +1754,53 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 function link(resObj, callback) {
                     console.log('equipment-18');
                     results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
                     if (resObj.permissions.need.weaponProperty || resObj.permissions.need.description
                         || resObj.permissions.need.specialDescription || resObj.permissions.need.assignedEquipment) {
                         sql = 'INSERT INTO adm_link';
                         sql += ' ("referenceId", "targetId", "typeId")';
                         sql += ' VALUES ';
-                        vals = [];
-                        addComma = false;
-                        parameterArray = common.parameterArray.resetValues(3);
                         if (resObj.permissions.need.weaponProperty) {
                             for (let e = 0; e < resObj.equipment.weapon.properties.length; e++) {
                                 sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.sql(parameterArray);
+                                sql += common.parameterArray.getParameterString(counter, 3);
                                 vals.push(resObj.equipment.id);
                                 vals.push(resObj.equipment.weapon.properties[e].id);
                                 vals.push(itemtypes.TYPE.LINK.WEAPON_PROPERTY);
                                 addComma = true;
-                                parameterArray = common.parameterArray.incrementValues(parameterArray);
+                                counter++;
                             }
                         }
                         if (resObj.permissions.need.assignedEquipment) {
                             for (let e = 0; e < resObj.equipment.assignedEquipment.length; e++) {
                                 sql += addComma ? ', ' : '';
-                                sql += common.parameterArray.sql(parameterArray);
+                                sql += common.parameterArray.getParameterString(counter, 3);
                                 vals.push(resObj.equipment.id);
                                 vals.push(resObj.equipment.assignedEquipment[e].id);
                                 vals.push(itemtypes.TYPE.LINK.ASSIGNED_EQUIPMENT);
                                 addComma = true;
-                                parameterArray = common.parameterArray.incrementValues(parameterArray);
+                                counter++;
                             }
                         }
                         if (resObj.permissions.need.description) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj.equipment.id);
                             vals.push(resObj.equipment.descriptionId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         if (resObj.permissions.need.specialDescription) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 3);
                             vals.push(resObj.equipment.id);
                             vals.push(resObj.equipment.weapon.specialDescriptionId);
                             vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         sql += ' RETURNING id, "targetId", "typeId"';
                         query = client.query(new pg.Query(sql, vals));
@@ -1830,20 +1829,20 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 function linkCount(resObj, callback) {
                     console.log('equipment-19');
                     results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
                     if (resObj.permissions.need.assignedEquipment) {
                         sql = 'INSERT INTO adm_link_count';
                         sql += ' ("linkId", "count")';
                         sql += ' VALUES ';
-                        vals = [];
-                        addComma = false;
-                        parameterArray = common.parameterArray.resetValues(2);
                         for (let q = 0; q < resObj.equipment.assignedEquipment.length; q++) {
                             sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.sql(parameterArray);
+                            sql += common.parameterArray.getParameterString(counter, 2);
                             vals.push(resObj.equipment.assignedEquipment[q].linkId);
                             vals.push(resObj.equipment.assignedEquipment[q].assigned);
                             addComma = true;
-                            parameterArray = common.parameterArray.incrementValues(parameterArray);
+                            counter++;
                         }
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
@@ -1858,7 +1857,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 }
             ], function(error, result) {
                 done();
-                console.log('--------------------------------END Equipment Insert');
                 if (error) {
                     console.error(error);
                 }

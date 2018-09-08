@@ -12,7 +12,9 @@ class SpellEntry extends React.Component {
         super(props, context);
         this.state = {
             editChart: Object.assign({}, util.objectModel.CHART),
+            editItem: Object.assign({}, util.objectModel.ITEM),
             editMechanic: Object.assign({}, util.objectModel.MECHANIC),
+            editSupplementalDamage: Object.assign({}, util.objectModel.DAMAGE),
             editSupplementalDescription: Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION),
             spell: this.props.spell,
             isCreate: this.props.isCreate,
@@ -78,8 +80,15 @@ class SpellEntry extends React.Component {
             case 'chart':
                 arrayItem = this.state.editChart;
                 break;
+            case 'damage-condition':
+            case 'damage-type':
+                arrayItem = this.state.editItem;
+                break;
             case 'mechanic':
                 arrayItem = this.state.editMechanic;
+                break;
+            case 'supplementaldamage':
+                arrayItem = this.state.editSupplementalDamage;
                 break;
             case 'supplementaldescription':
                 arrayItem = this.state.editSupplementalDescription;
@@ -92,6 +101,8 @@ class SpellEntry extends React.Component {
         saveItem = util.common.formState.standard(event, this.state.spell, this.props.picklists, arrayItem);
         newStateObj.editChart = Object.assign({}, util.common.resetObject.chart(saveItem.charts.length));
         newStateObj.editMechanic = Object.assign({}, util.common.resetObject.mechanic(saveItem.mechanics.length));
+        newStateObj.editItem = Object.assign({}, util.common.resetObject.item(saveItem.damage.typeList.list.length + saveItem.damage.conditionList.list.length));
+        newStateObj.editSupplementalDamage = Object.assign({}, util.common.resetObject.damage());
         newStateObj.editSupplementalDescription = Object.assign({}, util.common.resetObject.supplementalDescription(saveItem.supplementalDescriptions.length));
         newStateObj.spell = saveItem;
         console.log(saveItem);
@@ -106,9 +117,21 @@ class SpellEntry extends React.Component {
                 newItem = util.common.formState.standard(event, this.state.editChart, this.props.picklists, this.state.spell.charts);
                 newStateObj.editChart = newItem;
                 break;
+            case 'damage-condition':
+                newItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists, this.state.spell.damage.conditionList.list);
+                newStateObj.editItem = newItem;
+                break;
+            case 'damage-type':
+                newItem = util.common.formState.standard(event, this.state.editItem, this.props.picklists, this.state.spell.damage.typeList.list);
+                newStateObj.editItem = newItem;
+                break;
             case 'mechanic':
                 newItem = util.common.formState.standard(event, this.state.editMechanic, this.props.picklists, this.state.spell.mechanics);
                 newStateObj.editMechanic = newItem;
+                break;
+            case 'supplementaldamage':
+                newItem = util.common.formState.standard(event, this.state.editSupplementalDamage, this.props.picklists, this.state.spell.damage.supplemental);
+                newStateObj.editSupplementalDamage = newItem;
                 break;
             case 'supplementaldescription':
                 newItem = util.common.formState.standard(event, this.state.editSupplementalDescription, this.props.picklists, this.state.spell.supplementalDescriptions);
@@ -146,7 +169,9 @@ class SpellEntry extends React.Component {
                     isCreate={this.state.isCreate}
                     saving={this.state.saving}
                     editChart={this.state.editChart}
+                    editItem={this.state.editItem}
                     editMechanic={this.state.editMechanic}
+                    editSupplementalDamage={this.state.editSupplementalDamage}
                     editSupplementalDescription={this.state.editSupplementalDescription}
                     />
             </DndModal>

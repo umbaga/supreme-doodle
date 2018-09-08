@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DndInput from '../../common/inputs/DndInput';
+import DndInputWrapper from '../../common/inputs/DndInputWrapper';
+import DndList from '../../common/inputs/DndList';
 import DndCheckboxList from '../../common/inputs/DndCheckboxList';
 import DndUniversalInput from '../../common/inputs/DndUniversalInput';
 import DndManageCharts from '../../common/inputs/manage/DndManageCharts';
@@ -17,6 +19,9 @@ class SpellForm extends React.Component {
         this.renderMaterialComponentInput = this.renderMaterialComponentInput.bind(this);
         this.renderAreaOfEffectInput = this.renderAreaOfEffectInput.bind(this);
         this.renderConcentrationInput = this.renderConcentrationInput.bind(this);
+        this.renderListInputs = this.renderListInputs.bind(this);
+        this.renderDamageAdvancementInputs = this.renderDamageAdvancementInputs.bind(this);
+        this.renderProjectileAdvancementInputs = this.renderProjectileAdvancementInputs.bind(this);
     }
     
     componentDidMount() {
@@ -48,7 +53,7 @@ class SpellForm extends React.Component {
     renderAreaOfEffectInput(areaOfEffectShapes) {
         if (this.props.spell.range.unit.id == util.itemtypes.TYPE.SPELL_RANGE.SELF) {
             return (
-                <div className="col-md-12">
+                <div className="col-md-6">
                     <DndInput
                         name="range.areaOfEffect.value"
                         label="Area of Effect"
@@ -111,6 +116,139 @@ class SpellForm extends React.Component {
         }
     }
     
+    renderListInputs(typeName, listName, listLabel, spell, editItem, damageTypes) {
+        let countInput = null;
+        let listCols = 6;
+        if (!spell.damage[listName].isInclusive) {
+            countInput = (
+                <div className="col-md-2">
+                    <DndInput
+                        name={'damage.' + listName + '.count'}
+                        label="Select Count"
+                        value={spell.damage[listName].count}
+                        dataType={util.datatypes.NUMBER.INT}
+                        onChange={this.props.onChange}
+                        stackLabel
+                        />
+                </div>
+            );
+            listCols = 4;
+        }
+        if (spell.damage[typeName].id == util.itemtypes.TYPE.SUPPLEMENTAL_PICKLIST.SELECT_FROM_LIST) {
+            return (
+                <fragment>
+                    <div className="col-md-2">
+                        <DndInput
+                            name={'damage.' + listName + '.isInclusive'}
+                            label="Is Inclusive"
+                            value={spell.damage[listName].isInclusive}
+                            dataType={util.datatypes.BOOL}
+                            onChange={this.props.onChange}
+                            stackLabel
+                            />
+                    </div>
+                    {countInput}
+                    <div className={'col-md-' + listCols}>
+                        <DndInput
+                            name={'damage.' + listName + '.list'}
+                            label={listLabel}
+                            dataType={util.datatypes.ARRAY.TAGS.ADD.PICKLIST}
+                            value={spell.damage[listName].list}
+                            onChange={this.props.onChange}
+                            picklist={damageTypes}
+                            childValue={this.props.editItem}
+                            childName="name"
+                            buttonOnClick={this.props.onChange}
+                            onChangeChild={this.props.onChangeChild}
+                            buttonDatatype={util.datatypes.ACTION.LIST.PICKLIST}
+                            changeFocusRefName="damage.typeList.list"
+                            dataTask="damage-type"
+                            stackLabel
+                            />
+                    </div>
+                </fragment>
+            );
+        }
+        return null;
+    }
+    
+    renderDamageAdvancementInputs(spell, advancementTypes) {
+        let advancementInput = null;
+        if (spell.damage.advancement.type.id == util.itemtypes.TYPE.ADVANCEMENT_TYPE.AT_LEVEL) {
+            advancementInput = (
+                <DndInput
+                    name="damage.advancement.atLevels"
+                    label="At Levels"
+                    dataType={util.datatypes.ARRAY.COMMA_DELIMITED.INT}
+                    value={spell.damage.advancement.atLevels}
+                    onChange={this.props.onChange}
+                    stackLabel
+                    />
+            );
+        } else if (spell.damage.advancement.type.id == util.itemtypes.TYPE.ADVANCEMENT_TYPE.EVERY_X_LEVELS) {
+            advancementInput = (
+                <DndInput
+                    name="damage.advancement.levelCount"
+                    label="Every # Levels"
+                    dataType={util.datatypes.NUMBER.INT}
+                    value={spell.damage.advancement.levelCount}
+                    onChange={this.props.onChange}
+                    stackLabel
+                    />
+            );
+        }
+        if (util.datatypes.compareDataType(spell.damage.dice, util.datatypes.SPECIAL.DICE) && spell.damage.type.id != 0) {
+            return (
+                <fragment>
+                    <div className="col-md-2">
+                        <DndInput
+                            name="damage.advancement.dice"
+                            label="Damage Gained"
+                            dataType={util.datatypes.SPECIAL.DICE}
+                            value={spell.damage.advancement.dice}
+                            onChange={this.props.onChange}
+                            stackLabel
+                            />
+                    </div>
+                    <div className="col-md-3">
+                        <DndInput
+                            name="damage.advancement.type"
+                            label="Advancement Type"
+                            dataType={util.datatypes.PICKLIST}
+                            value={spell.damage.advancement.type}
+                            onChange={this.props.onChange}
+                            picklist={advancementTypes}
+                            stackLabel
+                            />
+                    </div>
+                    <div className="col-md-3">
+                        {advancementInput}
+                    </div>
+                </fragment>
+            );
+        }
+        return null;
+    }
+    
+    renderProjectileAdvancementInputs(spell) {
+        let advancementInput = null;
+        if (spell.damage.projectileCount) {
+            advancementInput = (
+                <div className="col-md-4">
+                    <DndInput
+                        name="damage.advancement.projectileCount"
+                        label="Projectiles Gained"
+                        dataType={util.datatypes.NUMBER.INT}
+                        value={spell.damage.advancement.projectileCount}
+                        onChange={this.props.onChange}
+                        stackLabel
+                        />
+                </div>
+            );
+        }
+        return advancementInput;
+    }
+    
     render() {
         const spell = this.props.spell;
         const picklists = this.props.picklists;
@@ -122,10 +260,16 @@ class SpellForm extends React.Component {
         const durations = util.common.picklists.getPicklistItems(picklists, [util.itemtypes.TYPE.ITEM.UNIT.TIME, util.itemtypes.TYPE.ITEM.DURATION]);
         const spellComponents = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.SPELL_COMPONENT);
         const concentrationDurations = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.UNIT.TIME);
+        const damageTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.DAMAGE_TYPE);
+        const conditions = util.common.picklists.getPicklistItems(picklists, [util.itemtypes.TYPE.ITEM.CONDITION, util.itemtypes.TYPE.ITEM.OTHER_EFFECT, util.itemtypes.TYPE.ITEM.SUPPLEMENTAL_PICKLIST]);
+        const savingThrowEffects = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.SAVE_EFFECT);
+        const abilityScores = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.ABILITY_SCORE);
+        const advancementTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.ADVANCEMENT_TYPE);
+        const attackTypes = util.common.picklists.getPicklistItems(picklists, util.itemtypes.TYPE.ITEM.ATTACK_TYPE);
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={3} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={2} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="General">
                             <DndUniversalInput
                                 ref="name"
@@ -245,7 +389,128 @@ class SpellForm extends React.Component {
                             </div>
                         </Tab>
                         <Tab eventKey={2} title="Damage/Effect">
-                            DAMAGE/EFFECT
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage"
+                                    label="Damage/Type"
+                                    dataType={util.datatypes.COMBO.DICE.PICKLIST}
+                                    value={spell.damage}
+                                    onChange={this.props.onChange}
+                                    picklist={damageTypes}
+                                    childName="damage.type"
+                                    childValue={spell.damage.type}
+                                    stackLabel
+                                    />
+                            </div>
+                            {this.renderListInputs('type', 'typeList', 'Damage Types', spell, this.props.editItem, damageTypes)}
+                            {this.renderDamageAdvancementInputs(spell, advancementTypes)}
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.projectileCount"
+                                    label="Projectiles"
+                                    dataType={util.datatypes.NUMBER.INT}
+                                    value={spell.damage.projectileCount}
+                                    onChange={this.props.onChange}
+                                    stackLabel
+                                    />
+                            </div>
+                            {this.renderProjectileAdvancementInputs(spell, advancementTypes)}
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.condition"
+                                    label="Condition"
+                                    dataType={util.datatypes.PICKLIST}
+                                    value={spell.damage.condition}
+                                    onChange={this.props.onChange}
+                                    picklist={conditions}
+                                    stackLabel
+                                    />
+                            </div>
+                            {this.renderListInputs('condition', 'conditionList', 'Conditions', spell, this.props.editItem, conditions)}
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.savingThrow.abilityScore"
+                                    label="Save Ability"
+                                    dataType={util.datatypes.PICKLIST}
+                                    value={spell.damage.savingThrow.abilityScore}
+                                    onChange={this.props.onChange}
+                                    picklist={abilityScores}
+                                    stackLabel
+                                    />
+                            </div>
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.savingThrow.effect"
+                                    label="Save Effect"
+                                    dataType={util.datatypes.PICKLIST}
+                                    value={spell.damage.savingThrow.effect}
+                                    onChange={this.props.onChange}
+                                    picklist={savingThrowEffects}
+                                    stackLabel
+                                    />
+                            </div>
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.areaOfEffect.value"
+                                    label="Area of Effect"
+                                    dataType={util.datatypes.COMBO.NUMBER.INT.TWO_PICKLISTS}
+                                    value={this.props.spell.damage.areaOfEffect.value}
+                                    onChange={this.props.onChange}
+                                    picklist={[areaRanges, areaShapes]}
+                                    childName="damage.areaOfEffect.shape"
+                                    childValue={this.props.spell.damage.areaOfEffect.shape}
+                                    childAuxiliaryNames={['damage.areaOfEffect.unit']}
+                                    childAuxiliaryValues={[this.props.spell.damage.areaOfEffect.unit]}
+                                    stackLabel
+                                    />
+                            </div>
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="damage.attack.type"
+                                    label="Attack Type"
+                                    dataType={util.datatypes.PICKLIST}
+                                    value={spell.damage.attack.type}
+                                    onChange={this.props.onChange}
+                                    picklist={attackTypes}
+                                    stackLabel
+                                    />
+                            </div>
+                            <div className="col-md-4">
+                                <DndInput
+                                    name="dice"
+                                    label="Supplemental Damage"
+                                    dataType={util.datatypes.COMBO.DICE.PICKLIST}
+                                    value={this.props.editSupplementalDamage}
+                                    onChange={this.props.onChangeChild}
+                                    picklist={damageTypes}
+                                    childName="type"
+                                    childValue={this.props.editSupplementalDamage.type}
+                                    dataTask="supplementaldamage"
+                                    stackLabel
+                                    buttonType="additem"
+                                    buttonName="damage.supplemental"
+                                    buttonDatatype={util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE}
+                                    buttonOnClick={this.props.onChange}
+                                    buttonDisabled={!util.datatypes.compareDataType(this.props.editSupplementalDamage.dice.rendered, util.datatypes.SPECIAL.DICE) || this.props.editSupplementalDamage.type.id == 0}
+                                    inputWidth={['75px']}
+                                    />
+                            </div>
+                            <div className="col-md-4">
+                                <DndInputWrapper
+                                    label="Damages"
+                                    stackLabel
+                                    >
+                                    <DndList
+                                        name="damage.supplemental"
+                                        value={spell.damage.supplemental}
+                                        onChange={this.props.onChange}
+                                        dataType={util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE}
+                                        hideScrolling
+                                        renderNameFunction={util.format.forDisplay.obj.damage}
+                                        dataTask="supplementaldamage"
+                                        />
+                                </DndInputWrapper>
+                            </div>
                         </Tab>
                         <Tab eventKey={3} title="Mechanics">
                             <DndManageMechanics
@@ -279,10 +544,13 @@ class SpellForm extends React.Component {
         );
     }
 }
-
+/*
+                            */
 SpellForm.propTypes = {
     editChart: PropTypes.object.isRequired,
+    editItem: PropTypes.object.isRequired,
     editMechanic: PropTypes.object.isRequired,
+    editSupplementalDamage: PropTypes.object.isRequired,
     editSupplementalDescription: PropTypes.object.isRequired,
     spell: PropTypes.object.isRequired,
     onSave: PropTypes.func.isRequired,
