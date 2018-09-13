@@ -290,13 +290,15 @@ export const SPELL = {
     charts: [],
     components: [],
     damage: {
+        abilityScore: _ID_NAME_OBJECT,
         advancement: {
             atLevels: [],
             dice: _DICE,
             levelCount: 1,
-            projectileCount: 1,
-            type: {id: itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE}
+            projectileCount: 0,
+            type: _ID_NAME_OBJECT
         },
+        applyAbilityScoreModifier: false,
         areaOfEffect: {
             shape: _ID_NAME_OBJECT,
             unit: {id: itemtypes.TYPE.DEFAULT.UNIT.LENGTH},
@@ -353,6 +355,7 @@ export const SPELL = {
     school: _ID_NAME_OBJECT,
     supplementalDescriptions: []
 };
+export const SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS = [5, 11, 17];
 export const SPELL_COMPONENT = {
     id: 0,
     name: '',

@@ -1301,7 +1301,6 @@ let common = {
                                     vals.push(resObj.mechanics[q].bonus.value);
                                     vals.push(resObj.mechanics[q].bonus.advancement.type.id);
                                     vals.push(resObj.mechanics[q].bonus.advancement.value ? resObj.mechanics[q].bonus.advancement.value : 0);
-                                    vals.push(resObj.mechanics[q].bonus.advancement.listId ? resObj.mechanics[q].bonus.advancement.listId : 0);
                                     vals.push(resObj.mechanics[q].bonus.abilityScore.id ? resObj.mechanics[q].bonus.abilityScore.id : 0);
                                     vals.push(resObj.mechanics[q].bonus.dice.id ? resObj.mechanics[q].bonus.dice.id : 0);
                                     addComma = true;

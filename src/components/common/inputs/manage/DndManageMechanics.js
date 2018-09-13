@@ -214,9 +214,10 @@ class DndManageMechanics extends React.Component {
                     util.itemtypes.TYPE.ITEM.DAMAGE_SOURCE,
                     util.itemtypes.TYPE.ITEM.DAMAGE_TYPE,
                     util.itemtypes.TYPE.ITEM.OTHER_EFFECT,
+                    util.itemtypes.TYPE.ITEM.MISC_MECHANIC_TARGET,
                     util.itemtypes.TYPE.ITEM.PROFICIENCY
                 ], [
-                    null, null, null, null, null, null,
+                    null, null, null, null, null, null, null,
                     [util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SKILL, util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SAVING_THROW]
                 ]);
                 break;
@@ -224,15 +225,17 @@ class DndManageMechanics extends React.Component {
                 targets = util.common.picklists.getPicklistItems(this.props.picklists, [
                     util.itemtypes.TYPE.ITEM.CHECK,
                     util.itemtypes.TYPE.ITEM.CHECK_TYPE,
+                    util.itemtypes.TYPE.ITEM.MISC_MECHANIC_TARGET,
                     util.itemtypes.TYPE.ITEM.PROFICIENCY
                 ], [
-                    null, null,
+                    null, null, null,
                     [util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SKILL, util.itemtypes.TYPE.PROFICIENCY_CATEGORY.SAVING_THROW]
                 ]);
                 break;
             case util.itemtypes.TYPE.MECHANIC.BONUS.STAT:
                 targets = util.common.picklists.getPicklistItems(this.props.picklists, [
                     util.itemtypes.TYPE.ITEM.ABILITY_SCORE,
+                    util.itemtypes.TYPE.ITEM.MISC_MECHANIC_TARGET,
                     util.itemtypes.TYPE.ITEM.STAT
                 ]);
                 break;

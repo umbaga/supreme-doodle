@@ -105,7 +105,6 @@ class SpellEntry extends React.Component {
         newStateObj.editSupplementalDamage = Object.assign({}, util.common.resetObject.damage());
         newStateObj.editSupplementalDescription = Object.assign({}, util.common.resetObject.supplementalDescription(saveItem.supplementalDescriptions.length));
         newStateObj.spell = saveItem;
-        console.log(saveItem);
         return this.setState(newStateObj);
     }
     
@@ -140,7 +139,6 @@ class SpellEntry extends React.Component {
             default:
                 console.error('updateChildFormState no data-task');
         }
-        console.log(newItem);
         return this.setState(newStateObj);
     }
     render() {

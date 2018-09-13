@@ -221,12 +221,14 @@ export function spell() {
     retVal.charts = [];
     retVal.components = [];
     retVal.damage = {};
+    retVal.damage.abilityScore = {id: 0};
     retVal.damage.advancement = {};
     retVal.damage.advancement.atLevels = [];
     retVal.damage.advancement.dice = util.objectModel.DICE;
     retVal.damage.advancement.levelCount = 1;
     retVal.damage.advancement.projectileCount = 0;
     retVal.damage.advancement.type = {id: util.itemtypes.TYPE.DEFAULT.ADVANCEMENT_TYPE};
+    retVal.damage.applyAbilityScoreModifier = false;
     retVal.damage.areaOfEffect = {};
     retVal.damage.areaOfEffect.shape = util.objectModel.ITEM;
     retVal.damage.areaOfEffect.unit = {id: util.itemtypes.TYPE.DEFAULT.UNIT.LENGTH};

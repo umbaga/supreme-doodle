@@ -97,6 +97,7 @@ export const picklists = picklistInfo;
 export const replace = {
     description: function(val) {
         return val.replace('W ', 'W').replace('ecom e', 'ecome').replace(' som e ', ' some ').replace('Som e ', 'Some ').replace(' ing', 'ing')
+            .replace('”', '"').replace('“', '"')
             .replace('com e ', 'come ').replace('som eone', 'someone').replace('becom e', 'become').replace('dlO ', 'd10 ').replace('w ood', 'wood');
     }
 };

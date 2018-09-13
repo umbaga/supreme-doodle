@@ -334,6 +334,9 @@ export function standard(event, obj, picklists, arrayObject) {
         case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.ADD:
             util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
             break;
+        case util.datatypes.ACTION.SPELL.EXPAND_AT_LEVELS:
+            util.common.formState.functions.set.objectValue(retVal, field, util.objectModel.SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS);
+            break;
         case util.datatypes.ACTION.SPELL_COMPONENT:
             tmpObj = util.common.picklists.getPicklistItem(picklists, subfield);
             if (event.target.checked) {

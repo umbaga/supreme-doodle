@@ -111,6 +111,7 @@ module.exports = {TYPE: {
         LIFESTYLE: 878,
         LINK_TYPE: 8,
         MECHANIC_TYPE: 9,
+        MISC_MECHANIC_TARGET: 3497,
         MONSTER_TAG: 312,
         MONSTER_TYPE: 148,
         MOVEMENT_TYPE: 207,

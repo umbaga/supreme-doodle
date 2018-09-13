@@ -421,13 +421,13 @@ obj.mechanicBonus = function(val) {
             break;
         case util.itemtypes.TYPE.BONUS_TYPE.MULTIPLIER:
             if (val.bonus.value == 2) {
-                retVal = 'Double';
+                retVal = 'Double ' + val.target.name;
             } else if (val.bonus.value == 3) {
-                retVal = 'Triple';
+                retVal = 'Triple ' + val.target.name;
             } else if (val.bonus.value == 4) {
-                retVal = 'Quadruple';
+                retVal = 'Quadruple ' + val.target.name;
             } else {
-                retVal = 'Multiply by ' + val.bonus.value;
+                retVal = 'Multiply ' + val.target.name + ' by ' + val.bonus.value;
             }
             break;
         case util.itemtypes.TYPE.BONUS_TYPE.PROFICIENCY_BONUS:

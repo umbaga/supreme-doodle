@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-//import util from '../../../util/util';
+import util from '../../../util/util';
 import DndListItemButtonBar from '../../common/buttons/DndListItemButtonBar';
 import * as spellActions from '../../../actions/admin/spellActions';
 
@@ -33,6 +33,7 @@ class SpellItem extends React.Component {
             <tr key={this.props.spell.id}>
                 <td width="50"></td>
                 <td>{this.props.spell.name}</td>
+                <td colSpan="2">{util.format.forDisplay.obj.spellLevelAndSchool(this.props.spell)}</td>
                 <td>
                     <DndListItemButtonBar
                         listItem={this.props.spell}

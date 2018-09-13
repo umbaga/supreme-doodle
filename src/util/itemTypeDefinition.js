@@ -47,7 +47,8 @@ export const TYPE = {
         SPECIAL_WEAPON: 84,
         SPELL_COMPONENT_TEXT: 99,
         SUGGESTED_CHARACTERISTICS: 903,
-        SUPPLEMENTAL: 2902
+        SUPPLEMENTAL: 2902,
+        SUPPLEMENTAL_TITLE: 2940
     },
     EQUIPMENT_CATEGORY: {
         AMMUNITION: 108,
@@ -110,6 +111,7 @@ export const TYPE = {
         LIFESTYLE: 878,
         LINK_TYPE: 8,
         MECHANIC_TYPE: 9,
+        MISC_MECHANIC_TARGET: 3497,
         MONSTER_TAG: 312,
         MONSTER_TYPE: 148,
         MOVEMENT_TYPE: 207,

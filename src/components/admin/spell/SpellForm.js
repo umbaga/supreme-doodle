@@ -8,6 +8,7 @@ import DndUniversalInput from '../../common/inputs/DndUniversalInput';
 import DndManageCharts from '../../common/inputs/manage/DndManageCharts';
 import DndManageMechanics from '../../common/inputs/manage/DndManageMechanics';
 import DndManageSupplementalDescriptions from '../../common/inputs/manage/DndManageSupplementalDescriptions';
+import DndNestedCheckbox from '../../common/inputs/DndNestedCheckbox';
 import util from '../../../util/util';
 import { Tabs, Tab } from 'react-bootstrap';
 
@@ -79,6 +80,9 @@ class SpellForm extends React.Component {
             if (this.props.spell.components[q].requireFlavorText) {
                 hasMaterialComponent = true;
             }
+        }
+        if (this.props.spell.materialComponentText && this.props.spell.materialComponentText.length != 0) {
+            hasMaterialComponent = true;
         }
         if (hasMaterialComponent) {
             return (
@@ -183,6 +187,10 @@ class SpellForm extends React.Component {
                     value={spell.damage.advancement.atLevels}
                     onChange={this.props.onChange}
                     stackLabel
+                    buttonType="fill"
+                    buttonDatatype={util.datatypes.ACTION.SPELL}
+                    buttonOverwriteAction="EXPAND_AT_LEVELS"
+                    buttonOnClick={this.props.onChange}
                     />
             );
         } else if (spell.damage.advancement.type.id == util.itemtypes.TYPE.ADVANCEMENT_TYPE.EVERY_X_LEVELS) {
@@ -197,19 +205,26 @@ class SpellForm extends React.Component {
                     />
             );
         }
+        let diceInput = null;
         if (util.datatypes.compareDataType(spell.damage.dice, util.datatypes.SPECIAL.DICE) && spell.damage.type.id != 0) {
+            diceInput = (
+                <div className="col-md-2">
+                    <DndInput
+                        name="damage.advancement.dice"
+                        label="Damage Gained"
+                        dataType={util.datatypes.SPECIAL.DICE}
+                        value={spell.damage.advancement.dice}
+                        onChange={this.props.onChange}
+                        stackLabel
+                        />
+                </div>
+            );
+        }
+        if ((util.datatypes.compareDataType(spell.damage.dice, util.datatypes.SPECIAL.DICE) && spell.damage.type.id != 0)
+           || (spell.damage.projectileCount != 0)) {
             return (
                 <fragment>
-                    <div className="col-md-2">
-                        <DndInput
-                            name="damage.advancement.dice"
-                            label="Damage Gained"
-                            dataType={util.datatypes.SPECIAL.DICE}
-                            value={spell.damage.advancement.dice}
-                            onChange={this.props.onChange}
-                            stackLabel
-                            />
-                    </div>
+                    {diceInput}
                     <div className="col-md-3">
                         <DndInput
                             name="damage.advancement.type"
@@ -269,7 +284,7 @@ class SpellForm extends React.Component {
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={2} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="General">
                             <DndUniversalInput
                                 ref="name"
@@ -415,6 +430,24 @@ class SpellForm extends React.Component {
                                     />
                             </div>
                             {this.renderProjectileAdvancementInputs(spell, advancementTypes)}
+                            <div className="col-md-4">
+                                <DndNestedCheckbox
+                                    value={spell.damage.applyAbilityScoreModifier}
+                                    label="Apply Ability Score"
+                                    onChange={this.props.onChange}
+                                    name="damage.applyAbilityScoreModifier"
+                                    stackLabel
+                                    >
+                                    <DndInput
+                                        name="damage.abilityScore"
+                                        dataType={util.datatypes.PICKLIST}
+                                        value={spell.damage.abilityScore}
+                                        onChange={this.props.onChange}
+                                        picklist={abilityScores}
+                                        hideLabel
+                                        />
+                                </DndNestedCheckbox>
+                            </div>
                             <div className="col-md-4">
                                 <DndInput
                                     name="damage.condition"

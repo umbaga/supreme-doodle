@@ -76,8 +76,8 @@ class SpellPage extends React.Component {
     }
     
     render() {
-        const spells = this.props.spells.filter(function(spell) {
-            /*if (this.state.selectedSpellLevel.id != -1 && this.state.selectedSchool.id != 0) {
+        const spells = this.props.spells/*.filter(function(spell) {
+            if (this.state.selectedSpellLevel.id != -1 && this.state.selectedSchool.id != 0) {
                 return (spell.level == this.state.selectedSpellLevel.id && spell.school.id == this.state.selectedSchool.id);
             } else if (this.state.selectedSpellLevel.id == -1 && this.state.selectedSchool.id != 0) {
                 return (spell.school.id == this.state.selectedSchool.id);
@@ -85,13 +85,12 @@ class SpellPage extends React.Component {
                 return (spell.level == this.state.selectedSpellLevel.id);
             } else {
                 return true;
-            }*/
+            }
             return true;
-        });
+        })*/;
         const picklists = this.props.picklists;
         const spellLevels = util.hardCoded.picklist.spellLevels;
         const spellSchools = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.SCHOOL_OF_MAGIC);
-        console.log(spells);
         return (
             <div className="col-md-12">
                 <div>

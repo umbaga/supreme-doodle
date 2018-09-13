@@ -400,6 +400,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     
                     resObj.permissions.need.charts = false;
                     resObj.permissions.need.mechanics = false;
+                    resObj.permissions.need.dice = false;
                     resObj.permissions.need.damage = false;
                     resObj.permissions.need.damageAdvancement = false;
                     resObj.permissions.need.supplementalDamage = false;
@@ -435,6 +436,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     if (resObj.spell.damage) {
                         if (resObj.spell.damage.type && resObj.spell.damage.type.id != 0) {
                             resObj.permissions.need.damage = true;
+                            resObj.permissions.need.dice = true;
                             checkForAdvancement = true;
                         }
                         if (resObj.spell.damage.condition && resObj.spell.damage.condition.id != 0) {
@@ -443,10 +445,11 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         if (resObj.spell.damage.savingThrow && resObj.spell.damage.savingThrow.effect && resObj.spell.damage.savingThrow.effect.id != 0) {
                             resObj.permissions.need.damage = true;
                         }
-                        if (resObj.spell.damage.supplementalDamage && resObj.spell.damage.supplementalDamage.length != 0) {
+                        if (resObj.spell.damage.supplemental && resObj.spell.damage.supplemental.length != 0) {
                             resObj.permissions.need.supplementalDamage = true;
                         }
-                        if (resObj.spell.damage.advancement && resObj.spell.damage.advancement.type && resObj.spell.damage.advancement.type.id != 0) {
+                        if (resObj.spell.damage.advancement && resObj.spell.damage.advancement.type && resObj.spell.damage.advancement.type.id != 0
+                           && resObj.spell.damage.advancement.dice && resObj.spell.damage.advancement.dice.dieType != 0) {
                             if (checkForAdvancement) {
                                 resObj.permissions.need.damageAdvancement = true;
                                 if (resObj.spell.damage.advancement.type.id == itemtypes.TYPE.ADVANCEMENT_TYPE.AT_LEVEL) {
@@ -464,7 +467,6 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             resObj.permissions.need.conditionList = true;
                         }
                     }
-                    
                     if (resObj.spell.description && resObj.spell.description.length != 0) {
                         resObj.permissions.need.description = true;
                     }
@@ -494,7 +496,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                 function manageDice(resObj, callback) {
                     console.log('insert-spell-02');
                     results = [];
-                    if (resObj.permissions.need.damage) {
+                    if (resObj.permissions.need.dice) {
                         let diceArr = [resObj.spell.damage.dice];
                         if (resObj.permissions.need.damageAdvancement) {
                             diceArr.push(resObj.spell.damage.advancement.dice);
@@ -510,8 +512,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 resObj.spell.damage.advancement.dice = common.datatypes.dice.getObject(results, resObj.spell.damage.advancement.dice);
                             }
                             if (resObj.permissions.need.supplementalDamage) {
-                                for (let q = 0; q < resObj.spell.damage.supplementalDamage.length; q++) {
-                                    resObj.permissions.need.supplementalDamage[q].dice = common.datatypes.dice.getObject(results, resObj.permissions.need.supplementalDamage[q].dice);
+                                for (let q = 0; q < resObj.spell.damage.supplemental.length; q++) {
+                                    resObj.spell.damage.supplemental[q].dice = common.datatypes.dice.getObject(results, resObj.spell.damage.supplemental[q].dice);
                                 }
                             }
                             return callback(null, resObj);
@@ -562,8 +564,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         sql = 'INSERT INTO adm_def_spell_damage';
                         sql += '("spellId", "diceId", "damageTypeId", "conditionId", "saveAbilityScoreId"';
                         sql += ', "saveEffectId", "attackTypeId", "areaOfEffectShapeId", "areaOfEffectUnitId", "areaOfEffectValue"';
-                        sql += ', "projectileCount")';
-                        sql += ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)';
+                        sql += ', "projectileCount", "applyAbilityScoreModifier", "abilityScoreId")';
+                        sql += ' VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)';
                         vals = [
                             resObj.spell.id,
                             resObj.spell.damage.dice.id,
@@ -575,7 +577,9 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                             resObj.spell.damage.areaOfEffect.shape.id,
                             resObj.spell.damage.areaOfEffect.unit.id,
                             resObj.spell.damage.areaOfEffect.value,
-                            resObj.spell.damage.projectileCount
+                            resObj.spell.damage.projectileCount,
+                            resObj.spell.damage.applyAbilityScoreModifier,
+                            resObj.spell.damage.abilityScore.id ? resObj.spell.damage.abilityScore.id : 0
                         ];
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
@@ -895,15 +899,19 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                                 counter++;
                             }
                         }
-                        query = client.query(new pg.Query(sql, vals));
-                        query.on('row', function(row) {
-                            results.push(row);
-                        });
-                        query.on('end', function() {
+                        if (addComma) {
+                            query = client.query(new pg.Query(sql, vals));
+                            query.on('row', function(row) {
+                                results.push(row);
+                            });
+                            query.on('end', function() {
+                                return callback(null, resObj);
+                            });
+                        } else {
                             return callback(null, resObj);
-                        });
+                        }
                     } else {
-                       return callback(null, resObj); 
+                       return callback(null, resObj);
                     }
                 },
                 function manageCharts(resObj, callback) {
@@ -938,6 +946,36 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     } else {
                         return callback(null, resObj);
                     }
+                },
+                function spellDamageSupplemental(resObj, callback) {
+                    console.log('insert-spell-13');
+                    results = [];
+                    vals = [];
+                    addComma = false;
+                    counter = 0;
+                    if (resObj.permissions.need.supplementalDamage) {
+                        sql = 'INSERT INTO adm_def_spell_damage_supplemental';
+                        sql += ' ("spellId", "diceId", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.spell.damage.supplemental.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.spell.id);
+                            vals.push(resObj.spell.damage.supplemental[q].dice.id);
+                            vals.push(resObj.spell.damage.supplemental[q].type.id);
+                            addComma = true;
+                            counter++;
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
                 }
             ], function(error, result) {
                 done();
@@ -962,8 +1000,8 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += ', spell."spellLevel" AS "level"';
             sql += ', get_item(spell."schoolId") AS "school"';
             sql += ', get_description(i.id, $2) AS "description"';
-            sql += ', get_description(i.id, $3) AS "atHigherLevels"';
-            sql += ', get_description(i.id, $4) AS "materialComponentText"';
+            sql += ', CASE WHEN get_description(i.id, $3) IS NULL THEN \'\' ELSE get_description(i.id, $3) END AS "atHigherLevels"';
+            sql += ', CASE WHEN get_description(i.id, $4) IS NULL THEN \'\' ELSE get_description(i.id, $4) END AS "materialComponentText"';
             sql += ', json_build_object(';
             sql += '    \'text\', get_description(i.id, $5)';
             sql += '    , \'unit\', get_item(spell."castingTimeUnitId")';
@@ -979,47 +1017,49 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += ') AS "duration"';
             sql += ', json_build_object(';
             sql += '    \'areaOfEffect\', json_build_object(';
-            sql += '        \'shape\', get_item(spell."rangeAreaOfEffectShapeId")';
-            sql += '        , \'unit\', get_item(spell."rangeAreaOfEffectUnitId")';
+            sql += '        \'shape\', CASE WHEN get_item(spell."rangeAreaOfEffectShapeId") IS NULL THEN get_empty_item() ELSE get_item(spell."rangeAreaOfEffectShapeId") END';
+            sql += '        , \'unit\', CASE WHEN get_item(spell."rangeAreaOfEffectUnitId") IS NULL THEN get_empty_item() ELSE get_item(spell."rangeAreaOfEffectUnitId") END';
             sql += '        , \'value\', spell."rangeAreaOfEffectValue"';
             sql += '    )';
             sql += '   , \'unit\', get_item(spell."rangeUnitId")';
             sql += '    , \'value\', spell."rangeValue"';
             sql += ') AS "range"';
             sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
-            sql += ', CASE WHEN get_list_items(i.id, $6) IS NULL THEN \'[]\' ELSE get_list_items(i.id, $6) END AS "components"';
+            sql += ', get_array_of_items(i.id, $6) AS "components"';
             sql += ', CASE WHEN get_mechanics(i.id) IS NULL THEN \'[]\' ELSE get_mechanics(i.id) END AS "mechanics"';
             sql += ', CASE WHEN get_supplemental_descriptions(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_descriptions(i.id) END AS "supplementalDescriptions"';
             sql += ', json_build_object(';
-            sql += '    \'dice\', get_dice(dmg."diceId")';
-            sql += '    , \'type\', get_item(dmg."damageTypeId")';
-            sql += '    , \'condition\', get_item(dmg."conditionId")';
-            sql += '    , \'projectileCount\', dmg."projectileCount"';
+            sql += '    \'dice\', CASE WHEN get_dice(dmg."diceId") IS NULL THEN get_empty_dice() ELSE get_dice(dmg."diceId") END';
+            sql += '    , \'type\', CASE WHEN get_item(dmg."damageTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."damageTypeId") END';
+            sql += '    , \'condition\', CASE WHEN get_item(dmg."conditionId") IS NULL THEN get_empty_item() ELSE get_item(dmg."conditionId") END';
+            sql += '    , \'projectileCount\', CASE WHEN dmg."projectileCount" IS NULL THEN 0 ELSE dmg."projectileCount" END';
             sql += '    , \'areaOfEffect\', json_build_object(';
-            sql += '        \'shape\', get_item(dmg."areaOfEffectShapeId")';
-            sql += '        , \'unit\', get_item(dmg."areaOfEffectUnitId")';
-            sql += '        , \'value\', dmg."areaOfEffectValue"';
+            sql += '        \'shape\', CASE WHEN get_item(dmg."areaOfEffectShapeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."areaOfEffectShapeId") END';
+            sql += '        , \'unit\', CASE WHEN get_item(dmg."areaOfEffectUnitId") IS NULL THEN get_empty_item() ELSE get_item(dmg."areaOfEffectUnitId") END';
+            sql += '        , \'value\', CASE WHEN dmg."areaOfEffectValue" IS NULL THEN 0 ELSE dmg."areaOfEffectValue" END';
             sql += '    )';
             sql += '    , \'attack\', json_build_object(';
-            sql += '        \'type\', get_item(dmg."attackTypeId")';
+            sql += '        \'type\', CASE WHEN get_item(dmg."attackTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."attackTypeId") END';
             //sql += '        , \'addedToAttack\', false';
             sql += '    )';
             sql += '    , \'savingThrow\', json_build_object(';
-            sql += '        \'abilityScore\', get_item(dmg."saveAbilityScoreId")';
-            sql += '        , \'effect\', get_item(dmg."saveEffectId")';
+            sql += '        \'abilityScore\', CASE WHEN get_item(dmg."saveAbilityScoreId") IS NULL THEN get_empty_item() ELSE get_item(dmg."saveAbilityScoreId") END';
+            sql += '        , \'effect\', CASE WHEN get_item(dmg."saveEffectId") IS NULL THEN get_empty_item() ELSE get_item(dmg."saveEffectId") END';
             //sql += '        , \'isReapeating\', false';
             //sql += '        , \'countToAvoid\', 1';
             sql += '    )';
             sql += '    , \'advancement\', json_build_object(';
             sql += '        \'atLevels\', CASE WHEN get_at_levels_list(i.id) IS NULL THEN \'[]\' ELSE get_at_levels_list(i.id) END';
-            sql += '        , \'dice\', get_dice(dmgadv."addDiceId")';
+            sql += '        , \'dice\', CASE WHEN get_dice(dmgadv."addDiceId") IS NULL THEN get_empty_dice() ELSE get_dice(dmgadv."addDiceId") END';
             sql += '        , \'levelCount\', dmgadv."levelCount"';
-            sql += '        , \'projectileCount\', dmgadv."addProjectileCount"';
-            sql += '        , \'type\', get_item(dmgadv."advancementTypeId")';
+            sql += '        , \'projectileCount\', CASE WHEN dmgadv."addProjectileCount" IS NULL THEN 0 ELSE dmgadv."addProjectileCount" END';
+            sql += '        , \'type\', CASE WHEN get_item(dmgadv."advancementTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmgadv."advancementTypeId") END';
             sql += '    )';
             sql += '    , \'conditionList\',  CASE WHEN get_list_object(i.id, $7) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $7) END';
             sql += '    , \'typeList\', CASE WHEN get_list_object(i.id, $8) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $8) END';
             sql += '    , \'supplemental\', CASE WHEN get_supplemental_damage(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_damage(i.id) END';
+            sql += '    , \'applyAbilityScoreModifier\', dmg."applyAbilityScoreModifier"';
+            sql += '    , \'abilityScore\', CASE WHEN get_item(dmg."abilityScoreId") IS NULL THEN get_empty_item() ELSE get_item(dmg."abilityScoreId") END';
             sql += ') AS "damage"';
             sql += ' FROM adm_core_item i';
             sql += ' INNER JOIN adm_def_spell spell ON spell."spellId" = i.id';
