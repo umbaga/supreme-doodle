@@ -357,23 +357,6 @@ export const SPELL = {
 };
 export const SPELLLIST = {
     id: 0,
-    name: '--test spell list 0',
-    resource: _RESOURCE,
-    spells: [
-        {id: 3499, name: 'Vicious Mockery', level: 0},
-        {id: 3420, name: 'Wrathful Smite', level: 1},
-        {id: 3416, name: 'Zone of Truth', level: 2},
-        {id: 3446, name: 'Water Breathing', level: 3},
-        {id: 3488, name: 'Wall of Ice', level: 4},
-        {id: 3666, name: 'Telekinesis', level: 5},
-        {id: 3422, name: 'Word of Recall', level: 6},
-        {id: 3562, name: 'Teleport', level: 7},
-        {id: 3510, name: 'Tsunami', level: 8},
-        {id: 3428, name: 'Wish', level: 9}
-    ]
-};
-export const _SPELLLIST = {
-    id: 0,
     name: '',
     resource: _RESOURCE,
     spells: []
