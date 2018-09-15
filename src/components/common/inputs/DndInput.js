@@ -88,6 +88,7 @@ class DndInput extends React.Component {
                 );
                 break;
             case util.datatypes.ARRAY.LIST.ADD.NEW:
+            case util.datatypes.ARRAY.LIST.ADD.PICKLIST:
             case util.datatypes.ARRAY.TAGS.ADD.NEW:
             case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
             case util.datatypes.ARRAY.LIST.ADD.WITH_VALUE.PICKLIST.INT:

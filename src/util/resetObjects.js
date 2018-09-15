@@ -277,6 +277,14 @@ export function spell() {
     return retVal;
 }
 
+export function spelllist() {
+    let retVal = util.objectModel.SPELLLIST;
+    retVal.name = '';
+    retVal.spells = [];
+    retVal.resource = {id: util.itemtypes.TYPE.RESOURCE.PHB};
+    return retVal;
+}
+
 export function supplementalDescription(newIndex) {
     let retVal = Object.assign({}, util.objectModel.SUPPLEMENTAL_DESCRIPTION);
     retVal.id = newIndex * -1;

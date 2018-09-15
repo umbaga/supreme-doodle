@@ -705,6 +705,107 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(err, resObj);
                     });
                 },
+                function spells(resObj, callback) {
+                    results = [];
+                    sql = 'SELECT i."id", i."itemName" AS "name"';
+                    sql += ', get_item(i."resourceId") AS "resource"';
+                    sql += ', spell."isRitual"';
+                    sql += ', spell."spellLevel" AS "level"';
+                    sql += ', get_item(spell."schoolId") AS "school"';
+                    sql += ', get_description(i.id, $2) AS "description"';
+                    sql += ', CASE WHEN get_description(i.id, $3) IS NULL THEN \'\' ELSE get_description(i.id, $3) END AS "atHigherLevels"';
+                    sql += ', CASE WHEN get_description(i.id, $4) IS NULL THEN \'\' ELSE get_description(i.id, $4) END AS "materialComponentText"';
+                    sql += ', json_build_object(';
+                    sql += '    \'text\', get_description(i.id, $5)';
+                    sql += '    , \'unit\', get_item(spell."castingTimeUnitId")';
+                    sql += '    , \'value\', spell."castingTimeValue"';
+                    sql += ') AS "castingTime"';
+                    sql += ', json_build_object(';
+                    sql += '    \'concentration\', json_build_object(';
+                    sql += '        \'unit\', get_item(spell."concentrationUnitId")';
+                    sql += '        , \'value\', spell."concentrationValue"';
+                    sql += '    )';
+                    sql += '    , \'unit\', get_item(spell."durationUnitId")';
+                    sql += '    , \'value\', spell."durationValue"';
+                    sql += ') AS "duration"';
+                    sql += ', json_build_object(';
+                    sql += '    \'areaOfEffect\', json_build_object(';
+                    sql += '        \'shape\', CASE WHEN get_item(spell."rangeAreaOfEffectShapeId") IS NULL THEN get_empty_item() ELSE get_item(spell."rangeAreaOfEffectShapeId") END';
+                    sql += '        , \'unit\', CASE WHEN get_item(spell."rangeAreaOfEffectUnitId") IS NULL THEN get_empty_item() ELSE get_item(spell."rangeAreaOfEffectUnitId") END';
+                    sql += '        , \'value\', spell."rangeAreaOfEffectValue"';
+                    sql += '    )';
+                    sql += '   , \'unit\', get_item(spell."rangeUnitId")';
+                    sql += '    , \'value\', spell."rangeValue"';
+                    sql += ') AS "range"';
+                    sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
+                    sql += ', get_array_of_items(i.id, $6) AS "components"';
+                    sql += ', CASE WHEN get_mechanics(i.id) IS NULL THEN \'[]\' ELSE get_mechanics(i.id) END AS "mechanics"';
+                    sql += ', CASE WHEN get_supplemental_descriptions(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_descriptions(i.id) END AS "supplementalDescriptions"';
+                    sql += ', json_build_object(';
+                    sql += '    \'dice\', CASE WHEN get_dice(dmg."diceId") IS NULL THEN get_empty_dice() ELSE get_dice(dmg."diceId") END';
+                    sql += '    , \'type\', CASE WHEN get_item(dmg."damageTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."damageTypeId") END';
+                    sql += '    , \'condition\', CASE WHEN get_item(dmg."conditionId") IS NULL THEN get_empty_item() ELSE get_item(dmg."conditionId") END';
+                    sql += '    , \'projectileCount\', CASE WHEN dmg."projectileCount" IS NULL THEN 0 ELSE dmg."projectileCount" END';
+                    sql += '    , \'areaOfEffect\', json_build_object(';
+                    sql += '        \'shape\', CASE WHEN get_item(dmg."areaOfEffectShapeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."areaOfEffectShapeId") END';
+                    sql += '        , \'unit\', CASE WHEN get_item(dmg."areaOfEffectUnitId") IS NULL THEN get_empty_item() ELSE get_item(dmg."areaOfEffectUnitId") END';
+                    sql += '        , \'value\', CASE WHEN dmg."areaOfEffectValue" IS NULL THEN 0 ELSE dmg."areaOfEffectValue" END';
+                    sql += '    )';
+                    sql += '    , \'attack\', json_build_object(';
+                    sql += '        \'type\', CASE WHEN get_item(dmg."attackTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmg."attackTypeId") END';
+                    //sql += '        , \'addedToAttack\', false';
+                    sql += '    )';
+                    sql += '    , \'savingThrow\', json_build_object(';
+                    sql += '        \'abilityScore\', CASE WHEN get_item(dmg."saveAbilityScoreId") IS NULL THEN get_empty_item() ELSE get_item(dmg."saveAbilityScoreId") END';
+                    sql += '        , \'effect\', CASE WHEN get_item(dmg."saveEffectId") IS NULL THEN get_empty_item() ELSE get_item(dmg."saveEffectId") END';
+                    //sql += '        , \'isReapeating\', false';
+                    //sql += '        , \'countToAvoid\', 1';
+                    sql += '    )';
+                    sql += '    , \'advancement\', json_build_object(';
+                    sql += '        \'atLevels\', CASE WHEN get_at_levels_list(i.id) IS NULL THEN \'[]\' ELSE get_at_levels_list(i.id) END';
+                    sql += '        , \'dice\', CASE WHEN get_dice(dmgadv."addDiceId") IS NULL THEN get_empty_dice() ELSE get_dice(dmgadv."addDiceId") END';
+                    sql += '        , \'levelCount\', dmgadv."levelCount"';
+                    sql += '        , \'projectileCount\', CASE WHEN dmgadv."addProjectileCount" IS NULL THEN 0 ELSE dmgadv."addProjectileCount" END';
+                    sql += '        , \'type\', CASE WHEN get_item(dmgadv."advancementTypeId") IS NULL THEN get_empty_item() ELSE get_item(dmgadv."advancementTypeId") END';
+                    sql += '    )';
+                    sql += '    , \'conditionList\',  CASE WHEN get_list_object(i.id, $7) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $7) END';
+                    sql += '    , \'typeList\', CASE WHEN get_list_object(i.id, $8) IS NULL THEN json_build_object(\'count\', 1, \'list\', \'[]\', \'isInclusive\', false) ELSE get_list_object(i.id, $8) END';
+                    sql += '    , \'supplemental\', CASE WHEN get_supplemental_damage(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_damage(i.id) END';
+                    sql += '    , \'applyAbilityScoreModifier\', dmg."applyAbilityScoreModifier"';
+                    sql += '    , \'abilityScore\', CASE WHEN get_item(dmg."abilityScoreId") IS NULL THEN get_empty_item() ELSE get_item(dmg."abilityScoreId") END';
+                    sql += ') AS "damage"';
+                    sql += ' FROM adm_core_item i';
+                    sql += ' INNER JOIN adm_def_spell spell ON spell."spellId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_spell_damage dmg ON dmg."spellId" = i.id';
+                    sql += ' LEFT OUTER JOIN adm_def_spell_damage_advancement dmgadv ON dmgadv."spellId" = i.id';
+                    sql += ' WHERE i."typeId" = $1';
+                    sql += ' ORDER BY i."itemName"';
+                    vals = [
+                        itemtypes.TYPE.ITEM.SPELL,
+                        itemtypes.TYPE.DESCRIPTION.GENERAL,
+                        itemtypes.TYPE.DESCRIPTION.AT_HIGHER_LEVELS,
+                        itemtypes.TYPE.DESCRIPTION.SPELL_COMPONENT_TEXT,
+                        itemtypes.TYPE.DESCRIPTION.REACTION_CASTING_TIME_TEXT,
+                        itemtypes.TYPE.LINK.SPELL_COMPONENT,
+                        itemtypes.TYPE.LINK.LIST.CONDITION,
+                        itemtypes.TYPE.LINK.LIST.DAMAGE_TYPE
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        let finalResults = results;
+                        let newPicklist = {};
+                        newPicklist.id = itemtypes.TYPE.ITEM.SPELL;
+                        newPicklist.name = 'Spell';
+                        newPicklist.isPicklist = true;
+                        newPicklist.applySupplementalPicklist = false;
+                        newPicklist.items = finalResults;
+                        resObj.push(newPicklist);
+                        return callback(err, resObj);
+                    });
+                },
                 function addHardcodedPicklists(resObj, callback) {
                     let spellLevelPicklist = {};
                     spellLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.SPELL;

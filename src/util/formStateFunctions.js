@@ -415,6 +415,7 @@ export function standard(event, obj, picklists, arrayObject) {
             }
             util.common.formState.functions.set.objectValue(retVal, field, tmpObj);
             break;
+        case util.datatypes.ARRAY.LIST.ADD.PICKLIST:
         case util.datatypes.ARRAY.TAGS.ADD.PICKLIST:
             if (field.split('_').length == 1) {
                 if (inputType == 'text') {

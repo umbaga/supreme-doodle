@@ -7,6 +7,7 @@ import itemtypes from './admin/itemtypeReducer';
 import picklists from './admin/picklistReducer';
 import proficiencies from './admin/proficiencyReducer';
 import spells from './admin/spellReducer';
+import spelllists from './admin/spelllistReducer';
 
 const rootReducer = combineReducers({
     _templates,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     picklists,
     proficiencies,
     spells,
+    spelllists,
     session
 });
 

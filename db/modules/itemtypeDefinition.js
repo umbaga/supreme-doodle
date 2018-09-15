@@ -127,6 +127,7 @@ module.exports = {TYPE: {
         SCHOOL_OF_MAGIC: 85,
         SIZE: 100,
         SPELL: 2890,
+        SPELLLIST: 5223,
         SPELL_COMPONENT: 94,
         SPELLCASTING_FOCUS: 445,
         STAT: 242,
@@ -183,6 +184,7 @@ module.exports = {TYPE: {
             SUBRACE: 20,
             VARIANT: 15
         },
+        SPELL: 5224,
         SPELL_COMPONENT: 2939,
         TITLE: 17,
         VARIANT: {

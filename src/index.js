@@ -13,6 +13,7 @@ import {loadItemtypes} from './actions/admin/itemtypeActions';
 import {loadPicklists} from './actions/admin/picklistActions';
 import {loadProficiencies} from './actions/admin/proficiencyActions';
 import {loadSpells} from './actions/admin/spellActions';
+import {loadSpelllists} from './actions/admin/spelllistActions';
 
 const store = configureStore();
 
@@ -22,6 +23,7 @@ store.dispatch(loadItemtypes());
 store.dispatch(loadPicklists());
 store.dispatch(loadProficiencies());
 store.dispatch(loadSpells());
+store.dispatch(loadSpelllists());
 
 render(
        <Provider store={store}>

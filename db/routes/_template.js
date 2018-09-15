@@ -557,7 +557,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             sql += ', get_item(i."resourceId") AS "resource"';
             sql += ', get_description(i.id, $2) AS "description"';
             sql += ' FROM adm_core_item i';
-            sql += ' INNER JOIN adm_def__template bg ON bg."_templateId" = i.id'
+            sql += ' INNER JOIN adm_def__template bg ON bg."_templateId" = i.id';
             sql += ' WHERE i."typeId" = $1';
             sql += ' ORDER BY i."itemName"';
             vals = [
