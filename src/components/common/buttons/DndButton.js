@@ -132,6 +132,7 @@ class DndButton extends React.Component {
             return (
                 <Button bsStyle={finalBootstrapStyle} onClick={this._onClick}
                     datatype={this.props.dataType} name={name} value={this.props.selectedIndex} disabled={finalDisabled}
+                    data-selectedId={this.props.selectedId}
                     data-task={dataTask}>
                     {renderedLabel}
                 </Button>
@@ -159,6 +160,10 @@ DndButton.propTypes = {
     name: PropTypes.string,
     onClick: PropTypes.func,
     refs: PropTypes.object,
+    selectedId: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+    ]),
     selectedIndex: PropTypes.number
 };
 

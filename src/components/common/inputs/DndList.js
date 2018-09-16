@@ -56,7 +56,7 @@ class DndList extends React.Component {
         }
     }
     
-    renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable) {
+    renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable, selectedId) {
         if (isEditable) {
             return (
                 <DndListItemButtonBar
@@ -81,6 +81,7 @@ class DndList extends React.Component {
                     selectedIndex={idx}
                     dataTask={dataTask}
                     bsButtonStyle={bsButtonStyle}
+                    selectedId={selectedId}
                     />
             );
         }
@@ -142,7 +143,7 @@ class DndList extends React.Component {
                                     {this.renderChangeOrderButtons(isOrdering, idx, this.props.name, item, this.props.value, dataTask, buttonDatatype)}
                                     <td width="75px">
                                         <div className="pull-right">
-                                            {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable)}
+                                            {this.renderButtonInput(item, idx, buttonType, buttonOnClick, buttonDatatype, dataTask, bsButtonStyle, isEditable, item.id)}
                                         </div>
                                     </td>
                                 </tr>

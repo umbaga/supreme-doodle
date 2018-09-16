@@ -67,6 +67,7 @@ class SpelllistPage extends React.Component {
     render() {
         const spelllists = this.props.spelllists;
         const picklists = this.props.picklists;
+        console.log(spelllists);
         return (
             <div className="col-md-12">
                 <div>

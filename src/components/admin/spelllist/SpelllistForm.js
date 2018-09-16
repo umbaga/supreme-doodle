@@ -41,7 +41,7 @@ class SpelllistForm extends React.Component {
         return (
             <div>
                 <form>
-                    <Tabs defaultActiveKey={2} id="uncontrolled-tab-example">
+                    <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
                         <Tab eventKey={1} title="General">
                             <DndUniversalInput
                                 ref="name"
@@ -72,7 +72,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={3} title="1st">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="1st Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 1)}
                                 onChange={this.props.onChange}
@@ -90,7 +90,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={4} title="2nd">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="2nd Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 2)}
                                 onChange={this.props.onChange}
@@ -108,7 +108,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={5} title="3rd">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="3rd Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 3)}
                                 onChange={this.props.onChange}
@@ -126,7 +126,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={6} title="4th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="4th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 4)}
                                 onChange={this.props.onChange}
@@ -144,7 +144,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={7} title="5th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="5th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 5)}
                                 onChange={this.props.onChange}
@@ -162,7 +162,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={8} title="6th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="6th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 6)}
                                 onChange={this.props.onChange}
@@ -180,7 +180,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={9} title="7th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="7th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 7)}
                                 onChange={this.props.onChange}
@@ -198,7 +198,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={10} title="8th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="8th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 8)}
                                 onChange={this.props.onChange}
@@ -216,7 +216,7 @@ class SpelllistForm extends React.Component {
                         <Tab eventKey={11} title="9th">
                             <DndInput
                                 name="spells"
-                                label="Cantrips"
+                                label="9th Level"
                                 dataType={util.datatypes.ARRAY.LIST.ADD.PICKLIST}
                                 value={this.getSpellsByLevel(spelllist.spells, 9)}
                                 onChange={this.props.onChange}

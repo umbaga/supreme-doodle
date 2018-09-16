@@ -25,6 +25,7 @@ class SpelllistEntry extends React.Component {
         this.saveAndBackSpelllist = this.saveAndBackSpelllist.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
         this.updateChildFormState = this.updateChildFormState.bind(this);
+        this.setEditItemToNextSpellInCurrentList = this.setEditItemToNextSpellInCurrentList.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -70,18 +71,20 @@ class SpelllistEntry extends React.Component {
     
     updateFormState(event) {
         let arrayItem = null;
+        let newEditItem = null;
         let newStateObj = {};
         switch (util.common.formState.functions.set.valueFromTarget(event, 'data-task').toLowerCase()) {
             case 'item':
                 arrayItem = this.state.editItem;
+                newEditItem = this.setEditItemToNextSpellInCurrentList(arrayItem);
                 break;
             case 'normal':
+                newEditItem = Object.assign({}, util.common.resetObject.item());
                 break;
             default:
                 console.error('updateFormState no data-task');
         }
         let spelllist = util.common.formState.standard(event, this.state.spelllist, this.props.picklists, arrayItem);
-        let newEditItem = Object.assign({}, util.common.resetObject.item());
         newStateObj.spelllist = spelllist;
         newStateObj.editItem = newEditItem;
         return this.setState(newStateObj);
@@ -100,6 +103,18 @@ class SpelllistEntry extends React.Component {
         }
         return this.setState(newStateObj);
     }
+    
+    setEditItemToNextSpellInCurrentList(currentSpell) {
+        let retVal = null;
+        let spells = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.SPELL).filter(function(spell) {
+            return currentSpell.level == spell.level;
+        });
+        let currentIndex = util.common.picklists.getIndexById(spells, currentSpell.id);
+        let nextIndex = currentIndex + 1;
+        retVal = (nextIndex < spells.length - 1) ? spells[nextIndex] : Object.assign({}, util.common.resetObject.item());
+        return retVal;
+    }
+    
     render() {
         return (
             <DndModal

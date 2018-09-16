@@ -228,7 +228,10 @@ export function standard(event, obj, picklists, arrayObject) {
     let oldRowCount = 0;
     let oldColumnCount = 0;
     let counter = 0;
-
+    let selectedId = util.common.formState.functions.set.valueFromTarget(event, 'data-selectedId');
+    if (selectedId) {
+        selectedIndex = util.common.picklists.getIndexById(util.common.formState.functions.set.objectValue(retVal, field), selectedId);
+    }
     switch (dataType) {
         case util.datatypes.ACTION.CHART.ADD:
             if (arrayObject.id <= 0) {
