@@ -10,6 +10,7 @@ let runEquipment = require('./routes/equipment');
 let runItemtype = require('./routes/itemtype');
 let runPicklist = require('./routes/picklist');
 let runProficiency = require('./routes/proficiency');
+let runRace = require('./routes/race');
 let runSpell = require('./routes/spell');
 let runSpelllist = require('./routes/spelllist');
 
@@ -37,6 +38,7 @@ runEquipment(app, pg, async, pool, itemtypes, modules);
 runItemtype(app, pg, async, pool, itemtypes, modules);
 runPicklist(app, pg, async, pool, itemtypes, modules);
 runProficiency(app, pg, async, pool, itemtypes, modules);
+runRace(app, pg, async, pool, itemtypes, modules);
 runSpell(app, pg, async, pool, itemtypes, modules);
 runSpelllist(app, pg, async, pool, itemtypes, modules);
 

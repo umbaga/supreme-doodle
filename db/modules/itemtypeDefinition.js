@@ -120,6 +120,7 @@ module.exports = {TYPE: {
         PICKLIST: 0,
         PROFICIENCY: 323,
         PROFICIENCY_CATEGORY: 125,
+        RACE: 5240,
         RANGE: 278,
         RECHARGE_TYPE: 291,
         RESOURCE: 1,

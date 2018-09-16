@@ -262,6 +262,12 @@ export const PROFICIENCY = {
         script: _ID_NAME_OBJECT
     }
 };
+export const RACE = {
+    id: 0,
+    name: '',
+    description: '',
+    resource: _RESOURCE
+};
 export const SELECT = {
     PROFICIENCY: {
         CATEGORY: {

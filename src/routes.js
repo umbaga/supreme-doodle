@@ -10,6 +10,7 @@ import EquipmentPage from './components/admin/equipment/EquipmentPage';
 import ItemtypePage from './components/admin/itemtype/ItemtypePage';
 import PicklistPage from './components/admin/picklist/PicklistPage';
 import ProficiencyPage from './components/admin/proficiency/ProficiencyPage';
+import RacePage from './components/admin/race/RacePage';
 import SpellPage from './components/admin/spell/SpellPage';
 import SpelllistPage from './components/admin/spelllist/SpelllistPage';
 
@@ -26,6 +27,7 @@ export default (
         <Route path="/admin/itemtype" component={ItemtypePage} />
         <Route path="/admin/picklist" component={PicklistPage} />
         <Route path="/admin/proficiency" component={ProficiencyPage} />
+        <Route path="/admin/race" component={RacePage} />
         <Route path="/admin/spell" component={SpellPage} />
         <Route path="/admin/spelllist" component={SpelllistPage} />
         <Route path="/login" component={LogInPage} />

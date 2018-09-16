@@ -12,6 +12,7 @@ import {loadEquipments} from './actions/admin/equipmentActions';
 import {loadItemtypes} from './actions/admin/itemtypeActions';
 import {loadPicklists} from './actions/admin/picklistActions';
 import {loadProficiencies} from './actions/admin/proficiencyActions';
+import {loadRaces} from './actions/admin/raceActions';
 import {loadSpells} from './actions/admin/spellActions';
 import {loadSpelllists} from './actions/admin/spelllistActions';
 
@@ -22,6 +23,7 @@ store.dispatch(loadEquipments());
 store.dispatch(loadItemtypes());
 store.dispatch(loadPicklists());
 store.dispatch(loadProficiencies());
+store.dispatch(loadRaces());
 store.dispatch(loadSpells());
 store.dispatch(loadSpelllists());
 

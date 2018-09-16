@@ -194,6 +194,14 @@ export function proficiency() {
     return retVal;
 }
 
+export function race() {
+    let retVal = Object.assign({}, util.objectModel.SPELL);
+    retVal.id = 0;
+    retVal.name = '';
+    retVal.description = '';
+    return retVal;
+}
+
 export const select = {
     proficiency: {
         category: function() {

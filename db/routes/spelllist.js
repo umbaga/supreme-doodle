@@ -25,7 +25,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('delete-spelllist-01');
+                    //console.log('delete-spelllist-01');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_core_item';
@@ -42,7 +42,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function linkTable(resObj, callback) {
-                    console.log('delete-spelllist-04');
+                    //console.log('delete-spelllist-04');
                     results = [];
                     vals = [];
                     sql = 'DELETE FROM adm_link';
@@ -96,7 +96,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('update-spelllist-01');
+                    //console.log('update-spelllist-01');
                     results = [];
                     vals = [];
                     sql = 'UPDATE adm_core_item';
@@ -115,7 +115,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function checkExistingStuff(resObj, callback) {
-                    console.log('update-spelllist-02');
+                    //console.log('update-spelllist-02');
                     results = [];
                     vals = [];
                     sql = 'SELECT i.id';
@@ -140,7 +140,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function insertNewLinks(resObj, callback) {
-                    console.log('update-spelllist-07');
+                    //console.log('update-spelllist-07');
                     results = [];
                     vals = [];
                     if (resObj.permissions.need.description) {
@@ -179,7 +179,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function deleteUnneededLinks(resObj, callback) {
-                    console.log('update-spelllist-08');
+                    //console.log('update-spelllist-08');
                     results = [];
                     vals = [];
                     if ((resObj.permissions.has.description && !resObj.permissions.need.description)) {
@@ -248,7 +248,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     cb(null, resObj);
                 },
                 function itemTable(resObj, callback) {
-                    console.log('insert-spelllist-01');
+                    //console.log('insert-spelllist-01');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_item';
@@ -269,7 +269,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function linkTable(resObj, callback) {
-                    console.log('insert-spelllist-04');
+                    //console.log('insert-spelllist-04');
                     results = [];
                     vals = [];
                     addComma = false;
