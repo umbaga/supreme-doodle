@@ -1,10 +1,11 @@
+export const SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS = [5, 11, 17];
 
-export const picklist = {
-    datatypes: [
+export const PICKLIST = {
+    DATA_TYPES: [
         {id: 1, name: 'Picklist', value: 'DATA_PICKLIST_GENERAL'},
         {id: 2, name: 'String', value: 'DATA_STRING_EMPTY_PICKLIST_ITEM'}
     ],
-    spellLevels: [
+    SPELL_LEVELS: [
         {id: -1, name: 'All'},
         {id: 0, name: 'Cantrip'},
         {id: 1, name: '1st'},

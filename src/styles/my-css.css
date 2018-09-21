@@ -51,7 +51,7 @@ tr.found{
 }
 
 .tab-pane-double-row-of-tabs {
-    height: 545px !important;
+    height: 450px !important;
     overflow-y: scroll;
     overflow-x: hidden;
 }

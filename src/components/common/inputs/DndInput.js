@@ -134,6 +134,7 @@ class DndInput extends React.Component {
                     auxiliaryInputs = (
                         <fragment>
                             {this.props.childAuxiliaryDatatypes.map(function(datatype, idx) {
+                                let numSteps = (this.props.childAuxiliaryNumberStepVal && this.props.childAuxiliaryNumberStepVal.length != 0 && this.props.childAuxiliaryNumberStepVal[idx]) ? this.props.childAuxiliaryNumberStepVal[idx] : 1;
                                 switch (datatype) {
                                     case util.datatypes.NUMBER.INT:
                                         return (
@@ -142,10 +143,11 @@ class DndInput extends React.Component {
                                                 type="number"
                                                 name={this.props.childAuxiliaryNames[idx]}
                                                 value={this.props.childAuxiliaryValues[idx]}
+                                                step={numSteps}
                                                 datatype={datatype}
                                                 onChange={this.props.onChangeChild}
                                                 className="form-control dnd-input-number"
-                                                min="1"
+                                                min="0"
                                                 data-task={dataTask}
                                                 />
                                         );
@@ -215,6 +217,7 @@ class DndInput extends React.Component {
                         hideScrolling={this.props.listTableHideScrolling}
                         childAuxiliaryDatatypes={this.props.childAuxiliaryDatatypes}
                         childAuxiliaryNames={this.props.childAuxiliaryNames}
+                        childAuxiliaryNumberStepVal={this.props.childAuxiliaryNumberStepVal}
                         childAuxiliaryValues={this.props.childAuxiliaryValues}
                         renderNameFunction={this.props.renderNameFunction}
                         data-task={dataTask}
@@ -421,6 +424,24 @@ class DndInput extends React.Component {
                         />
                 );
                 break;
+            case util.datatypes.NUMBER.CHARACTER_LEVEL:
+                primaryInput = (
+                    <input
+                        type="number"
+                        name={this.props.name}
+                        ref={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onChange={this.props.onChange}
+                        className="form-control"
+                        min={1}
+                        max={20}
+                        readOnly={isReadOnly}
+                        data-task={dataTask}
+                        />
+                );
+                break;
             case util.datatypes.NUMBER.DEC_ALLOW_NEGATIVE:
             case util.datatypes.NUMBER.INT_ALLOW_NEGATIVE:
                 primaryInput = (
@@ -483,6 +504,18 @@ class DndInput extends React.Component {
                         className="form-control"
                         data-task={dataTask}
                         />
+                );
+                break;
+            case util.datatypes.STRING.LONG:
+                primaryInput = (
+                    <textarea
+                        name={this.props.name}
+                        placeholder={this.props.placeholder}
+                        value={this.props.value}
+                        datatype={this.props.dataType}
+                        onKeyUp={this.props.onChange}
+                        onChange={this.props.onChange}
+                        className="form-control" />
                 );
                 break;
             case util.datatypes.STRING.SHORT:
@@ -596,6 +629,7 @@ DndInput.propTypes = {
     changeFocusRefName: PropTypes.string,
     childAuxiliaryDatatypes: PropTypes.array,
     childAuxiliaryNames: PropTypes.array,
+    childAuxiliaryNumberStepVal: PropTypes.array,
     childAuxiliaryValues: PropTypes.array,
     childName: PropTypes.string,
     childValue: PropTypes.oneOfType([

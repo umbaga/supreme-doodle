@@ -90,7 +90,7 @@ class SpellPage extends React.Component {
             return true;
         });*/
         const picklists = this.props.picklists;
-        const spellLevels = util.hardCoded.picklist.spellLevels;
+        const spellLevels = util.hardcoded.PICKLIST.SPELL_LEVELS;
         const spellSchools = util.common.picklists.getPicklistItems(this.props.picklists, util.itemtypes.TYPE.ITEM.SCHOOL_OF_MAGIC);
         return (
             <div className="col-md-12">

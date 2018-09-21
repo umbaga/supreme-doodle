@@ -9,6 +9,11 @@ const _ID_NAME_OBJECT = {
     id: 0,
     name: ''
 };
+function _SET_ID_NAME_OBJECT(id) {
+    let retVal = Object.assign({}, _ID_NAME_OBJECT);
+    retVal.id = id;
+    return retVal;
+}
 const _DICE = {
     id: 0,
     dieCount: 0,
@@ -17,6 +22,29 @@ const _DICE = {
     multiplier: 1,
     divisor: 1,
     rendered: ''
+};
+const _PROFICIENCIES = {
+    assigned: [],
+    select: {
+        category: [],
+        list: []
+    },
+    variant: {
+        gain: {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        },
+        lose: {
+            assigned: [],
+            select: {
+                category: [],
+                list: []
+            }
+        }
+    }
 };
 export const examples = exampleObjects;
 
@@ -63,29 +91,7 @@ export const BACKGROUND = {
             assigned: []
         }
     },
-    proficiencies: {
-        assigned: [],
-        select: {
-            category: [],
-            list: []
-        },
-        variant: {
-            gain: {
-                assigned: [],
-                select: {
-                    category: [],
-                    list: []
-                }
-            },
-            lose: {
-                assigned: [],
-                select: {
-                    category: [],
-                    list: []
-                }
-            }
-        }
-    },
+    proficiencies: _PROFICIENCIES,
     suggestedCharacteristics: '',
     variants: []
 };
@@ -119,6 +125,36 @@ export const BACKGROUND_VARIANT = {
     equipment: {
         gain: [],
         lose: []
+    }
+};
+export const BREATH_WEAPON = {
+    advancement: {
+        atLevels: [],
+        dice: _DICE,
+        levelCount: 1,
+        projectileCount: 0,
+        type: _ID_NAME_OBJECT
+    },
+    areaOfEffect: {
+        shape: _ID_NAME_OBJECT
+    },
+    charges: {
+        count: 1,
+        rechargeType: _ID_NAME_OBJECT
+    },
+    damage: {
+        dice: _DICE,
+        type: _ID_NAME_OBJECT
+    },
+    range: 0,
+    savingThrow: {
+        abilityScore: _ID_NAME_OBJECT,
+        dc: {
+            abilityScore: _ID_NAME_OBJECT,
+            applyProficiencyBonus: true,
+            base: 8
+        },
+        effect: _ID_NAME_OBJECT
     }
 };
 export const CHART = {
@@ -220,6 +256,7 @@ export const EQUIPMENT = {
     weight: 0
 };
 export const ITEM = {id: 0, name: '', description: ''};
+export const ITEM_WITH_VALUE = {id: 0, name: '', value: 0};
 export const ITEMTYPE = {
     id: 0,
     name: '',
@@ -244,6 +281,18 @@ export const MECHANIC = {
     target: _ID_NAME_OBJECT,
     type: _ID_NAME_OBJECT
 };
+export const NATURAL_WEAPON = {
+    attack: {
+        abilityScore: _ID_NAME_OBJECT,
+        count: 1
+    },
+    damage: {
+        abilityScore: _ID_NAME_OBJECT,
+        dice: _DICE,
+        type: _ID_NAME_OBJECT
+    },
+    type: _ID_NAME_OBJECT
+};
 export const PICKLIST = {
     id: 0,
     name: '',
@@ -262,11 +311,49 @@ export const PROFICIENCY = {
         script: _ID_NAME_OBJECT
     }
 };
+export const PROFICIENCIES = _PROFICIENCIES;
 export const RACE = {
     id: 0,
     name: '',
     description: '',
-    resource: _RESOURCE
+    resource: _RESOURCE,
+    abilityScores: {
+        charisma: 0,
+        constitution: 0,
+        dexterity: 0,
+        intelligence: 0,
+        strength: 0,
+        wisdom: 0,
+        selectCount: 0,
+        selectValue: 0
+    },
+    parent: {id: 0},
+    isVariant: false,
+    breathWeapons: [],
+    charts: [],
+    mechanics: [],
+    monsterTags: [],
+    monsterType: _SET_ID_NAME_OBJECT(itemtypes.TYPE.DEFAULT.MONSTER_TYPE),
+    movement: [],
+    naturalWeapons: [],
+    proficiencies: _PROFICIENCIES,
+    senses: [],
+    size: _SET_ID_NAME_OBJECT(itemtypes.TYPE.DEFAULT.SIZE),
+    spellcasting: {
+        abilityScore: _ID_NAME_OBJECT,
+        groups: []
+    },
+    supplementalDescriptions: [],
+    vitals: {
+        height: {
+            base: 0,
+            dice: _DICE
+        },
+        weight: {
+            base: 0,
+            dice: _DICE
+        }
+    }
 };
 export const SELECT = {
     PROFICIENCY: {
@@ -361,13 +448,24 @@ export const SPELL = {
     school: _ID_NAME_OBJECT,
     supplementalDescriptions: []
 };
+export const SPELLCASTING_GROUP = {
+    characterLevel: 1,
+    chargeCount: 0,
+    rechargeType: _ID_NAME_OBJECT,
+    school: _ID_NAME_OBJECT,
+    selectCount: 0,
+    slotLevel: -1,
+    spell: _ID_NAME_OBJECT,
+    spelllist: _ID_NAME_OBJECT,
+    spellLevel: -1,
+    type: _ID_NAME_OBJECT
+};
 export const SPELLLIST = {
     id: 0,
     name: '',
     resource: _RESOURCE,
     spells: []
 };
-export const SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS = [5, 11, 17];
 export const SPELL_COMPONENT = {
     id: 0,
     name: '',

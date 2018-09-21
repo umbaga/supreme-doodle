@@ -23,7 +23,7 @@ util.datatypes = dataTypes;
 util.unicode = unicode;
 util.common = common;
 util.itemtypes = itemTypeDefinition;
-util.hardCoded = hardCoded;
+util.hardcoded = hardCoded;
 util.styles = styles;
 util.validation = validation;
 export default util;

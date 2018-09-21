@@ -1,6 +1,6 @@
 import util from './util';
 
-export function getPicklistItems (picklistArray, picklistId, categoryIds) {
+export function getPicklistItems (picklistArray, picklistId, categoryIds, omitThese) {
     let retVal = [];
     let tmp = picklistArray.filter(function(picklist) {
         if (picklistId.constructor === Array) {
@@ -70,6 +70,20 @@ export function getPicklistItems (picklistArray, picklistId, categoryIds) {
         }
         
     });
+    if (omitThese) {
+        if (omitThese.constructor === Array) {
+            if (omitThese.length != 0) {
+                retVal = retVal.filter(function(item) {
+                    for (let q = 0; q < omitThese.length; q++) {
+                        if (item.id == omitThese[q]) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+        }
+    }
     return retVal;
 }
 
@@ -128,10 +142,12 @@ export function getDefaultSelectedItem (picklist) {
 
 export function getIndexById(arr, id) {
     let retVal = -1;
-    for (let d = 0; d < arr.length; d++) {
-        if (arr[d].id == id) {
-            retVal = d;
-            break;
+    if (arr && arr.constructor === Array) {
+        for (let d = 0; d < arr.length; d++) {
+            if (arr[d].id == id) {
+                retVal = d;
+                break;
+            }
         }
     }
     return retVal;

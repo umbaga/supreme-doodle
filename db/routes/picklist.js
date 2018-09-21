@@ -806,6 +806,33 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(err, resObj);
                     });
                 },
+                function spellLists(resObj, callback) {
+                    results = [];
+                    sql = 'SELECT i."id", i."itemName" AS "name"';
+                    sql += ', get_item(i."resourceId") AS "resource"';
+                    sql += ', CASE WHEN get_spell_list(i.id) IS NULL THEN \'[]\' ELSE get_spell_list(i.id) END AS "spells"';
+                    sql += ' FROM adm_core_item i';
+                    sql += ' WHERE i."typeId" = $1';
+                    sql += ' ORDER BY i."itemName"';
+                    vals = [
+                        itemtypes.TYPE.ITEM.SPELLLIST
+                    ];
+                    query = client.query(new pg.Query(sql, vals));
+                    query.on('row', function(row) {
+                        results.push(row);
+                    });
+                    query.on('end', function() {
+                        let finalResults = results;
+                        let newPicklist = {};
+                        newPicklist.id = itemtypes.TYPE.ITEM.SPELLLIST;
+                        newPicklist.name = 'Spell List';
+                        newPicklist.isPicklist = true;
+                        newPicklist.applySupplementalPicklist = false;
+                        newPicklist.items = finalResults;
+                        resObj.push(newPicklist);
+                        return callback(err, resObj);
+                    });
+                },
                 function addHardcodedPicklists(resObj, callback) {
                     let spellLevelPicklist = {};
                     spellLevelPicklist.id = itemtypes.TYPE.ITEM.LEVEL.SPELL;

@@ -1,4 +1,7 @@
 export const TYPE = {
+    ABILITY_SCORE: {
+        SPELLCASTING: 66
+    },
     ADVANCEMENT_TYPE: {
         AT_LEVEL: 2910,
         BASE: 2927,
@@ -32,6 +35,8 @@ export const TYPE = {
     },
     DEFAULT: {
         ADVANCEMENT_TYPE: 2927,
+        MONSTER_TYPE: 158,
+        SIZE: 104,
         UNIT: {
             CASTING_TIME: 214,
             LENGTH: 275
@@ -88,6 +93,7 @@ export const TYPE = {
         BACKGROUND: 902,
         BACKGROUND_VARIANT: 2855,
         BONUS_TYPE: 2912,
+        BREATH_WEAPON: 5253,
         CHART: 1061,
         CHECK: 2920,
         CHECK_TYPE: 248,
@@ -115,6 +121,7 @@ export const TYPE = {
         MONSTER_TAG: 312,
         MONSTER_TYPE: 148,
         MOVEMENT_TYPE: 207,
+        NATURAL_WEAPON: 5252,
         NATURAL_WEAPON_TYPE: 305,
         OTHER_EFFECT: 255,
         PICKLIST: 0,
@@ -128,9 +135,11 @@ export const TYPE = {
         SCHOOL_OF_MAGIC: 85,
         SIZE: 100,
         SPELL: 2890,
+        SPELLCASTING_FOCUS: 445,
+        SPELLCASTING_GROUP: 5249,
+        SPELLCASTING_GROUP_TYPE: 5241,
         SPELLLIST: 5223,
         SPELL_COMPONENT: 94,
-        SPELLCASTING_FOCUS: 445,
         STAT: 242,
         SUPPLEMENTAL_PICKLIST: 585,
         TITLE: 10,
@@ -145,7 +154,9 @@ export const TYPE = {
     },
     LINK: {
         ABBREVIATION: 14,
+        ADVANCED_SENSE: 2546,
         ASSIGNED_EQUIPMENT: 886,
+        BREATH_WEAPON: 5254,
         CHART: 18,
         CHART_RELATIONSHIP: {
             DICE: 1069,
@@ -173,6 +184,9 @@ export const TYPE = {
             EQUIPMENT_CATEGORY_TO_FOCUS_TYPE: 450
         },
         MECHANIC: 21,
+        MONSTER_TAG: 5250,
+        MOVEMENT: 5247,
+        NATURAL_WEAPON: 5251,
         PARENT_CHILD: 124,
         PROFICIENCY: {
             ASSIGNED: 907,
@@ -186,6 +200,7 @@ export const TYPE = {
             VARIANT: 15
         },
         SPELL: 5224,
+        SPELLCASTING_GROUP: 5248,
         SPELL_COMPONENT: 2939,
         TITLE: 17,
         VARIANT: {
@@ -285,6 +300,12 @@ export const TYPE = {
         DRUIDIC_FOCUS: 447,
         HOLY_SYMBOL: 448,
         MUSICAL_INSTRUMENT: 449
+    },
+    SPELLCASTING_GROUP: {
+        BY_SCHOOL: 5242,
+        BY_SPELL: 5243,
+        BY_SPELL_LEVEL: 5244,
+        BY_SPELLLIST: 5245
     },
     SUPPLEMENTAL_PICKLIST: {
         NONE: 586,

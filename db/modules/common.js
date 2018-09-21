@@ -1371,6 +1371,101 @@ let common = {
                 });
             });
         },
+        naturalWeapons: function (referenceObj, parentObj, cb) {
+            pool.connect(function(err, client, done) {
+                async.waterfall([
+                    function init(callback) {
+                        let resObj = {};
+                        resObj.referenceId = parentObj.id;
+                        resObj.resourceId = (parentObj.resource && parentObj.resource.id) ? parentObj.resource.id : 0;
+                        resObj.naturalWeapons = referenceObj;
+                        resObj.permissions = {};
+                        resObj.permissions.has = {};
+                        
+                        return callback(null, resObj);
+                    },
+                    function coreTable(resObj, callback) {
+                        console.log('x-insert-naturalWeapons-01');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_natural_weapon';
+                        sql += ' ("typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.naturalWeapons.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 1);
+                            vals.push(itemtypes.TYPE.IETM.NATURAL_WEAPON);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "typeId"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                resObj.naturalWeapons[q].id = results[q].id;
+                            }
+                            return callback(null, resObj);
+                        });
+                    },
+                    function manageDice(resObj, callback) {
+                        console.log('x-insert-naturalWeapons-02');
+                        let diceArr = [];
+                        for (let q = 0; q < resObj.naturalWeapons.length; q++) {
+                            diceArr.push(resObj.naturalWeapons[q].damage.dice);
+                        }
+                        common.manage.dice(diceArr, function(results) {
+                            for (let q = 0; q < resObj.naturalWeapons.length; q++) {
+                                resObj.naturalWeapons[q].damage.dice = common.datatypes.dice.getObject(results, resObj.naturalWeapons[q].damage.dice);
+                            }
+                            return callback(null, resObj);
+                        });
+                    },
+                    function defTable(resObj, callback) {
+                        console.log('x-insert-naturalWeapons-03');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_def_natural_weapon';
+                        sql += ' ("naturalWeaponId", "typeId", "attackAbilityScoreId", "attackCount"';
+                        sql += ', "damageAbilityScoreId", "damageTypeId", "damageDiceId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.naturalWeapons.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 7);
+                            vals.push(resObj.naturalWeapons[q].id);
+                            vals.push(resObj.naturalWeapons[q].type.id);
+                            vals.push(resObj.naturalWeapons[q].attack.abilityScore.id);
+                            vals.push(resObj.naturalWeapons[q].attack.count);
+                            vals.push(resObj.naturalWeapons[q].damage.abilityScore.id);
+                            vals.push(resObj.naturalWeapons[q].damage.type.id);
+                            vals.push(resObj.naturalWeapons[q].damage.dice.id);
+                            addComma = true;
+                            counter++;
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
+                    }
+                ], function(error, result) {
+                    done();
+                    if (error) {
+                        console.error(error);
+                    }
+                    return cb(result);
+                });
+            });
+            
+        },
         proficiencies: function (referenceObj, parentObj, cb) {
             pool.connect(function(err, client, done) {
                 async.waterfall([
@@ -1550,6 +1645,131 @@ let common = {
                             return callback(null, resObj);
                         }
                         
+                    }
+                ], function(error, result) {
+                    done();
+                    if (error) {
+                        console.error(error);
+                    }
+                    return cb(result);
+                });
+            });
+        },
+        spellcastingGroups: function (referenceObj, parentObj, cb) {
+            pool.connect(function(err, client, done) {
+                async.waterfall([
+                    function init(callback) {
+                        let resObj = {};
+                        resObj.referenceId = parentObj.id;
+                        resObj.resourceId = (parentObj.resource && parentObj.resource.id) ? parentObj.resource.id : 0;
+                        resObj.spellcastingGroups = referenceObj;
+                        resObj.permissions = {};
+                        resObj.permissions.has = {};
+                        
+                        for (let q = 0; q < resObj.spellcastingGroups.length; q++) {
+                            if (resObj.spellcastingGroups[q].spell && resObj.spellcastingGroups[q].spell.id && resObj.spellcastingGroups[q].spell.id != 0) {
+                                resObj.spellcastingGroups[q].spellLevel = resObj.spellcastingGroups[q].spell.level;
+                                resObj.spellcastingGroups[q].school = resObj.spellcastingGroups[q].spell.school;
+                            }
+                            if (resObj.spellcastingGroups[q].slotLevel < resObj.spellcastingGroups[q].spellLevel) {
+                                resObj.spellcastingGroups[q].slotLevel = resObj.spellcastingGroups[q].spellLevel;
+                            }
+                        }
+                        
+                        return callback(null, resObj);
+                    },
+                    function coreTable(resObj, callback) {
+                        console.log('x-insert-spellcastingGroup-01');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_core_nameless_item';
+                        sql += ' ("typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.spellcastingGroups.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 1);
+                            vals.push(itemtypes.TYPE.ITEM.SPELLCASTING_GROUP);
+                            addComma = true;
+                            counter++;
+                        }
+                        sql += ' RETURNING id, "typeId"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                resObj.spellcastingGroups[q].id = results[q].id;
+                            }
+                            return callback(null, resObj);
+                        });
+                    },
+                    function defTable(resObj, callback) {
+                        console.log('x-insert-spellcastingGroup-02');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_def_spellcasting_group';
+                        sql += ' ("spellcastinGroupId", "rechargeTypeId", "schoolId", "spellId", "spelllistId"';
+                        sql += ', "characterLevel", "chargeCount", "selectCount", "slotLevel", "spellLevel"';
+                        sql += ', "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.spellcastingGroups.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 11);
+                            vals.push(resObj.spellcastingGroups[q].id);
+                            vals.push(resObj.spellcastingGroups[q].rechargeType.id);
+                            vals.push(resObj.spellcastingGroups[q].school.id);
+                            vals.push(resObj.spellcastingGroups[q].spell.id);
+                            vals.push(resObj.spellcastingGroups[q].spelllist.id);
+                            vals.push(resObj.spellcastingGroups[q].characterLevel);
+                            vals.push(resObj.spellcastingGroups[q].chargeCount);
+                            vals.push(resObj.spellcastingGroups[q].selectCount);
+                            vals.push(resObj.spellcastingGroups[q].slotLevel);
+                            vals.push(resObj.spellcastingGroups[q].spellLevel);
+                            vals.push(resObj.spellcastingGroups[q].type.id);
+                            addComma = true;
+                            counter++;
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                resObj.spellcastingGroups[q].id = results[q].id;
+                            }
+                            return callback(null, resObj);
+                        });
+                    },
+                    function linkTable(resObj, callback) {
+                        console.log('x-insert-spellcastingGroup-03');
+                        vals = [];
+                        results = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        for (let q = 0; q < resObj.supplementalDescriptions.length; q++) {
+                            sql += addComma ? ', ' : '';
+                            sql += common.parameterArray.getParameterString(counter, 3);
+                            vals.push(resObj.referenceId);
+                            vals.push(resObj.spellcastingGroups[q].id);
+                            vals.push(itemtypes.TYPE.LINK.SPELLCASTING_GROUP);
+                            addComma = true;
+                            counter++;
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            return callback(null, resObj);
+                        });
                     }
                 ], function(error, result) {
                     done();

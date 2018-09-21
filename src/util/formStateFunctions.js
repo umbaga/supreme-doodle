@@ -233,6 +233,21 @@ export function standard(event, obj, picklists, arrayObject) {
         selectedIndex = util.common.picklists.getIndexById(util.common.formState.functions.set.objectValue(retVal, field), selectedId);
     }
     switch (dataType) {
+        case util.datatypes.ACTION.CHART.REMOVE:
+        case util.datatypes.ACTION.MECHANIC.REMOVE:
+        case util.datatypes.ACTION.NATURAL_WEAPON.REMOVE:
+        case util.datatypes.ACTION.SPELLCASTING_GROUP.REMOVE:
+        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.REMOVE:
+        case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.REMOVE:
+            util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
+            break;
+        case util.datatypes.ACTION.MECHANIC.ADD:
+        case util.datatypes.ACTION.NATURAL_WEAPON.ADD:
+        case util.datatypes.ACTION.SPELLCASTING_GROUP.ADD:
+        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.ADD:
+            util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
+            break;
+            
         case util.datatypes.ACTION.CHART.ADD:
             if (arrayObject.id <= 0) {
                 util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
@@ -260,6 +275,12 @@ export function standard(event, obj, picklists, arrayObject) {
             break;
         case util.datatypes.ACTION.CHART.CANCEL:
             retVal = util.common.resetObject.chart(arrayObject.length);
+            break;
+        case util.datatypes.ACTION.MECHANIC.CANCEL:
+            retVal = util.common.resetObject.mechanic(arrayObject.length);
+            break;
+        case util.datatypes.ACTION.NATURAL_WEAPON.CANCEL:
+            retVal = util.common.resetObject.naturalWeapon();
             break;
         case util.datatypes.ACTION.CHART.ORDER.DOWN:
         case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.ORDER.DOWN:
@@ -315,12 +336,6 @@ export function standard(event, obj, picklists, arrayObject) {
             });
             retVal.entries = util.common.charts.refactorIndexes.entries(retVal.entries, retVal.rows, retVal.columns);
             break;
-        case util.datatypes.ACTION.CHART.REMOVE:
-        case util.datatypes.ACTION.MECHANIC.REMOVE:
-        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.REMOVE:
-        case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.REMOVE:
-            util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
-            break;
         case util.datatypes.ACTION.CHART.SELECT:
         case util.datatypes.ACTION.SUPPLEMENTAL_DESCRIPTION.SELECT:
             retVal = Object.assign({}, arrayObject[selectedIndex]);
@@ -333,12 +348,8 @@ export function standard(event, obj, picklists, arrayObject) {
         case util.datatypes.ACTION.LIST.PICKLIST.REMOVE:
             util.common.formState.functions.set.objectValue(retVal, field, '', 'remove', selectedIndex);
             break;
-        case util.datatypes.ACTION.MECHANIC.ADD:
-        case util.datatypes.ACTION.SUPPLEMENTAL_DAMAGE.ADD:
-            util.common.formState.functions.set.objectValue(retVal, field, arrayObject, 'add');
-            break;
         case util.datatypes.ACTION.SPELL.EXPAND_AT_LEVELS:
-            util.common.formState.functions.set.objectValue(retVal, field, util.objectModel.SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS);
+            util.common.formState.functions.set.objectValue(retVal, field, util.hardcoded.SPELL_CANTRIP_ADVANCEMENT_AT_LEVELS);
             break;
         case util.datatypes.ACTION.SPELL_COMPONENT:
             tmpObj = util.common.picklists.getPicklistItem(picklists, subfield);

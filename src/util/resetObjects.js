@@ -156,6 +156,12 @@ export function itemtype() {
     return retVal;
 }
 
+export function itemWithValue() {
+    let retVal = Object.assign({}, util.objectModel.ITEM_WITH_VALUE);
+    retVal.value = 0;
+    return retVal;
+}
+
 export function mechanic(newId) {
     let retVal = Object.assign({}, util.objectModel.MECHANIC);
     if (newId !== undefined) {
@@ -173,6 +179,21 @@ export function mechanic(newId) {
     retVal.conditionalText = '';
     retVal.specialText = '';
     retVal.target = {id: 0};
+    retVal.type = {id: 0};
+    return retVal;
+}
+
+export function naturalWeapon() {
+    let retVal = Object.assign({}, util.objectModel.NATURAL_WEAPON);
+    retVal.attack = {
+        abilityScore: {id: 0},
+        count: 1
+    };
+    retVal.damage = {
+        abilityScore: {id: 0},
+        dice: Object.assign({}, util.objectModel.DICE),
+        type: {id: 0}
+    };
     retVal.type = {id: 0};
     return retVal;
 }
@@ -282,6 +303,12 @@ export function spell() {
     retVal.resource = {id: util.itemtypes.TYPE.RESOURCE.PHB};
     retVal.school = util.objectModel.ITEM;
     retVal.supplementalDescriptions = [];
+    return retVal;
+}
+
+export function spellcastingGroup() {
+    let retVal = util.objectModel.SPELLCASTING_GROUP;
+    
     return retVal;
 }
 

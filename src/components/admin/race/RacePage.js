@@ -112,6 +112,7 @@ class RacePage extends React.Component {
                     showModal={this.state.showModal}
                     onEdit={this.onEdit}
                     onViewDetails={this.onViewDetails}
+                    races={races}
                     />
             </div>
         );

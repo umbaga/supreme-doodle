@@ -107,6 +107,61 @@ export const isReadyToSave = {
         }
         return true;
     },
+    naturalWeapon: function(val) {
+        if (!val.type || !val.type.id || val.type.id == 0) {
+            return false;
+        }
+        if (!val.damage || !val.damage.type || !val.damage.type.id || val.damage.type.id == 0) {
+            return false;
+        }
+        if (val.attack.count <= 0) {
+            return false;
+        }
+        return true;
+    },
+    spellcastingGroup: function(val) {
+        switch (val.type.id) {
+            case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SCHOOL:
+                if (!val.school || (val.school.id == 0)) {
+                    return false;
+                }
+                if (val.selectCount <= 0) {
+                    return false;
+                }
+                break;
+            case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELL:
+                if (!val.spell || (val.spell.id == 0)) {
+                    return false;
+                }
+                break;
+            case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELL_LEVEL:
+                if (val.spellLevel < 0) {
+                    return false;
+                }
+                if (val.selectCount <= 0) {
+                    return false;
+                }
+                break;
+            case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELLLIST:
+                if (!val.spelllist || (val.spelllist.id == 0)) {
+                    return false;
+                }
+                if (val.selectCount == 0) {
+                    return false;
+                }
+                if (val.spellLevel < 0) {
+                    return false;
+                }
+                break;
+            default:
+        }
+        if (val.chargeCount > 0 && val.spellLevel > 0) {
+            if (!val.rechargeType || val.rechargeType.id == 0) {
+                return false;
+            }
+        }
+        return true;
+    },
     supplementalDescription: function(val) {
         if (!val.title || val.title.length == 0) {
             return false;

@@ -194,19 +194,30 @@ number.coin = function(val, fullNames) {
     }
     return retVal;
 };
+number.multiplicative = function (val) {
+    let retVal = '';
+    if (val == 1) {
+        retVal = 'once';
+    } else if (val == 2) {
+        retVal = 'twice';
+    } else {
+        retVal = util.format.forDisplay.number.renderAsWord(val) + ' times';
+    }
+    return retVal;
+};
 number.ordinal = function(val) {
     let retVal = '';
     let lastDigit = val.toString().slice(-1);
     switch (lastDigit) {
         case '1':
-            if (val == 11) {
+            if (parseInt(val) == 11) {
                 retVal = val.toString() + 'th';
             } else {
                 retVal = val.toString() + 'st';
             }
             break;
         case '2':
-            if (val == 12) {
+            if (parseInt(val) == 12) {
                 retVal = val.toString() + 'th';
             } else {
                 retVal = val.toString() + 'nd';
@@ -222,7 +233,7 @@ number.ordinal = function(val) {
 };
 number.renderAsWord = function(val) {
     let retVal = '';
-    switch (val) {
+    switch (parseInt(val)) {
         case 1:
             retVal = 'one';
             break;
@@ -493,6 +504,22 @@ obj.monsterTypeSizeBlock = function(val) {
     }
     return retVal;
 };
+obj.naturalWeapon = function(val) {
+    let retVal = val.type.name;
+    if (val.attack.count > 1) {
+        retVal += ' (' + val.attack.count + ')';
+    }
+    retVal += ': ';
+    retVal += util.format.forDisplay.string.dieRoll(val.damage.dice);
+    if (val.damage.abilityScore.id != 0) {
+        retVal += ' + ' + val.damage.abilityScore.name + ' modifier';
+    }
+    retVal += ' ' + val.damage.type.name + ' damage.';
+    if (val.attack.abilityScore.id != 0) {
+        retVal += ' Add ' + val.attack.abilityScore.name + ' modifier to attacks.';
+    }
+    return retVal;
+};
 obj.proficiency = {
     savingThrow: function(val) {
         let retVal = val.name + ' saving throws';
@@ -570,6 +597,60 @@ obj.proficiencyList = function(val) {
         retVal += (q != 0) ? ', ' : '';
         retVal += (q == val.proficiencies.length - 1) ? ' or ' : '';
         retVal += val.proficiencies[q].name;
+    }
+    return retVal;
+};
+obj.spellcastingGroup = function(val) {
+    let retVal = '';
+    if (val.characterLevel != 1) {
+        retVal = 'At ' + util.format.forDisplay.number.ordinal(val.characterLevel) + ' level, ';
+    }
+    switch (val.type.id) {
+        case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SCHOOL:
+            retVal += (val.characterLevel != 1) ? 'select' : 'Select';
+            retVal += ' ' + val.selectCount + ' ';
+            retVal += (val.spellLevel == 0) ? 'cantrip' : 'level ' + val.spellLevel + ' spell';
+            retVal += ' from the school of ' + val.school.name + '.';
+            break;
+        case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELL:
+            retVal += (val.characterLevel != 1) ? 'you can cast' : 'You can cast';
+            retVal += ' ' + val.spell.name;
+            if (val.spellLevel == 0) {
+                retVal += ' as a cantrip.';
+            } else {
+                retVal += ' ' + util.format.forDisplay.number.multiplicative(val.chargeCount) + '.';
+                retVal += ' You can cast the spell again after a ' + val.rechargeType.name;
+            }
+            if (val.slotLevel > val.spellLevel) {
+                retVal += ' You cast this spell at a slot level of ' + val.slotLevel;
+            }
+            break;
+        case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELL_LEVEL:
+            retVal += (val.characterLevel != 1) ? 'select' : 'Select';
+            retVal += ' ' + val.selectCount + ' ';
+            retVal += (val.spellLevel == 0) ? 'cantrip' : 'level ' + val.spellLevel + ' spell';
+            retVal += '.';
+            break;
+        case util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELLLIST:
+            retVal += (val.characterLevel != 1) ? 'select' : 'Select';
+            retVal += ' ' + val.selectCount + ' ';
+            retVal += (val.spellLevel == 0) ? 'cantrip' : 'level ' + val.spellLevel + ' spell';
+            retVal += ' from the ' + val.spelllist.name + ' spell list.';
+            break;
+        default:
+    }
+    if (val.type.id == util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SCHOOL
+       || val.type.id == util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELL_LEVEL
+       || val.type.id == util.itemtypes.TYPE.SPELLCASTING_GROUP.BY_SPELLLIST) {
+        if (val.chargeCount != 0) {
+            retVal += ' You can cast ';
+            retVal += ((val.selectCount == 1) ? 'this spell' : 'these spells');
+            retVal += ' ' + util.format.forDisplay.number.multiplicative(val.chargeCount) + '.';
+            retVal += ' You can cast the spell again after a ' + val.rechargeType.name + '.';
+        }
+        if (val.slotLevel > val.spellLevel) {
+            retVal += ' You cast this spell at a slot level of ' + val.slotLevel;
+        }
     }
     return retVal;
 };

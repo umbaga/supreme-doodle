@@ -390,15 +390,82 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     resObj.permissions = {};
                     resObj.permissions.need = {};
                     
-                    resObj.permissions.need.description = false;
+                    resObj.permissions.need.dice = false;
+                    resObj.permissions.need.vitals = false;
+                    resObj.permissions.need.mechanics = false;
+                    resObj.permissions.need.charts = false;
+                    resObj.permissions.need.supplementalDescriptions = false;
+                    resObj.permissions.need.proficiencies = false;
+                    resObj.permissions.need.spellcasting = false;
+                    resObj.permissions.need.movement = false;
+                    resObj.permissions.need.senses = false;
+                    resObj.permissions.need.naturalWeapons = false;
+                    resObj.permissions.need.breathWeapons = false;
                     
-                    if (resObj.race.description && resObj.race.description.length != 0) {
-                        resObj.permissions.need.description = true;
+                    if (resObj.race.vitals && resObj.race.vitals.height && resObj.race.vitals.height.base && resObj.race.vitals.height.base != 0) {
+                        resObj.permissions.need.dice = true;
+                        resObj.permissions.need.vitals = true;
+                    }
+                    if (resObj.race.mechanics && resObj.race.mechanics.length != 0) {
+                        resObj.permissions.need.mechanics = true;
+                    }
+                    if (resObj.race.mechanics && resObj.race.mechanics.length != 0) {
+                        resObj.permissions.need.mechanics = true;
+                    }
+                    if (resObj.race.charts && resObj.race.charts.length != 0) {
+                        resObj.permissions.need.charts = true;
+                    }
+                    if (resObj.race.supplementalDescriptions && resObj.race.supplementalDescriptions.length != 0) {
+                        resObj.permissions.need.supplementalDescriptions = true;
+                    }
+                    if (resObj.race.spellcasting
+                        && ((resObj.race.spellcasting.abilityScore && resObj.race.spellcasting.abilityScore.id != 0)
+                           || (resObj.race.spellcasting.groups && resObj.race.spellcasting.groups.length != 0))) {
+                        resObj.permissions.need.spellcasting = true;
+                    }
+                    if (resObj.race.proficiencies) {
+                        if (resObj.race.proficiencies.assigned && resObj.race.proficiencies.assigned.length != 0) {
+                            resObj.permissions.need.proficiencies = true;
+                        }
+                        if (resObj.race.proficiencies.select) {
+                            if ((resObj.race.proficiencies.select.category && resObj.race.proficiencies.select.category.length != 0)
+                               || (resObj.race.proficiencies.select.list && resObj.race.proficiencies.select.category.list != 0)) {
+                                resObj.permissions.need.proficiencies = true;
+                            }
+                        }
+                    }
+                    if (resObj.race.movement && resObj.race.movement.length != 0) {
+                        resObj.permissions.need.movement = true;
+                    }
+                    if (resObj.race.senses && resObj.race.senses.length != 0) {
+                        resObj.permissions.need.senses = true;
+                    }
+                    if (resObj.race.naturalWeapons && resObj.race.naturalWeapons.length != 0) {
+                        resObj.permissions.need.naturalWeapons = true;
+                    }
+                    if (resObj.race.breathWeapons && resObj.race.breathWeapons.length != 0) {
+                        resObj.permissions.need.breathWeapons = true;
                     }
                     cb(null, resObj);
                 },
+                function manageDice(resObj, callback) {
+                    console.log('x-insert-race-01');
+                    if (resObj.permissions.need.dice) {
+                        let diceArr = [
+                            resObj.race.vitals.height.dice,
+                            resObj.race.vitals.weight.dice
+                        ];
+                        common.manage.dice(diceArr, function(results) {
+                            resObj.race.vitals.height.dice = common.datatypes.dice.getObject(results, resObj.race.vitals.height.dice);
+                            resObj.race.vitals.weight.dice = common.datatypes.dice.getObject(results, resObj.race.vitals.weight.dice);
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
                 function itemTable(resObj, callback) {
-                    console.log('insert-race-01');
+                    console.log('x-insert-race-02');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_core_item';
@@ -419,14 +486,27 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     });
                 },
                 function raceTable(resObj, callback) {
-                    console.log('insert-race-02');
+                    console.log('x-insert-race-03');
                     results = [];
                     vals = [];
                     sql = 'INSERT INTO adm_def_race';
-                    sql += '("raceId")';
-                    sql += 'VALUES ($1)';
+                    sql += '("raceId", "strMod", "dexMod", "conMod", "intMod", "wisMod", "chaMod", "abilitySelectCount", "abilitySelectValue",';
+                    sql += ', "monsterTypeId", "sizeId", "parentId", "isVariant")';
+                    sql += 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)';
                     vals = [
-                        resObj.race.id
+                        resObj.race.id,
+                        resObj.race.abilityScore.stengthModifier,
+                        resObj.race.abilityScore.dexterityModifier,
+                        resObj.race.abilityScore.constitutionModifier,
+                        resObj.race.abilityScore.intelligenceModifier,
+                        resObj.race.abilityScore.wisdomModifier,
+                        resObj.race.abilityScore.charismaModifier,
+                        resObj.race.abilityScore.selectCount,
+                        resObj.race.abilityScore.selectValue,
+                        resObj.race.monsterType.id,
+                        resObj.race.size.id,
+                        resObj.race.parent.id,
+                        resObj.race.isVariant
                     ];
                     query = client.query(new pg.Query(sql, vals));
                     query.on('row', function(row) {
@@ -436,64 +516,44 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     });
                 },
-                function descriptionTable(resObj, callback) {
-                    console.log('insert-race-03');
-                    if (resObj.permissions.need.description) {
+                function raceVitals(resObj, callback) {
+                    console.log('x-insert-race-04');
+                    if (resObj.permissions.need.vitals) {
                         results = [];
                         vals = [];
-                        addComma = false;
-                        counter = 0;
-                        sql = 'INSERT INTO adm_core_description';
-                        sql += ' ("description", "typeId")';
-                        sql += ' VALUES ';
-                        if (resObj.permissions.need.description) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 2);
-                            vals.push(resObj.race.description);
-                            vals.push(itemtypes.TYPE.DESCRIPTION.GENERAL);
-                            addComma = true;
-                            counter++;
-                        }
-                        sql += ' RETURNING id, "typeId"';
+                        sql = 'INSERT INTO adm_def_race_vitals';
+                        sql += '("raceId", "baseHeight", "heightDiceId", "baseWeight", "weightDiceId")';
+                        sql += 'VALUES ($1, $2, $3, $4, $5)';
+                        vals = [
+                            resObj.race.id,
+                            resObj.race.vitals.height.base,
+                            resObj.race.vitals.height.dice.id,
+                            resObj.race.vitals.weight.base,
+                            resObj.race.vitals.weight.dice.id
+                        ];
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
                         });
                         query.on('end', function() {
-                            for (let q = 0; q < results.length; q++) {
-                                if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.GENERAL) {
-                                    resObj.race.descriptionId = results[q].id;
-                                }
-                                if (results[q].typeId == itemtypes.TYPE.DESCRIPTION.SUGGESTED_CHARACTERISTICS) {
-                                    resObj.race.suggestedCharacteristicsId = results[q].id;
-                                }
-                            }
                             return callback(null, resObj);
                         });
                     } else {
                         return callback(null, resObj);
                     }
                 },
-                function linkTable(resObj, callback) {
-                    console.log('insert-race-04');
-                    if (resObj.permissions.need.description) {
+                function raceSpellcasting(resObj, callback) {
+                    console.log('x-insert-race-05');
+                    if (resObj.permissions.need.spellcasting) {
                         results = [];
                         vals = [];
-                        addComma = false;
-                        counter = 0;
-                        sql = 'INSERT INTO adm_link';
-                        sql += ' ("referenceId", "targetId", "typeId")';
-                        sql += ' VALUES ';
-                        if (resObj.permissions.need.description) {
-                            sql += addComma ? ', ' : '';
-                            sql += common.parameterArray.getParameterString(counter, 3);
-                            vals.push(resObj.race.id);
-                            vals.push(resObj.race.descriptionId);
-                            vals.push(itemtypes.TYPE.LINK.DESCRIPTION);
-                            addComma = true;
-                            counter++;
-                        }
-                        sql += ' RETURNING id, "targetId", "typeId"';
+                        sql = 'INSERT INTO adm_def_race_spellcasting';
+                        sql += '("raceId", "abilityScoreId")';
+                        sql += 'VALUES ($1, $2)';
+                        vals = [
+                            resObj.race.id,
+                            resObj.race.spellcasting.abilityScore.id
+                        ];
                         query = client.query(new pg.Query(sql, vals));
                         query.on('row', function(row) {
                             results.push(row);
@@ -506,7 +566,7 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                     }
                 },
                 function manageProficiencies(resObj, callback) {
-                    console.log('x-insert-race-05');
+                    console.log('x-insert-race-06');
                     if (resObj.permissions.need.proficiencies) {
                         common.insert.proficiencies(resObj.race.proficiencies, resObj.race, function(results) {
                             return callback(null, resObj);
@@ -515,21 +575,164 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
                         return callback(null, resObj);
                     }
                 },
-                function manageFeature(resObj, callback) {
+                function manageCharts(resObj, callback) {
                     console.log('x-insert-race-07');
-                    if (resObj.permissions.need.feature) {
-                        common.insert.feature(resObj.race.feature, resObj.race, function(results) {
-                            resObj.race.feature = results.feature;
+                    if (resObj.permissions.need.charts) {
+                        common.insert.charts(resObj.race.charts, resObj.race, function(results) {
+                            resObj.race.charts = results.charts;
                             return callback(null, resObj);
                         });
                     } else {
                         return callback(null, resObj);
                     }
                 },
-                function manageAssignedEquipment(resObj, callback) {
-                    console.log('x-insert-race-06');
-                    if (resObj.permissions.need.assignedEquipment) {
-                        common.insert.assignedEquipment(resObj.race.equipment.assigned, resObj.race, function(results) {
+                function manageSupplementalDescriptions(resObj, callback) {
+                    console.log('x-insert-race-08');
+                    if (resObj.permissions.need.supplementalDescriptions) {
+                        common.insert.supplementalDescriptions(resObj.race.supplementalDescriptions, resObj.race, function(results) {
+                            resObj.race.supplementalDescriptions = results.supplementalDescriptions;
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageMechanics(resObj, callback) {
+                    console.log('x-insert-race-09');
+                    if (resObj.permissions.need.mechanics) {
+                        common.insert.mechanics(resObj.race.mechanics, resObj.race, function(results) {
+                            resObj.race.mechanics = results.mechanics;
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageSpellcastingGroups(resObj, callback) {
+                    console.log('x-insert-race-10');
+                    if (resObj.permissions.need.spellcasting) {
+                        common.insert.spellcastingGroups(resObj.race.spellcasting.groups, resObj.race, function(results) {
+                            resObj.race.spellcasting.groups = results.spellcastingGroups;
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageNaturalWeapons(resObj, callback) {
+                    console.log('x-insert-race-11');
+                    if (resObj.permissions.need.naturalWeapons) {
+                        common.insert.naturalWeapons(resObj.race.naturalWeapons, resObj.race, function(results) {
+                            resObj.race.naturalWeapons = results.naturalWeapons;
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function manageBreathWeapons(resObj, callback) {
+                    console.log('x-insert-race-12');
+                    if (resObj.permissions.need.breathWeapons) {
+                        
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function linkTable(resObj, callback) {
+                    console.log('x-insert-race-13');
+                    if (resObj.permissions.need.movement || resObj.permissions.need.senses) {
+                        results = [];
+                        vals = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link';
+                        sql += ' ("referenceId", "targetId", "typeId")';
+                        sql += ' VALUES ';
+                        if (resObj.permissions.need.movement) {
+                            for (let q = 0; q < resObj.race.movement.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.spell.id);
+                                vals.push(resObj.spell.movement[q].id);
+                                vals.push(itemtypes.TYPE.LINK.MOVEMENT);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        if (resObj.permissions.need.senses) {
+                            for (let q = 0; q < resObj.race.senses.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 3);
+                                vals.push(resObj.spell.id);
+                                vals.push(resObj.spell.senses[q].id);
+                                vals.push(itemtypes.TYPE.LINK.ADVANCED_SENSE);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        sql += ' RETURNING id, "targetId", "typeId"';
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
+                            for (let q = 0; q < results.length; q++) {
+                                if (resObj.permissions.need.movement) {
+                                    for (let w = 0; w < resObj.race.movement.length; w++) {
+                                        if (results[q].targetId == resObj.race.movement[w].id) {
+                                            resObj.race.movement[w].linkId = results[q].id;
+                                        }
+                                    }
+                                }
+                                if (resObj.permissions.need.senses) {
+                                    for (let w = 0; w < resObj.race.senses.length; w++) {
+                                        if (results[q].targetId == resObj.race.senses[w].id) {
+                                            resObj.race.senses[w].linkId = results[q].id;
+                                        }
+                                    }
+                                }
+                            }
+                            return callback(null, resObj);
+                        });
+                    } else {
+                        return callback(null, resObj);
+                    }
+                },
+                function linkValueNumber(resObj, callback) {
+                    console.log('x-insert-race-14');
+                    if (resObj.permissions.need.movement || resObj.permissions.need.senses) {
+                        results = [];
+                        vals = [];
+                        addComma = false;
+                        counter = 0;
+                        sql = 'INSERT INTO adm_link_value_number';
+                        sql += ' ("linkId", "numberValue")';
+                        sql += ' VALUES ';
+                        if (resObj.permissions.need.movement) {
+                            for (let q = 0; q < resObj.race.movement.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.spell.movement[q].linkId);
+                                vals.push(resObj.spell.movement[q].value);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        if (resObj.permissions.need.senses) {
+                            for (let q = 0; q < resObj.race.senses.length; q++) {
+                                sql += addComma ? ', ' : '';
+                                sql += common.parameterArray.getParameterString(counter, 2);
+                                vals.push(resObj.spell.senses[q].linkId);
+                                vals.push(resObj.spell.senses[q].value);
+                                addComma = true;
+                                counter++;
+                            }
+                        }
+                        query = client.query(new pg.Query(sql, vals));
+                        query.on('row', function(row) {
+                            results.push(row);
+                        });
+                        query.on('end', function() {
                             return callback(null, resObj);
                         });
                     } else {
@@ -555,14 +758,53 @@ module.exports = function(app, pg, async, pool, itemtypes, common) {
             }
             sql = 'SELECT i."id", i."itemName" AS "name"';
             sql += ', get_item(i."resourceId") AS "resource"';
-            sql += ', get_description(i.id, $2) AS "description"';
+            sql += ', json_build_object(';
+            sql += '    \'strength\', race."strMod"';
+            sql += '    , \'dexterity\', race."dexMod"';
+            sql += '    , \'constitution\', race."conMod"';
+            sql += '    , \'intelligence\', race."intMod"';
+            sql += '    , \'wisdom\', race."wisMod"';
+            sql += '    , \'charisma\', race."chaMod"';
+            sql += '    , \'selectCount\', race."abilitySelectCount"';
+            sql += '    , \'selectValue\', race."abilitySelectValue"';
+            sql += ') AS "abilityScores"';
+            sql += ', get_item(race."sizeId") AS "size"';
+            sql += ', get_item(race."monsterTypeId") AS "monsterType"';
+            sql += ', get_item(race."parentId") AS "parent"';
+            sql += ', race."isVariant"';
+            sql += ', json_build_object(';
+            sql += '    \'abilityScore\', get_item(spellcasting."abilityScoreId")';
+            sql += '    , \'groups\', \'[]\'';
+            sql += ') AS "spellcasting"';
+            sql += ', json_build_object(';
+            sql += '    \'height\', json_build_object(';
+            sql += '        \'base\', vitals."baseHeight"';
+            sql += '        , \'dice\', get_dice(vitals."heightDiceId")';
+            sql += '    )';
+            sql += '    , \'weight\', json_build_object(';
+            sql += '        \'base\', vitals."baseWeight"';
+            sql += '        , \'dice\', get_dice(vitals."weightDiceId")';
+            sql += '    )';
+            sql += ') AS "vitals"';
+            sql += ', CASE WHEN get_natural_weapons(i.id) IS NULL THEN \'[]\' ELSE get_natural_weapons(i.id) END AS "naturalWeapons"';
+            sql += ', \'[]\' AS "breathWeapons"';
+            sql += ', CASE WHEN get_charts(i.id) IS NULL THEN \'[]\' ELSE get_charts(i.id) END AS "charts"';
+            sql += ', CASE WHEN get_mechanics(i.id) IS NULL THEN \'[]\' ELSE get_mechanics(i.id) END AS "mechanics"';
+            sql += ', CASE WHEN get_supplemental_descriptions(i.id) IS NULL THEN \'[]\' ELSE get_supplemental_descriptions(i.id) END AS "supplementalDescriptions"';
+            sql += ', get_array_of_items(i.id, $2) AS "monsterTags"';
+            sql += ', get_array_of_items_with_number(i.id, $3) AS "movement"';
+            sql += ', get_array_of_items_with_number(i.id, $4) AS "senses"';
             sql += ' FROM adm_core_item i';
-            sql += ' INNER JOIN adm_def_race bg ON bg."raceId" = i.id';
+            sql += ' INNER JOIN adm_def_race race ON race."raceId" = i.id';
+            sql += ' LEFT OUTER JOIN adm_def_race_vitals vitals ON vitals."raceId" = i.id';
+            sql += ' LEFT OUTER JOIN adm_def_race_spellcasting spellcasting ON spellcasting."raceId" = i.id';
             sql += ' WHERE i."typeId" = $1';
             sql += ' ORDER BY i."itemName"';
             vals = [
                 itemtypes.TYPE.ITEM.RACE,
-                itemtypes.TYPE.DESCRIPTION.GENERAL
+                itemtypes.TYPE.LINK.MONSTER_TAG,
+                itemtypes.TYPE.LINK.MOVEMENT,
+                itemtypes.TYPE.LINK.ADVANCED_SENSE
             ];
             query = client.query(new pg.Query(sql, vals));
             query.on('row', function(row) {

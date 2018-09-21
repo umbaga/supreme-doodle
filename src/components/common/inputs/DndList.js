@@ -31,10 +31,11 @@ class DndList extends React.Component {
     renderAuxiliaryInputs(idx) {
         if (this.props.childAuxiliaryDatatypes && this.props.childAuxiliaryDatatypes.length != 0) {
             return this.props.childAuxiliaryDatatypes.map(function(datatype, idx2) {
+                let numSteps = (this.props.childAuxiliaryNumberStepVal && this.props.childAuxiliaryNumberStepVal.length != 0 && this.props.childAuxiliaryNumberStepVal[idx2]) ? this.props.childAuxiliaryNumberStepVal[idx2] : 1;
                 switch (datatype) {
                     case util.datatypes.NUMBER.INT:
                         return (
-                            <td key={idx2}>
+                            <td key={idx2} width="100px">
                                 <input
                                     type="number"
                                     name={this.props.name + '_idx_' + idx.toString() + '_idx_' + this.props.childAuxiliaryNames[idx2]}
@@ -43,6 +44,7 @@ class DndList extends React.Component {
                                     onChange={this._onChangeWithIndex}
                                     className="form-control dnd-input-number"
                                     min="1"
+                                    step={numSteps}
                                     data-selectedIndex={idx}
                                     />
                             </td>
@@ -175,6 +177,7 @@ DndList.propTypes = {
     ]),
     childAuxiliaryDatatypes: PropTypes.array,
     childAuxiliaryNames: PropTypes.array,
+    childAuxiliaryNumberStepVal: PropTypes.array,
     childAuxiliaryValues: PropTypes.array,
     childName: PropTypes.string,
     children: PropTypes.oneOfType([
